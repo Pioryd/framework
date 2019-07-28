@@ -1,3 +1,7 @@
+# Example
+example/server/out
+example/client/out
+
 # Python
 __pycache__
 
