@@ -102,6 +102,24 @@ inline void writeBE64(uint8_t* data, T value) {
   data[6] = ((T)value >> 8) & 0xFF;
   data[7] = (T)value;
 }
+
+uint32_t adler32(const uint8_t* data, size_t lenght);
+
+long random_range(long min, long max);
+float random_range(float min, float max);
+
+inline bool is_power_of_two(size_t v) { return ((v != 0) && !(v & (v - 1))); }
+inline size_t to_power_of_two(size_t v) {
+  if (v == 0) return 0;
+  size_t r = 1;
+  while (r < v && r != 0xffffffff) r <<= 1;
+  return r;
+}
+
+template <typename T>
+T clamp(T x, T min, T max) {
+  return std::max<T>(min, std::min<T>(x, max));
+}
 }  // namespace Math
 }  // namespace FW::Util
 #endif  // FW_UTIL_MATH_H
