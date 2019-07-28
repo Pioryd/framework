@@ -3,9 +3,11 @@
 #include "../time/time.h"
 
 namespace FW::Core {
-Logger::Logger() {}
+Logger::Logger(const std::string& traceInfo) : EventManager(traceInfo) {}
 
 void Logger::start(const std::string& file) {
+  EventManager::start();
+
   if (config.logToFile) {
     logFile_.open(file.c_str(), std::ios::out | std::ios::trunc);
     if (!logFile_.is_open() || !logFile_.good()) {
@@ -45,6 +47,12 @@ void Logger::fatal(const std::string& what, const std::string& caller,
 
 void Logger::log(Level level, const std::string& message,
                  const std::string& caller, const std::string& trace) {
+  addAsyncEvent(
+      std::bind(&Logger::addEventLog, this, level, message, caller, trace));
+}
+
+void Logger::addEventLog(Level level, const std::string& message,
+                         const std::string& caller, const std::string& trace) {
   std::string logMessage;
 
   if (level == Level::Info && config.showInfo)
@@ -83,5 +91,4 @@ void Logger::log(Level level, const std::string& message,
     }
   }
 }
-
 }  // namespace FW::Core
