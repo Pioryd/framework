@@ -1,6 +1,9 @@
 #ifndef FW_MULTIMEDIA_RECT_H
 #define FW_MULTIMEDIA_RECT_H
 
+// Can't include, becouse current file is included in declarations.
+//#include "declarations.h"
+
 #include <SFML/Graphics.hpp>
 #include <type_traits>
 #include "../pch.h"
@@ -30,36 +33,46 @@ class Rect {
 
   Rect(const Rect<T>& other)
       : x1(other.x1), y1(other.y1), x2(other.x2), y2(other.y2) {}
-  Rect<T>& operator=(const Rect<T>& other) { return nullptr; }
+  Rect<T>& operator=(const Rect<T>& other) {
+    x1 = other.x1;
+    y1 = other.y1;
+    x2 = other.x2;
+    y2 = other.y2;
+    return *this;
+  }
 
-  operator sf::Rect<T>() const { return sf::Rect<T>(); }
-  operator const sf::Rect<T>() { return sf::Rect<T>(); }
+  operator sf::Rect<T>() const {
+    return sf::Rect<T>(getLeft(), getTop(), getWidth(), getHeight());
+  }
+  operator const sf::Rect<T>() {
+    return sf::Rect<T>(getLeft(), getTop(), getWidth(), getHeight());
+  }
 
-  bool isValid() const { return false; }
+  bool isValid() const { return x1 < x2 && y1 < y2; }
 
-  T getX() const { return T(); }
-  T getY() const { return T(); }
-  T getWidth() const { return T(); }
-  T getHeight() const { return T(); }
-  Size<T> getSize() const { return Size<T>(); }
+  T getX() const { return x1; }
+  T getY() const { return y1; }
+  T getWidth() const { return x2 - x1; }
+  T getHeight() const { return y2 - y1; }
+  Size<T> getSize() const { return Size<T>(getWidth(), getHeight()); }
 
-  T getLeft() const { return T(); }
-  T getTop() const { return T(); }
-  T getRight() const { return T(); }
-  T getBottom() const { return T(); }
+  T getLeft() const { return x1; }
+  T getTop() const { return y1; }
+  T getRight() const { return x2; }
+  T getBottom() const { return y2; }
 
-  Point<T> getTopLeft() const { return Point < T(); }
-  Point<T> getTopRight() const { return Point < T(); }
-  Point<T> getBottomLeft() const { return Point < T(); }
-  Point<T> getBottomRight() const { return Point < T(); }
+  Point<T> getTopLeft() const { return Point<T>(x1, y1); }
+  Point<T> getTopRight() const { return Point<T>(x2, y1); }
+  Point<T> getBottomLeft() const { return Point<T>(x1, y2); }
+  Point<T> getBottomRight() const { return Point<T>(x2, y2); }
 
-  Point<T> getCenter() const { return Point < T(); }
-  Point<T> getTopCenter() const { return Point < T(); }
-  Point<T> getBottomCenter() const { return Point < T(); }
-  Point<T> getCenterLeft() const { return Point < T(); }
-  Point<T> getCenterRight() const { return Point < T(); }
-  T getHorizontalDistanceToCenter() const { return T(); }
-  T getVerticalDistanceToCenter() const { return T(); }
+  Point<T> getCenter() const { return Point<T>((x1 + x2) / 2, (y1 + y2) / 2); }
+  Point<T> getTopCenter() const { return Point<T>((x1 + x2) / 2, y1); }
+  Point<T> getBottomCenter() const { return Point<T>((x1 + x2) / 2, y2); }
+  Point<T> getCenterLeft() const { return Point<T>(x1, (y1 + y2) / 2); }
+  Point<T> getCenterRight() const { return Point<T>(x2, (y1 + y2) / 2); }
+  T getHorizontalDistanceToCenter() const { return x1 + (x2 - x1) / 2; }
+  T getVerticalDistanceToCenter() const { return y1 + (y2 - y1) / 2; }
 
   void setRect(T x, T y, Size<T> size) {}
   void setRect(int left, int top, int right, int bottom) {}
