@@ -3,8 +3,9 @@
 
 #include "declarations.h"
 
+#include "../thread/eventmanager.h"
 namespace FW::Core {
-class Logger {
+class Logger : protected FW::Thread::EventManager {
  public:
   struct Config {
     bool showTime = true;
@@ -22,13 +23,15 @@ class Logger {
   enum class Level { Info, Warn, Error, Fatal, Debug };
 
  public:
-  Logger();
+  Logger(const std::string& traceInfo);
   virtual ~Logger() = default;
 
   Logger(const Logger&) = delete;
   Logger& operator=(const Logger&) = delete;
 
   void start(const std::string& logFile);
+  using EventManager::join;
+  using EventManager::terminate;
 
   void debug(const std::string& message, const std::string& caller = "",
              const std::string& trace = "");
@@ -44,6 +47,8 @@ class Logger {
  protected:
   void log(Level level, const std::string& message,
            const std::string& caller = "", const std::string& trace = "");
+  void addEventLog(Level level, const std::string& message,
+                   const std::string& caller, const std::string& trace);
 
  public:
   Config config;
