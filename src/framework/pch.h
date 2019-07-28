@@ -28,4 +28,11 @@
 #include <chrono>
 #include <cstdio>
 
+#ifndef NDEBUG
+#define FW_DEBUG_INSTRUCTIONS(instructions) \
+  if (config.debug_enabled) { instructions }
+#else  // #ifndef NDEBUG
+#define FW_DEBUG_INSTRUCTIONS(instructions)
+#endif  // #ifndef NDEBUG
+
 #endif  // #ifndef FW_PCH_H
