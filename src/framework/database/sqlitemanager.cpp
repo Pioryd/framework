@@ -39,4 +39,22 @@ bool SqliteManager::databaseExists() { return false; }
 std::string SqliteManager::getSqlClientVersion() const { return ""; }
 
 int64_t SqliteManager::getLastInsertId() const { return 0; }
+
+SqliteResult::SqliteResult(void* sqliteResult) : Result(sqliteResult) {}
+
+SqliteResult::~SqliteResult() {}
+int64_t SqliteResult::getNumber(const std::string& columnName) const {
+  return 0;
+}
+
+std::string SqliteResult::getString(const std::string& columnName) const {
+  return "";
+}
+
+const char* SqliteResult::getStream(const std::string& columnName,
+                                    unsigned long& size) const {
+  return "";
+}
+
+bool SqliteResult::next() { return false; }
 }  // namespace FW::Database
