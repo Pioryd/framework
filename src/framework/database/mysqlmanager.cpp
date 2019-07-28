@@ -42,4 +42,23 @@ int64_t MySqlManager::getLastInsertId() const { return 0; }
 bool MySqlManager::isConnectionError(uint32_t errorCode) { return false; }
 
 bool MySqlManager::internalExecute(const std::string& query) { return false; }
+
+MySqlResult::MySqlResult(void* mySqlResult) {}
+
+MySqlResult::~MySqlResult() {}
+
+int64_t MySqlResult::getNumber(const std::string& columnName) const {
+  return 0;
+}
+
+std::string MySqlResult::getString(const std::string& columnName) const {
+  return "";
+}
+
+const char* MySqlResult::getStream(const std::string& columnName,
+                                   unsigned long& size) const {
+  return "";
+}
+
+bool MySqlResult::next() { return false; }
 }  // namespace FW::Database
