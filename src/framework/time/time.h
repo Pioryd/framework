@@ -24,5 +24,12 @@ struct Time {
   ticks_t millis_;
   ticks_t seconds_;
 };
+
+namespace Now {
+std::string getTime();
+ticks_t getMicros();
+ticks_t getMillis();
+ticks_t getSeconds();
+}  // namespace Now
 }  // namespace FW::Time
 #endif  // #ifndef FW_TIME_TIME_H
