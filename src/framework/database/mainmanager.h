@@ -5,6 +5,8 @@
 
 #include "sqlmanager.h"
 
+#include "../thread/eventmanager.h"
+
 namespace FW::Database {
 enum class SqlType { MySql, Sqlite };
 
@@ -26,13 +28,21 @@ class Query {
   bool store_;
 };
 
-class MainManager : protected SqlManager {
+class MainManager : protected FW::Thread::EventManager, protected SqlManager {
  public:
   MainManager(SqlType sqlType);
   virtual ~MainManager() = default;
 
   MainManager(const MainManager&) = delete;
   MainManager& operator=(const MainManager&) = delete;
+
+  //
+  // Handle EventManager
+  //
+ public:
+  using EventManager::join;
+  using EventManager::start;
+  using EventManager::terminate;
 
   //
   // Override SqlManager
