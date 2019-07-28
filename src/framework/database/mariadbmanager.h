@@ -3,5 +3,15 @@
 
 #include "declarations.h"
 
-namespace FW::Database {}  // namespace FW::Database
-#endif                     // #ifndef FW_DATABASE_MARIADBMANAGER_H
+#include "mysqlmanager.h"
+
+namespace FW::Database {
+class MariadbManager : public MySqlManager {
+  MariadbManager();
+  virtual ~MariadbManager() = default;
+
+  MariadbManager(const MariadbManager&) = delete;
+  MariadbManager& operator=(const MariadbManager&) = delete;
+};
+}  // namespace FW::Database
+#endif  // #ifndef FW_DATABASE_MARIADBMANAGER_H
