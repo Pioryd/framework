@@ -5,6 +5,7 @@
 
 namespace FW::Core {
 class ApplicationBase {
+ public:
   std::wstring getWorkingDirectory();
 };
 }  // namespace FW::Core
