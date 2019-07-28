@@ -5,7 +5,18 @@
 namespace FW::Core {
 Logger::Logger() {}
 
-void Logger::start(const std::string& file) {}
+void Logger::start(const std::string& file) {
+  if (config.logToFile) {
+    logFile_.open(file.c_str(), std::ios::out | std::ios::trunc);
+    if (!logFile_.is_open() || !logFile_.good()) {
+      error("Unable to write log to file: " + file);
+      return;
+    }
+    logFile_.flush();
+  }
+
+  info("Log started at: " + Time::Now::getTime());
+}
 
 void Logger::debug(const std::string& what, const std::string& caller,
                    const std::string& trace) {
@@ -33,6 +44,44 @@ void Logger::fatal(const std::string& what, const std::string& caller,
 }
 
 void Logger::log(Level level, const std::string& message,
-                 const std::string& caller, const std::string& trace) {}
+                 const std::string& caller, const std::string& trace) {
+  std::string logMessage;
+
+  if (level == Level::Info && config.showInfo)
+    logMessage.append("Info");
+  else if (level == Level::Warn && config.showWarning)
+    logMessage.append("Warning");
+  else if (level == Level::Error && config.showError)
+    logMessage.append("Error");
+  else if (level == Level::Fatal && config.showFatalError)
+    logMessage.append("Fatal error");
+  else if (level == Level::Debug && config.showDebug)
+    logMessage.append("Debug");
+  else
+    return;
+
+  if (config.showTime) {
+    time_t time = std::time(nullptr);
+    tm localTime = *std::localtime(&time);
+    std::stringstream stringTime;
+    stringTime << std::put_time(&localTime, "%H:%M:%S");
+    logMessage.append("[" + stringTime.str() + "]");
+  }
+
+  const std::string space = "    ";
+  if (caller != "") logMessage.append("\n" + space + "F >> [" + caller + "]");
+  if (trace != "") logMessage.append("\n" + space + "T >> [" + trace + "]");
+
+  logMessage.append("\n" + space + "M >> " + message);
+
+  if (config.logToConsole) std::cout << logMessage << std::endl;
+
+  if (config.logToFile) {
+    if (logFile_.good()) {
+      logFile_ << logMessage << std::endl;
+      logFile_.flush();
+    }
+  }
+}
 
 }  // namespace FW::Core
