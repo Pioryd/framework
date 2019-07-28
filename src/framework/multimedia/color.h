@@ -63,22 +63,62 @@ class Color {
   static const Color Orange;
 };
 
-inline Color& Color::operator=(const Color& object) { return Color(); }
+inline Color& Color::operator=(const Color& object) {
+  setRGBA(object.getRGBA());
+  return *this;
+}
 
-inline Color Color::operator+(const Color& object) const { return Color(); }
+inline Color Color::operator+(const Color& object) const {
+  return Color(
+      static_cast<uint8_t>(std::min(static_cast<int32_t>(r) + object.r,
+                                    static_cast<int32_t>(MAX_RGBA_VALUE))),
+      static_cast<uint8_t>(std::min(static_cast<int32_t>(g) + object.g,
+                                    static_cast<int32_t>(MAX_RGBA_VALUE))),
+      static_cast<uint8_t>(std::min(static_cast<int32_t>(b) + object.b,
+                                    static_cast<int32_t>(MAX_RGBA_VALUE))),
+      static_cast<uint8_t>(std::min(static_cast<int32_t>(a) + object.a,
+                                    static_cast<int32_t>(MAX_RGBA_VALUE))));
+}
 
-inline Color Color::operator-(const Color& object) const { return Color(); }
+inline Color Color::operator-(const Color& object) const {
+  return Color(
+      static_cast<uint8_t>(std::max(static_cast<int32_t>(r) - object.r,
+                                    static_cast<int32_t>(MIN_RGBA_VALUE))),
+      static_cast<uint8_t>(std::max(static_cast<int32_t>(g) - object.g,
+                                    static_cast<int32_t>(MIN_RGBA_VALUE))),
+      static_cast<uint8_t>(std::max(static_cast<int32_t>(b) - object.b,
+                                    static_cast<int32_t>(MIN_RGBA_VALUE))),
+      static_cast<uint8_t>(std::max(static_cast<int32_t>(a) - object.a,
+                                    static_cast<int32_t>(MIN_RGBA_VALUE))));
+}
 
-inline Color Color::operator+=(const Color& object) { return Color(); }
+inline Color Color::operator+=(const Color& object) {
+  return *this = *this + object;
+}
 
-inline Color Color::operator-=(const Color& object) { return Color(); }
+inline Color Color::operator-=(const Color& object) {
+  return *this = *this - object;
+}
 
-inline Color Color::operator*(const Color& object) const { return Color(); }
+inline Color Color::operator*(const Color& object) const {
+  return Color(
+      static_cast<uint8_t>(static_cast<int32_t>(r) * object.r / MAX_RGBA_VALUE),
+      static_cast<uint8_t>(static_cast<int32_t>(g) * object.g / MAX_RGBA_VALUE),
+      static_cast<uint8_t>(static_cast<int32_t>(b) * object.b / MAX_RGBA_VALUE),
+      static_cast<uint8_t>(static_cast<int32_t>(a) * object.a /
+                           MAX_RGBA_VALUE));
+}
 
-inline Color Color::operator*=(const Color& object) { return Color(); }
+inline Color Color::operator*=(const Color& object) {
+  return *this = *this * object;
+}
 
-inline bool Color::operator==(const Color& object) { return false; }
+inline bool Color::operator==(const Color& object) {
+  return getRGBA() == object.getRGBA();
+}
 
-inline bool Color::operator!=(const Color& object) { return false; }
+inline bool Color::operator!=(const Color& object) {
+  return getRGBA() != object.getRGBA();
+}
 }  // namespace FW::MM
 #endif  // #ifndef FW_MULTIMEDIA_COLOR_H
