@@ -70,6 +70,27 @@ class SqlManager {
   std::recursive_mutex mutex_;
 };
 
-class Result {};
+class Result {
+ public:
+  Result(void* handle);
+  virtual ~Result() = default;
+
+  Result(const Result&) = delete;
+  Result& operator=(const Result&) = delete;
+
+  virtual int64_t getNumber(const std::string& columnName) const = 0;
+  virtual std::string getString(const std::string& columnName) const = 0;
+  virtual const char* getStream(const std::string& columnName,
+                                unsigned long& size) const = 0;
+
+  virtual bool next() = 0;
+
+ protected:
+  size_t getColumnIndex(const std::string& columnName) const;
+
+ protected:
+  void* handle_;
+  std::map<std::string, size_t> fieldNames_;
+};
 }  // namespace FW::Database
 #endif  // #ifndef FW_DATABASE_SQLMANAGER_H
