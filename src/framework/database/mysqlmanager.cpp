@@ -247,22 +247,50 @@ bool MySqlManager::internalExecute(const std::string& query) {
   return true;
 }
 
-MySqlResult::MySqlResult(void* mySqlResult) {}
+MySqlResult::MySqlResult(void* mySqlResult)
+    : Result(mySqlResult), row_(nullptr) {
+  size_t columnIndex = 0;
+  MYSQL_FIELD* field = mysql_fetch_field(static_cast<MYSQL_RES*>(handle_));
+  while (field) {
+    fieldNames_[field->name] = columnIndex++;
+    field = mysql_fetch_field(static_cast<MYSQL_RES*>(handle_));
+  }
+}
 
-MySqlResult::~MySqlResult() {}
+MySqlResult::~MySqlResult() {
+  mysql_free_result(static_cast<MYSQL_RES*>(handle_));
+}
 
 int64_t MySqlResult::getNumber(const std::string& columnName) const {
-  return 0;
+  size_t columnIndex = getColumnIndex(columnName);
+  if (row_[columnIndex] == nullptr) return 0;
+
+  try {
+    return boost::lexical_cast<int64_t>(row_[columnIndex]);
+  } catch (boost::bad_lexical_cast&) { return 0; }
 }
 
 std::string MySqlResult::getString(const std::string& columnName) const {
-  return "";
+  size_t columnIndex = getColumnIndex(columnName);
+  if (row_[columnIndex] == nullptr) return std::string();
+
+  return std::string(row_[columnIndex]);
 }
 
 const char* MySqlResult::getStream(const std::string& columnName,
                                    unsigned long& size) const {
-  return "";
+  size_t columnIndex = getColumnIndex(columnName);
+  if (row_[columnIndex] == nullptr) {
+    size = 0;
+    return nullptr;
+  }
+
+  size = mysql_fetch_lengths(static_cast<MYSQL_RES*>(handle_))[columnIndex];
+  return row_[columnIndex];
 }
 
-bool MySqlResult::next() { return false; }
+bool MySqlResult::next() {
+  row_ = mysql_fetch_row(static_cast<MYSQL_RES*>(handle_));
+  return row_ != nullptr;
+}
 }  // namespace FW::Database
