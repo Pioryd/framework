@@ -40,6 +40,21 @@ class SqliteManager : public SqlManager {
   sqlite3* handle_ = nullptr;
 };
 
-class SqliteResult : public Result {};
+class SqliteResult : public Result {
+ public:
+  SqliteResult(void* handle);
+  virtual ~SqliteResult();
+
+  SqliteResult(const Result&) = delete;
+  SqliteResult& operator=(const Result&) = delete;
+
+  int64_t getNumber(const std::string& columnName) const override;
+  std::string getString(const std::string& columnName) const override;
+  const char* getStream(const std::string& columnName,
+                        unsigned long& size) const override;
+
+ public:
+  bool next() override;
+};
 }  // namespace FW::Database
 #endif  // #ifndef FW_DATABASE_SQLITEMANAGER_H
