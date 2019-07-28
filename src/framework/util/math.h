@@ -3,6 +3,8 @@
 
 #include "declarations.h"
 
+#include <algorithm>
+
 namespace FW::Util {
 namespace Math {
 template <typename T>
