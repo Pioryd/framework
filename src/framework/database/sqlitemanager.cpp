@@ -187,21 +187,42 @@ int64_t SqliteManager::getLastInsertId() const {
   return static_cast<uint64_t>(sqlite3_last_insert_rowid(handle_));
 }
 
-SqliteResult::SqliteResult(void* sqliteResult) : Result(sqliteResult) {}
+SqliteResult::SqliteResult(void* sqliteResult) : Result(sqliteResult) {
+  if (!sqliteResult)
+    throw std::runtime_error("Sqlite handle to result cannot be nullptr.");
 
-SqliteResult::~SqliteResult() {}
+  int32_t fieldsCount =
+      sqlite3_column_count(static_cast<sqlite3_stmt*>(handle_));
+  for (int32_t i = 0; i < fieldsCount; i++)
+    fieldNames_[sqlite3_column_name(static_cast<sqlite3_stmt*>(handle_), i)] =
+        i;
+}
+
+SqliteResult::~SqliteResult() {
+  if (handle_) sqlite3_finalize(static_cast<sqlite3_stmt*>(handle_));
+}
 int64_t SqliteResult::getNumber(const std::string& columnName) const {
-  return 0;
+  size_t columnIndex = getColumnIndex(columnName);
+  return sqlite3_column_int64(static_cast<sqlite3_stmt*>(handle_), columnIndex);
 }
 
 std::string SqliteResult::getString(const std::string& columnName) const {
-  return "";
+  size_t columnIndex = getColumnIndex(columnName);
+  std::string value = reinterpret_cast<const char*>(
+      sqlite3_column_text(static_cast<sqlite3_stmt*>(handle_), columnIndex));
+  return value;
 }
 
 const char* SqliteResult::getStream(const std::string& columnName,
                                     unsigned long& size) const {
-  return "";
+  size_t columnIndex = getColumnIndex(columnName);
+  const char* value = static_cast<const char*>(
+      sqlite3_column_blob(static_cast<sqlite3_stmt*>(handle_), columnIndex));
+  size = sqlite3_column_bytes(static_cast<sqlite3_stmt*>(handle_), columnIndex);
+  return value;
 }
 
-bool SqliteResult::next() { return false; }
+bool SqliteResult::next() {
+  return (sqlite3_step(static_cast<sqlite3_stmt*>(handle_)) == SQLITE_ROW);
+}
 }  // namespace FW::Database
