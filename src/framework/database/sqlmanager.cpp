@@ -1,3 +1,9 @@
 #include "sqlmanager.h"
 
-namespace FW::Database {}  // namespace FW::Database
+#include <mysql/errmsg.h>
+
+namespace FW::Database {
+SqlManager::SqlManager() {}
+
+bool SqlManager::connect(const SqlConfig& sqlConfig) {}
+}  // namespace FW::Database
