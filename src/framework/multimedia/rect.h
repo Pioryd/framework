@@ -74,54 +74,157 @@ class Rect {
   T getHorizontalDistanceToCenter() const { return x1 + (x2 - x1) / 2; }
   T getVerticalDistanceToCenter() const { return y1 + (y2 - y1) / 2; }
 
-  void setRect(T x, T y, Size<T> size) {}
-  void setRect(int left, int top, int right, int bottom) {}
+  void setRect(T x, T y, Size<T> size) {
+    x1 = x;
+    y1 = y;
+    x2 = (x + size.x);
+    y2 = (y + size.y);
+  }
+  void setRect(int left, int top, int right, int bottom) {
+    x1 = left;
+    y1 = top;
+    x2 = right;
+    y2 = bottom;
+  }
 
-  void setX(T x) {}
-  void setY(T y) {}
-  void setWidth(T width) {}
-  void setHeight(T height) {}
-  void setSize(const Size<T>& size) {}
-  void setSize(T width, T height) {}
+  void setX(T x) { x1 = x; }
+  void setY(T y) { y1 = y; }
+  void setWidth(T width) { x2 = x1 + width; }
+  void setHeight(T height) { y2 = y1 + height; }
+  void setSize(const Size<T>& size) {
+    setSize(size.getWidth(), size.getHeight());
+  }
+  void setSize(T width, T height) {
+    x2 = x1 + width;
+    y2 = y1 + height;
+  }
 
-  void setLeft(T left) {}
-  void setTop(T top) {}
-  void setRight(T right) {}
-  void setBottom(T bottom) {}
+  void setLeft(T left) { x1 = left; }
+  void setTop(T top) { y1 = top; }
+  void setRight(T right) { x2 = right; }
+  void setBottom(T bottom) { y2 = bottom; }
 
-  void setTopLeft(const Point<T>& point) {}
-  void setTopRight(const Point<T>& point) {}
-  void setBottomLeft(const Point<T>& point) {}
-  void setBottomRight(const Point<T>& point) {}
+  void setTopLeft(const Point<T>& point) {
+    x1 = point.x;
+    y1 = point.y;
+  }
+  void setTopRight(const Point<T>& point) {
+    x2 = point.x;
+    y1 = point.y;
+  }
+  void setBottomLeft(const Point<T>& point) {
+    x1 = point.x;
+    y2 = point.y;
+  }
+  void setBottomRight(const Point<T>& point) {
+    x2 = point.x;
+    y2 = point.y;
+  }
 
-  void expandToLeft(T value) {}
-  void expandToTop(T value) {}
-  void expandToRight(T value) {}
-  void expandToBottom(T value) {}
-  void expandAll(T valueLeft, T valueTop, T valueRight, T valueBottom) {}
-  void expandAll(T value) {}
+  void expandToLeft(T value) { x1 -= value; }
+  void expandToTop(T value) { y1 -= value; }
+  void expandToRight(T value) { x2 += value; }
+  void expandToBottom(T value) { y2 += value; }
+  void expandAll(T valueLeft, T valueTop, T valueRight, T valueBottom) {
+    x1 -= valueLeft;
+    y1 -= valueTop;
+    x2 += valueRight;
+    y2 += valueBottom;
+  }
+  void expandAll(T value) {
+    x1 -= value;
+    y1 -= value;
+    x2 += value;
+    y2 += value;
+  }
 
-  void moveByDistance(T x, T y) {}
-  void moveByDistance(const Point<T>& point) {}
+  void moveByDistance(T x, T y) {
+    x1 += x;
+    y1 += y;
+    x2 += x;
+    y2 += y;
+  }
+  void moveByDistance(const Point<T>& point) {
+    x1 += point.x;
+    y1 += point.y;
+    x2 += point.x;
+    y2 += point.y;
+  }
 
-  void moveTo(T x, T y) {}
-  void moveTo(const Point<T>& point) {}
-  void moveToLeft(T left) {}
-  void moveToTop(T top) {}
-  void moveToRight(T right) {}
-  void moveToBottom(T bottom) {}
-  void moveToCenter(const Point<T>& point) {}
-  void moveToHorizontalCenter(T x) {}
-  void moveToVerticalCenter(T y) {}
+  void moveTo(T x, T y) {
+    x2 += x - x1;
+    y2 += y - y1;
+    x1 = x;
+    y1 = y;
+  }
+  void moveTo(const Point<T>& point) { moveTo(point.x, point.y); }
+  void moveToLeft(T left) {
+    x2 += (left - x1);
+    x1 = left;
+  }
+  void moveToTop(T top) {
+    y2 += (top - y1);
+    y1 = top;
+  }
+  void moveToRight(T right) {
+    x1 += (right - x2);
+    x2 = right;
+  }
+  void moveToBottom(T bottom) {
+    y1 += (bottom - y2);
+    y2 = bottom;
+  }
+  void moveToCenter(const Point<T>& point) {
+    T width = x2 - x1;
+    T height = y2 - y1;
+    x1 = point.x - width / 2;
+    y1 = point.y - height / 2;
+    x2 = x1 + width;
+    y2 = y1 + height;
+  }
+  void moveToHorizontalCenter(T x) {
+    T width = x2 - x1;
+    x1 = x - width / 2;
+    x2 = x1 + width;
+  }
+  void moveToVerticalCenter(T y) {
+    T height = y2 - y1;
+    y1 = y - height / 2;
+    y2 = y1 + height;
+  }
 
-  void moveToTopLeft(const Point<T>& point) {}
-  void moveToTopRight(const Point<T>& point) {}
-  void moveToBottomLeft(const Point<T>& point) {}
-  void moveToBottomRight(const Point<T>& point) {}
-  void moveToTopCenter(const Point<T>& point) {}
-  void moveToBottomCenter(const Point<T>& point) {}
-  void moveToLeftCenter(const Point<T>& point) {}
-  void moveToRightCenter(const Point<T>& point) {}
+  void moveToTopLeft(const Point<T>& point) {
+    moveToTop(point.y);
+    moveToLeft(point.x);
+  }
+  void moveToTopRight(const Point<T>& point) {
+    moveToTop(point.y);
+    moveToRight(point.x);
+  }
+  void moveToBottomLeft(const Point<T>& point) {
+    moveToBottom(point.y);
+    moveToLeft(point.x);
+  }
+  void moveToBottomRight(const Point<T>& point) {
+    moveToBottom(point.y);
+    moveToRight(point.x);
+  }
+  void moveToTopCenter(const Point<T>& point) {
+    moveToTop(point.y);
+    moveToHorizontalCenter(point.x);
+  }
+  void moveToBottomCenter(const Point<T>& point) {
+    moveToBottom(point.y);
+    moveToHorizontalCenter(point.x);
+  }
+  void moveToLeftCenter(const Point<T>& point) {
+    moveToLeft(point.x);
+    moveToVerticalCenter(point.y);
+  }
+  void moveToRightCenter(const Point<T>& point) {
+    moveToRight(point.x);
+    moveToVerticalCenter(point.y);
+  }
 
   // Check if constains given point.
   bool contains(T x, T y) const { return false; }
