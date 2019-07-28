@@ -1,0 +1,5 @@
+#ifndef FW_MULTIMEDIA_RECTSIDES_H
+#define FW_MULTIMEDIA_RECTSIDES_H
+
+namespace FW::MM {}
+#endif  // #ifndef FW_MULTIMEDIA_RECTSIDES_H
