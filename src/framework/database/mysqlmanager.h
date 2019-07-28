@@ -48,6 +48,23 @@ class MySqlManager : public SqlManager {
   MYSQL* handle_;
 };
 
-class MySqlResult : public Result {};
+class MySqlResult : public Result {
+ public:
+  MySqlResult(void* handle);
+  virtual ~MySqlResult();
+
+  MySqlResult(const Result&) = delete;
+  MySqlResult& operator=(const Result&) = delete;
+
+  int64_t getNumber(const std::string& columnName) const override;
+  std::string getString(const std::string& columnName) const override;
+  const char* getStream(const std::string& columnName,
+                        unsigned long& size) const override;
+
+  bool next() override;
+
+ protected:
+  MYSQL_ROW row_;
+};
 }  // namespace FW::Database
 #endif  // #ifndef FW_DATABASE_MYSQLMANAGER_H
