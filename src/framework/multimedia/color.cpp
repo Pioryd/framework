@@ -26,7 +26,7 @@ Color::Color()
       b{Color::White.b},
       a{Color::White.a} {}
 
-Color::Color(uint32_t rgba) {}
+Color::Color(uint32_t rgba) { setRGBA(rgba); }
 
 Color::Color(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
     : r{r}, g{g}, b{b}, a{a} {}
@@ -34,11 +34,21 @@ Color::Color(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
 Color::Color(const sf::Color& object)
     : r{object.r}, g{object.g}, b{object.b}, a{object.a} {}
 
-uint32_t Color::getRGBA() const { return 0; }
+uint32_t Color::getRGBA() const {
+  return uint32_t(a | b << 8 | g << 16 | r << 24);
+}
 
-void Color::setRGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {}
+void Color::setRGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+  this->r = r;
+  this->g = g;
+  this->b = b;
+  this->a = a;
+}
 
-void Color::setRGBA(uint32_t rgba) {}
+void Color::setRGBA(uint32_t rgba) {
+  setRGBA((rgba >> 24) & MAX_RGBA_VALUE, (rgba >> 16) & MAX_RGBA_VALUE,
+          (rgba >> 8) & MAX_RGBA_VALUE, (rgba >> 0) & MAX_RGBA_VALUE);
+}
 
-bool Color::isVisible() { return false; }
+bool Color::isVisible() { return (a > 0); }
 }  // namespace FW::MM
