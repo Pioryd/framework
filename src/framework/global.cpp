@@ -4,4 +4,5 @@
 
 namespace FW::G {
 FW::Core::Logger Logger;
+FW::Thread::LookAfter<FW::Core::Application> Application;
 }  // namespace FW::G
