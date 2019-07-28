@@ -1,0 +1,4 @@
+Application CRASH
+	Check log if contains any throws pybind11/python exception. Some occurred 
+	pybind11/python exception are becouse pybind11/python embed is corrupted. 
+	Eliminate the reason of exceptions.
