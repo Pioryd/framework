@@ -227,26 +227,78 @@ class Rect {
   }
 
   // Check if constains given point.
-  bool contains(T x, T y) const { return false; }
+  bool contains(T x, T y) const {
+    if (x < std::min(x1, static_cast<T>(x2))) return false;
+    if (y < std::min(y1, static_cast<T>(y2))) return false;
+    if (x >= std::max(x1, static_cast<T>(x2))) return false;
+    if (y >= std::max(y1, static_cast<T>(y2))) return false;
+    return true;
+  }
   // Check if constains given point.
-  bool contains(const Point<T>& point) const { return false; }
+  bool contains(const Point<T>& point) const {
+    return contains(point.x, point.y);
+  }
   // Check if constains given rect.
-  bool contains(const Rect<T>& rect) const { return false; }
+  bool contains(const Rect<T>& rect) const {
+    if (contains(rect.getTopLeft()) && contains(rect.getBottomRight()))
+      return true;
+    return false;
+  }
 
   // Return true if is intersected with given rect.
-  bool intersects(const Rect<T>& rect) const { return false; }
+  bool intersects(const Rect<T>& rect) const {
+    if (rect.getLeft() < std::min(x1, static_cast<T>(x2))) return true;
+    if (rect.getTop() < std::min(y1, static_cast<T>(y2))) return true;
+    if (rect.getLeft() >= std::max(x1, static_cast<T>(x2))) return true;
+    if (rect.getTop() >= std::max(y1, static_cast<T>(y2))) return true;
+
+    if (rect.getRight() < std::min(x1, static_cast<T>(x2))) return true;
+    if (rect.getBottom() < std::min(y1, static_cast<T>(y2))) return true;
+    if (rect.getRight() >= std::max(x1, static_cast<T>(x2))) return true;
+    if (rect.getBottom() >= std::max(y1, static_cast<T>(y2))) return true;
+
+    return false;
+  }
 
   // Return intersected rect.
-  Rect<T> intersection(const Rect<T>& rect) const { return Rect<T>(); }
+  Rect<T> intersection(const Rect<T>& rect) const {
+    if (!isValid() || !rect.isValid()) return Rect<T>();
+
+    Rect<T> intersectedRect = *this;
+
+    if (contains(rect.getTopLeft()))
+      intersectedRect.setTopLeft(rect.getTopLeft());
+    if (contains(rect.getTopRight()))
+      intersectedRect.setTopRight(rect.getTopRight());
+    if (contains(rect.getBottomLeft()))
+      intersectedRect.setBottomLeft(rect.getBottomLeft());
+    if (contains(rect.getBottomRight()))
+      intersectedRect.setBottomRight(rect.getBottomRight());
+
+    return intersectedRect;
+  }
 
   // Is moving from bootom-right to top-left. Event if given rect is smaller,
   // will try to clip to top-left.
-  void moveToInside(const Rect<T>& rect) {}
+  void moveToInside(const Rect<T>& rect) {
+    if (!isValid() || !rect.isValid()) return;
+
+    if (getBottom() > rect.getBottom()) moveToBottom(rect.getBottom());
+    if (getRight() > rect.getRight()) moveToRight(rect.getRight());
+    if (getTop() < rect.getTop()) moveToTop(rect.getTop());
+    if (getLeft() < rect.getLeft()) moveToLeft(rect.getLeft());
+  }
 
   // Return true if all cordinates are equal.
-  bool operator==(const Rect<T>& object) const { return false; }
+  bool operator==(const Rect<T>& object) const {
+    return (x1 == object.x1 && y1 == object.y1 && x2 == object.x2 &&
+            y2 == object.y2);
+  }
   // Return true if one or more cordinates are not equal.
-  bool operator!=(const Rect<T>& object) const { return false; }
+  bool operator!=(const Rect<T>& object) const {
+    return (x1 != object.x1 || y1 != object.y1 || x2 != object.x2 ||
+            y2 != object.y2);
+  }
 
  private:
   T x1, y1, x2, y2;
