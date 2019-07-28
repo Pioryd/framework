@@ -3,6 +3,8 @@
 
 #include "declarations.h"
 
+#include "time.h"
+
 namespace FW::Time {
 class Timer {
  public:
