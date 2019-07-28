@@ -3,6 +3,9 @@
 
 #include "declarations.h"
 
+#include <framework/core/signal.h>
+#include <boost/asio.hpp>
+
 #ifdef FW_DEF_GRAPHICAL_APPLICATION
 #include "applicationgraphical.h"
 #define APP_PARENT ApplicationGraphical
