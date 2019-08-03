@@ -2,6 +2,9 @@
 example/server/out
 example/client/out
 
+# Third party source
+third_party
+
 # Python
 __pycache__
 
