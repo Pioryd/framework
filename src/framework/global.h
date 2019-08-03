@@ -4,6 +4,7 @@
 #include <boost/current_function.hpp>
 #include "core/declarations.h"
 #include "crypt/declarations.h"
+#include "net/declarations.h"
 #include "platform/declarations.h"
 #include "pymodule/declarations.h"
 #include "thread/declarations.h"
@@ -33,6 +34,7 @@ extern FW::Time::Clock Clock;
 extern FW::Crypt::Rsa Rsa;
 extern FW::Thread::EventManager eventManager;
 
+extern FW::Net::Manager NetManager;
 extern FW::Thread::LookAfter<FW::PyModule::Manager> PyModuleManager;
 extern FW::Thread::LookAfter<FW::Core::Application> Application;
 

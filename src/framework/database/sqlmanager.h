@@ -9,6 +9,9 @@ namespace FW::Database {
 enum class TransactionState { BEGIN, FAIL, NONE };
 
 struct SqlConfig {
+  enum class SqlType { None, MySql, Sqlite };
+
+  SqlType type{SqlType::None};
   std::string host;
   std::string user;
   std::string password;
