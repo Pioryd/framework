@@ -1,0 +1,1 @@
+Core is framework extension in C++ logic.
