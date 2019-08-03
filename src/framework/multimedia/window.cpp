@@ -1,5 +1,6 @@
 #include "window.h"
 
+#include "../core/application.h"
 #include "../global.h"
 
 namespace FW::MM {
@@ -13,6 +14,9 @@ void Window::init(MM::SizeInt size, const std::string& name, bool fullScreen,
   window->setFramerateLimit(fpsLimit);
 
   gui = std::make_unique<tgui::Gui>(*window);
+
+  theme = tgui::Theme{FW::G::Application->getAssetsPath().string() +
+                      "/themes/Black.txt"};
 }
 
 void Window::poll() {
@@ -21,9 +25,13 @@ void Window::poll() {
     // "close requested" event: we close the window
     if (event.type == sf::Event::Closed) window->close();
 
-    if (event.type == sf::Event::Resized)
-      window->setView(
+    if (event.type == sf::Event::Resized) {
+      /*window->setView(
+          sf::View(sf::FloatRect(0, 0, event.size.width, event.size.height)));*/
+      gui->setView(
           sf::View(sf::FloatRect(0, 0, event.size.width, event.size.height)));
+    }
+
 
     gui->handleEvent(event);
   }

@@ -32,6 +32,7 @@ class Window {
  public:
   std::unique_ptr<sf::RenderWindow> window;
   std::unique_ptr<tgui::Gui> gui;
+  tgui::Theme theme;
 };
 }  // namespace FW::MM
 #endif  // #ifndef FW_MULTIMEDIA_WINDOW_H
