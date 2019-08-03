@@ -58,7 +58,7 @@ else()
 CMAKE_SYSTEM_NAME not set. Set one of 'Windows', 'Android', 'Linux'.")
 endif()
 
-include(../../third_party/cms/cpp/cms/CMakeLists.txt)
+include(../../third_party/cms/src/cpp/cms/CMakeLists.txt)
 include(../../src/framework/CMakeLists.txt)
 include(../../src/cmsext/CMakeLists.txt)
 include(src/CMakeLists.txt)
@@ -70,7 +70,7 @@ include_directories (..)
 # For <framework/..> and <cmsext/..>
 include_directories (../../src)
 # For <cms/..>
-include_directories (../../third_party/cms/cpp)
+include_directories (../../third_party/cms/src/cpp)
 
 # ${WIN32_ENABLED} must be betweenn 2 variables, otherwise it will led to error.
 add_executable(${PROJECT_NAME} ${WIN32_ENABLED} ${CORE_SOURCES} 
