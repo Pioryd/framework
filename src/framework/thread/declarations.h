@@ -11,5 +11,7 @@ class EventManager;
 typedef std::shared_ptr<Event> Event_ptr;
 typedef std::shared_ptr<EventPoll> EventPoll_ptr;
 typedef std::shared_ptr<EventManager> EventManager_ptr;
+
+typedef std::unique_ptr<EventManager> EventManager_uptr;
 }  // namespace FW::Thread
 #endif  // #ifndef FW_THREAD_DECLARATIONS_H
