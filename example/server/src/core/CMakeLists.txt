@@ -1,0 +1,3 @@
+﻿set(CORE_SOURCES ${CORE_SOURCES}
+
+  )
