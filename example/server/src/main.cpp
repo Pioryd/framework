@@ -1,16 +1,8 @@
-#include <framework/core/application.h>
 #include <framework/global.h>
-
-#include "global.h"
-#include "serverapp.h"
-
-#include <modules/init.h>
+#include <framework/core/application.h>
+#include <framework/pymodule/manager.h>
 
 int main(int argc, char* argv[]) {
-  FW::G::Application->signals.onInit.connect(
-      "Server::G::serverApp", &Server::ServerApp::init, &Server::G::serverApp);
-  FW::G::Application->signals.onInit.connect("Modules::init", &Modules::init);
-
-  FW::G::Application->start(argc, argv, Server::G::serverApp.config.appName);
+  FW::G::Application->start(argc, argv, "Server");
   return 0;
 }
