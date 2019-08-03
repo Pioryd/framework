@@ -1,13 +1,12 @@
 #ifndef FW_NET_TCPLISTENER_H
 #define FW_NET_TCPLISTENER_H
 
-#include "declarations.h"
-
 #include <boost/asio.hpp>
 #include <unordered_set>
 #include "../thread/declarations.h"
 #include "../time/declarations.h"
-
+#include "connection.h"
+#include "declarations.h"
 namespace FW::Net {
 class TcpListener : public std::enable_shared_from_this<TcpListener> {
  public:
@@ -22,8 +21,8 @@ class TcpListener : public std::enable_shared_from_this<TcpListener> {
 
  public:
   TcpListener(boost::asio::io_service& io_service,
-              std::function<Protocol_ptr(void)> protocolOnCreate,
-              const std::string& host, uint16_t port,
+              std::function<void(Connection_ptr&)> on_connected,
+              const std::string& host, const std::string& port,
               Thread::EventManager& eventManager);
   ~TcpListener();
 
@@ -39,6 +38,8 @@ class TcpListener : public std::enable_shared_from_this<TcpListener> {
   void onConnectionClose(Connection_ptr& connection);
   void closeConnections();
 
+  Connection_ptr getConnection(uint32_t id);
+
  private:
   void asyncRestart();
   void asyncAccept();
@@ -49,13 +50,14 @@ class TcpListener : public std::enable_shared_from_this<TcpListener> {
 
  public:
   Config config;
+  Connection::PacketParseCallbacks_ptr packetParseCallbacks;
 
  private:
   boost::asio::io_service& io_service_;
   std::string host_;
-  uint16_t port_;
+  std::string port_;
   std::unique_ptr<boost::asio::ip::tcp::acceptor> acceptor_;
-  std::function<Protocol_ptr(void)> protocolOnCreate_;
+  std::function<void(Connection_ptr&)> on_connected_;
   State state_;
 
   std::mutex connectionsGuard_;

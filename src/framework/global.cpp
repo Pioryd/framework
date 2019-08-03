@@ -2,6 +2,7 @@
 
 #include "core/application.h"
 #include "core/logger.h"
+#include "net/manager.h"
 #include "crypt/rsa.h"
 #include "pymodule/manager.h"
 #include "pymodule/signalmanager.h"
@@ -23,6 +24,7 @@ FW::Time::Clock Clock;
 FW::Crypt::Rsa Rsa(1024);
 FW::Thread::EventManager eventManager("FW::G::eventManager");
 FW::Database::MainManager db_manager;
+FW::Net::Manager NetManager;
 FW::Thread::LookAfter<FW::PyModule::Manager> PyModuleManager;
 FW::Thread::LookAfter<FW::Core::Application> Application;
 

@@ -9,6 +9,7 @@
 #include "pymodule/declarations.h"
 #include "thread/declarations.h"
 #include "thread/lookafter.h"
+#include "database/declarations.h"
 #include "time/declarations.h"
 
 #ifdef FW_DEF_GRAPHICAL_APPLICATION
@@ -33,7 +34,7 @@ extern FW::Core::Logger Logger;
 extern FW::Time::Clock Clock;
 extern FW::Crypt::Rsa Rsa;
 extern FW::Thread::EventManager eventManager;
-
+extern FW::Database::MainManager db_manager;
 extern FW::Net::Manager NetManager;
 extern FW::Thread::LookAfter<FW::PyModule::Manager> PyModuleManager;
 extern FW::Thread::LookAfter<FW::Core::Application> Application;

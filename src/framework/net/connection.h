@@ -1,6 +1,7 @@
 #ifndef FW_NET_CONNECTION_H
 #define FW_NET_CONNECTION_H
 
+#include "../core/autoid.h"
 #include "../thread/declarations.h"
 #include "declarations.h"
 
@@ -12,6 +13,26 @@
 namespace FW::Net {
 class Connection : public std::enable_shared_from_this<Connection> {
  public:
+  struct PacketParseCallbacks {
+    void add(uint8_t code, std::function<void(Connection_ptr&)> callback) {
+      std::lock_guard<std::recursive_mutex> lock(mutex_);
+      if (callbacks_.count(code))
+        throw std::runtime_error("Packet parse callback already binded: " +
+                                 std::to_string(code));
+      callbacks_[code] = callback;
+    }
+
+    void call(uint8_t code, Connection_ptr& connection) {
+      std::lock_guard<std::recursive_mutex> lock(mutex_);
+      if (callbacks_.count(code)) callbacks_[code](connection);
+    }
+
+   protected:
+    std::recursive_mutex mutex_;
+    std::map<uint8_t, std::function<void(Connection_ptr&)>> callbacks_;
+  };
+  typedef std::shared_ptr<PacketParseCallbacks> PacketParseCallbacks_ptr;
+
   enum class State { OPEN, CLOSED, CONNECTING, CONNECTED };
 
  public:
@@ -24,8 +45,11 @@ class Connection : public std::enable_shared_from_this<Connection> {
  public:
   Connection(boost::asio::io_service& io_service,
              std::function<void(Connection_ptr&)> onClose,
-             const Protocol_ptr& protocol, uint32_t packetsPerSecond);
+             std::function<void(Connection_ptr&)> on_connected,
+             const PacketParseCallbacks_ptr& packetParseCallbacks);
   virtual ~Connection();
+
+  void init();
 
   Connection(const Connection&) = delete;
   Connection& operator=(const Connection&) = delete;
@@ -33,13 +57,14 @@ class Connection : public std::enable_shared_from_this<Connection> {
   void connect(boost::asio::ip::basic_resolver<boost::asio::ip::tcp>::iterator
                    endpointIterator);
   void close();
-  void send(const OutputMessage_ptr& msg);
+  void send();
 
   unsigned long getHost();
   std::string getHostAsString();
   unsigned short getPort();
   std::string getPortAsString();
   std::string getInfo();
+  int32_t get_id();
 
  protected:
   void readPacket();
@@ -53,22 +78,34 @@ class Connection : public std::enable_shared_from_this<Connection> {
   void onWritePacket(const boost::system::error_code& error);
   void onTimeout(const boost::system::error_code& error);
 
+  void prepareToWrite(const OutputMessage_ptr& msg) const;
+  void parsePacket();
+
   boost::asio::ip::tcp::socket& getSocket();
 
  public:
   Config config;
-  std::function<void(Connection_ptr&)> onClose;
 
+  InputMessage inMsg;
+  OutputMessage_ptr outMsg;
+
+  static inline Core::AutoId<Connection> auto_id{1000};
  protected:
+
+
+  std::function<void(Connection_ptr&)> onClose;
+  std::function<void(Connection_ptr&)> on_connected;
+
+  int32_t id_;
   boost::asio::ip::tcp::socket socket_;
   boost::asio::steady_timer readTimer_;
   boost::asio::steady_timer writeTimer_;
-  OutputMessage outMsg_;
-  InputMessage inMsg_;
+
   std::list<OutputMessage_ptr> outputMessageQueue_;
-  Protocol_ptr protocol_;
   State state_;
   std::recursive_mutex mutex_;
+
+  PacketParseCallbacks_ptr packetParseCallbacks_;
 
  private:
   friend class TcpListener;

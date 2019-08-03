@@ -4,24 +4,20 @@
 #include "../global.h"
 #include "../thread/eventmanager.h"
 #include "connection.h"
-#include "protocol.h"
 
 namespace FW::Net {
 TcpClient::TcpClient(boost::asio::io_service& io_service,
-                     const std::function<Protocol_ptr(void)>& protocolOnCreate,
-                     const std::string& host, uint16_t port,
+                     const std::function<void(Connection_ptr&)>& on_connected,
+                     const std::string& host, const std::string& port,
                      Thread::EventManager& eventManager)
     : io_service_{io_service},
-      protocolOnCreate_{protocolOnCreate},
+      on_connected_{on_connected},
       host_{host},
       port_{port},
       state_{State::DISCONNECTED},
-      eventManager_{eventManager} {
-  if (port_ == 0)
-    throw std::runtime_error(
-        ("Port number 0 is reserved. Select another one. Host: " + host_ + ".")
-            .c_str());
-}
+      eventManager_{eventManager},
+      packetParseCallbacks{
+          std::make_shared<Connection::PacketParseCallbacks>()} {}
 
 TcpClient::~TcpClient() { disconnect(); }
 
@@ -34,18 +30,23 @@ void TcpClient::connect() {
     readTimer_ = std::make_unique<boost::asio::steady_timer>(io_service_);
     writeTimer_ = std::make_unique<boost::asio::steady_timer>(io_service_);
 
-    auto protocol = protocolOnCreate_();
     connection_ = std::make_shared<Connection>(
         io_service_,
         std::bind(&TcpClient::onConnectionClose, shared_from_this(),
                   std::placeholders::_1),
-        protocol, config.packetsPerSecond);
-    protocol->setConnection(connection_);
+        on_connected_, packetParseCallbacks);
+    connection_->init();
 
     resolver_ = std::make_unique<boost::asio::ip::tcp::resolver>(io_service_);
 
+    if (port_ == "0")
+      throw std::runtime_error(
+          ("Port number 0 is reserved. Select another one. Host: " + host_ +
+           ".")
+              .c_str());
+
     resolver_->async_resolve(
-        boost::asio::ip::tcp::resolver::query(host_, std::to_string(port_)),
+        boost::asio::ip::tcp::resolver::query(host_, port_),
         std::bind(&TcpClient::onResolve, shared_from_this(),
                   std::placeholders::_1, std::placeholders::_2));
 
@@ -130,7 +131,7 @@ void TcpClient::asyncReconnect() {
 }
 
 void TcpClient::onTimeout(const boost::system::error_code& error) {
-  G::Logger.error("Timeout: [" + host_ + ":" + std::to_string(port_) +
+  G::Logger.error("Timeout: [" + host_ + ":" + port_ +
                   "]. Error: " + error.message() + ".");
   if (error != boost::asio::error::operation_aborted) asyncReconnect();
 }
@@ -140,6 +141,6 @@ void TcpClient::onConnectionClose(Connection_ptr& connection) {
 }
 
 std::string TcpClient::info() {
-  return "Host: " + host_ + ". Port: " + std::to_string(port_) + ".";
+  return "Host: " + host_ + ". Port: " + port_ + ".";
 }
 }  // namespace FW::Net

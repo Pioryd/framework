@@ -3,26 +3,29 @@
 #include "../core/logger.h"
 #include "../global.h"
 
-#include "protocol.h"
 #include "tcplistener.h"
 
 namespace FW::Net {
 Connection::Connection(boost::asio::io_service& io_service,
                        std::function<void(Connection_ptr&)> onClose,
-                       const Protocol_ptr& protocol, uint32_t packetsPerSecond)
-    : onClose{onClose},
-      protocol_{protocol},
+                       std::function<void(Connection_ptr&)> on_connected,
+                       const PacketParseCallbacks_ptr& packetParseCallbacks)
+    : id_{-1},
       socket_{io_service},
       readTimer_{io_service},
       writeTimer_{io_service},
-      state_{State::OPEN} {
-  if (!protocol_)
-    throw std::runtime_error(
-        (getInfo() + " Unable to read packet body. Protocol is NOT set.")
-            .c_str());
+      onClose{onClose},
+      on_connected{on_connected},
+      packetParseCallbacks_{packetParseCallbacks},
+      state_{State::OPEN},
+      outMsg{std::make_shared<OutputMessage>()} {}
+
+Connection::~Connection() {
+  Connection::auto_id.release(id_);
+  close();
 }
 
-Connection::~Connection() { close(); }
+void Connection::init() { id_ = Connection::auto_id.lock(shared_from_this()); }
 
 void Connection::connect(
     boost::asio::ip::basic_resolver<boost::asio::ip::tcp>::iterator
@@ -84,12 +87,10 @@ void Connection::close() {
     }
   }
 
-  protocol_ = nullptr;
-
   state_ = State::CLOSED;
 }
 
-void Connection::send(const OutputMessage_ptr& msg) {
+void Connection::send() {
   std::lock_guard<std::recursive_mutex> lock(mutex_);
   if (state_ != State::CONNECTED) {
     FW_DEBUG_INSTRUCTIONS(G::Logger.error(
@@ -98,8 +99,9 @@ void Connection::send(const OutputMessage_ptr& msg) {
   }
 
   bool isSocketWritingPackets = outputMessageQueue_.empty();
-  outputMessageQueue_.emplace_back(msg);
-  if (isSocketWritingPackets) { writePacket(msg); }
+  outputMessageQueue_.emplace_back(outMsg);
+  if (isSocketWritingPackets) { writePacket(outMsg); }
+  outMsg = std::make_shared<OutputMessage>();
 }
 
 unsigned long Connection::getHost() {
@@ -160,12 +162,12 @@ void Connection::readPacket() {
     readTimer_.async_wait(std::bind(&Connection::onTimeout, shared_from_this(),
                                     std::placeholders::_1));
 
-    inMsg_.reset();
-    inMsg_.setLength(NetworkMessage::PACKET_SIZE_BYTES_LENGTH);
+    inMsg.reset();
+    inMsg.setLength(NetworkMessage::PACKET_SIZE_BYTES_LENGTH);
 
     boost::asio::async_read(
         socket_,
-        boost::asio::buffer(inMsg_.getBufferAtCurrentPosition(),
+        boost::asio::buffer(inMsg.getBufferAtCurrentPosition(),
                             NetworkMessage::PACKET_SIZE_BYTES_LENGTH),
         std::bind(&Connection::readPacketSize, shared_from_this(),
                   std::placeholders::_1));
@@ -197,12 +199,12 @@ void Connection::readPacketSize(const boost::system::error_code& error) {
       return;
     }
 
-    inMsg_.setLength(inMsg_.peekUInt16());
-    if (inMsg_.getLength() == 0 ||
-        inMsg_.getLength() >= NetworkMessage::MAX_PACKET_BODY_LENGTH) {
+    inMsg.setLength(inMsg.peekUInt16());
+    if (inMsg.getLength() == 0 ||
+        inMsg.getLength() >= NetworkMessage::MAX_PACKET_BODY_LENGTH) {
       FW_DEBUG_INSTRUCTIONS(G::Logger.error(
           getInfo() +
-          " Wrong packet size: " + std::to_string(inMsg_.getLength()) + ".");)
+          " Wrong packet size: " + std::to_string(inMsg.getLength()) + ".");)
       close();
       return;
     }
@@ -213,8 +215,8 @@ void Connection::readPacketSize(const boost::system::error_code& error) {
 
     boost::asio::async_read(
         socket_,
-        boost::asio::buffer(inMsg_.getBufferAtCurrentPosition(),
-                            inMsg_.getLength() - inMsg_.getBufferPosition()),
+        boost::asio::buffer(inMsg.getBufferAtCurrentPosition(),
+                            inMsg.getLength() - inMsg.getBufferPosition()),
         std::bind(&Connection::readPacketBody, shared_from_this(),
                   std::placeholders::_1));
   } catch (boost::system::system_error& e) {
@@ -251,7 +253,7 @@ void Connection::readPacketBody(const boost::system::error_code& error) {
     return;
   }
 
-  protocol_->onRecvMessage(inMsg_);
+  parsePacket();
 
   readPacket();
 }
@@ -267,7 +269,7 @@ void Connection::writePacket(const OutputMessage_ptr& msg) {
       return;
     }
 
-    protocol_->prepareToWrite(msg);
+    prepareToWrite(msg);
 
     writeTimer_.expires_from_now(std::chrono::seconds(config.writeTimeout));
     writeTimer_.async_wait(std::bind(&Connection::onTimeout, shared_from_this(),
@@ -312,14 +314,16 @@ void Connection::onConnect(const boost::system::error_code& error) {
   boost::asio::ip::tcp::no_delay option(true);
   socket_.set_option(option);
   state_ = State::CONNECTED;
-  protocol_->onConnected(protocol_);
+  auto this_connection = shared_from_this();
+  on_connected(this_connection);
   readPacket();
 }
 
 void Connection::onAccept() {
   std::lock_guard<std::recursive_mutex> lock(mutex_);
   state_ = State::CONNECTED;
-  protocol_->onConnected(protocol_);
+  auto this_connection = shared_from_this();
+  on_connected(this_connection);
   readPacket();
 }
 
@@ -359,5 +363,24 @@ void Connection::onTimeout(const boost::system::error_code& error) {
   close();
 }
 
+void Connection::prepareToWrite(const OutputMessage_ptr& msg) const {
+  msg->writeMessageLength();
+}
+
+void Connection::parsePacket() {
+  uint8_t packetId = inMsg.getUInt8();
+  auto this_connection = shared_from_this();
+
+  try {
+    Connection::packetParseCallbacks_->call(packetId, this_connection);
+  } catch (std::exception e) {
+    FW::G::Logger.error("Unable to parse packet[" + std::to_string(packetId) +
+                        "]. Error " + std::string(e.what()));
+    close();
+  }
+}
+
 boost::asio::ip::tcp::socket& Connection::getSocket() { return socket_; }
+
+int32_t Connection::get_id() { return id_; }
 }  // namespace FW::Net

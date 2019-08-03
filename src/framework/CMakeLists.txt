@@ -4,6 +4,7 @@ set(FRAMEWORK_SOURCES ${FRAMEWORK_SOURCES}
  ${CMAKE_CURRENT_LIST_DIR}/global.cpp
  ${CMAKE_CURRENT_LIST_DIR}/global.h
  ${CMAKE_CURRENT_LIST_DIR}/pch.h
+ ${CMAKE_CURRENT_LIST_DIR}/core/autoid.h
  ${CMAKE_CURRENT_LIST_DIR}/core/application.h
  ${CMAKE_CURRENT_LIST_DIR}/core/applicationbase.cpp
  ${CMAKE_CURRENT_LIST_DIR}/core/applicationbase.h
@@ -35,12 +36,12 @@ set(FRAMEWORK_SOURCES ${FRAMEWORK_SOURCES}
  ${CMAKE_CURRENT_LIST_DIR}/net/declarations.h
  ${CMAKE_CURRENT_LIST_DIR}/net/inputmessage.cpp
  ${CMAKE_CURRENT_LIST_DIR}/net/inputmessage.h
+ ${CMAKE_CURRENT_LIST_DIR}/net/manager.cpp
+ ${CMAKE_CURRENT_LIST_DIR}/net/manager.h
  ${CMAKE_CURRENT_LIST_DIR}/net/networkmessage.cpp
  ${CMAKE_CURRENT_LIST_DIR}/net/networkmessage.h
  ${CMAKE_CURRENT_LIST_DIR}/net/outputmessage.cpp
  ${CMAKE_CURRENT_LIST_DIR}/net/outputmessage.h
- ${CMAKE_CURRENT_LIST_DIR}/net/protocol.cpp
- ${CMAKE_CURRENT_LIST_DIR}/net/protocol.h
  ${CMAKE_CURRENT_LIST_DIR}/net/tcpclient.cpp
  ${CMAKE_CURRENT_LIST_DIR}/net/tcpclient.h
  ${CMAKE_CURRENT_LIST_DIR}/net/tcplistener.cpp
