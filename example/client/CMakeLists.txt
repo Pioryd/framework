@@ -57,18 +57,24 @@ else()
 CMAKE_SYSTEM_NAME not set. Set one of 'Windows', 'Android', 'Linux'.")
 endif()
 
+include(../../third_party/cms/cpp/cms/CMakeLists.txt)
 include(../../src/framework/CMakeLists.txt)
-include(../modules/CMakeLists.txt)
+include(../../src/cmsext/CMakeLists.txt)
 include(src/CMakeLists.txt)
+include(src/core/CMakeLists.txt)
+include(src/modules/CMakeLists.txt)
 
-# For <modules/..>
+# For <modules/..> and <core/..>
 include_directories (..)
-# For <framework/..>
+# For <framework/..> and <cmsext/..>
 include_directories (../../src)
+# For <cms/..>
+include_directories (../../third_party/cms/cpp)
 
 # ${WIN32_ENABLED} must be betweenn 2 variables, otherwise it will led to error.
-add_executable(${PROJECT_NAME} ${WIN32_ENABLED} ${MODULES_SOURCES} 
-    ${SERVER_SOURCES} ${MAIN_SOURCES} ${FRAMEWORK_SOURCES})
+add_executable(${PROJECT_NAME} ${WIN32_ENABLED} ${CORE_SOURCES} 
+    ${MODULES_SOURCES} ${MAIN_SOURCES} ${FRAMEWORK_SOURCES} 
+    ${CMSEXT_SOURCES} ${CMS_SOURCES})
 
 target_link_libraries(${PROJECT_NAME} ${PYTHON_LIBRARIES} ${SFML_LIBRARIES} 
 		${TGUI_LIBRARIES} ${cryptopp_LIBRARIES}  ${sqlite3_LIBRARIES} 
