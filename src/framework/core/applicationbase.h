@@ -65,8 +65,14 @@ class ApplicationBase {
   static void handleSystemSignal(int32_t signal);
   void asyncWaitForSignal();
 
+  void connect_cms_modules();
  public:
   Signals signals;
+
+  static inline std::vector<void (*)(void)> on_load_vec;
+  static inline std::vector<void (*)(void)> on_init_vec;
+  static inline std::vector<void (*)(void)> on_terminate_vec;
+  static inline std::vector<void (*)(void)> on_reload_vec;
 
  protected:
   State state_;

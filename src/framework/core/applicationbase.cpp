@@ -8,6 +8,11 @@
 #include "../thread/eventmanager.h"
 #include "../util/file.h"
 
+#include "../multimedia/fontmanager.h"
+#include "../multimedia/imagemanager.h"
+#include "../multimedia/soundmanager.h"
+#include "../multimedia/texturemanager.h"
+
 void std_handler() {
   std::cout << "Out of memory." << std::endl;
   exit(-1);
@@ -23,12 +28,26 @@ ApplicationBase::ApplicationBase()
 #endif  // #ifdef _WIN32
 
   asyncWaitForSignal();
+
+  connect_cms_modules();
 }
 
 void ApplicationBase::start(int32_t argc, char* argv[],
                             const std::string& title) {
   std::vector<std::string> argvVector;
   for (int32_t i = 0; i < argc; i++) argvVector.push_back(argv[i]);
+
+  // Init
+  FW::G::FontManager.init();
+  FW::G::FontManager.loadFonts();
+  FW::G::SoundManager.init();
+  FW::G::SoundManager.loadSounds();
+  FW::G::ImageManager.init();
+  FW::G::ImageManager.loadImages();
+  FW::G::TextureManager.init();
+  FW::G::TextureManager.loadTextures();
+
+  FW::G::PyModuleManager->init();
 
   init(argvVector, title);
 
@@ -74,9 +93,8 @@ std::string ApplicationBase::getCompileInfo() {
 std::filesystem::path ApplicationBase::getAssetsPath() {
   std::filesystem::path assetsPath;
 
-  if (FW_DEF_PATH_ASSETS == "assets")
-    assetsPath.append(getWorkingDirectory());
-  
+  if (FW_DEF_PATH_ASSETS == "assets") assetsPath.append(getWorkingDirectory());
+
   assetsPath.append(FW_DEF_PATH_ASSETS);
 
   return assetsPath;
@@ -105,6 +123,9 @@ void ApplicationBase::init(const std::vector<std::string>& argv,
   FW::G::PyModuleManager->init();
 
   FW::G::eventManager.start();
+  signals.onPollEnd.connect("FW::G::eventManager.syncPoll()",
+                            &FW::Thread::EventManager::syncPoll,
+                            &FW::G::eventManager);
 
   signals.onInit.send(argv, title);
 
@@ -166,5 +187,19 @@ void ApplicationBase::asyncWaitForSignal() {
       asyncWaitForSignal();
     }
   });
+}
+
+void ApplicationBase::connect_cms_modules() {
+  for (int32_t i = 0; i < ApplicationBase::on_init_vec.size(); i++) {
+    auto on_init = ApplicationBase::on_init_vec[i];
+    signals.onInit.connect("cms_onInit_" + std::to_string(i),
+                           [on_init](const std::vector<std::string>&,
+                                     const std::string& title) { on_init(); });
+  }
+
+  for (int32_t i = 0; i < ApplicationBase::on_terminate_vec.size(); i++) {
+    signals.onTerminate.connect("cms_onTerminate_" + std::to_string(i),
+                                ApplicationBase::on_terminate_vec[i]);
+  }
 }
 }  // namespace  FW::Core
