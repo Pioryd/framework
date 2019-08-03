@@ -6,7 +6,7 @@ using namespace cmsext::widget;
 using namespace cmsext::app;
 using namespace cmsext::gui;
 
-CMS_BEGIN(ui_mod)
+CMS_BEGIN(ui_mod, "")
 void createUI() {
   {
     cms::string root = "root";

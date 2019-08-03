@@ -7,7 +7,7 @@ using namespace cmsext::db;
 using namespace cmsext::log;
 using namespace cmsext::thread;
 
-CMS_BEGIN(db_mod)
+CMS_BEGIN(db_mod, "")
 void db_test() {
   auto sql_id = connect("mysql", "127.0.0.1", "root", "", "test", "3306", "");
 

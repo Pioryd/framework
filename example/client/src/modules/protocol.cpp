@@ -6,7 +6,7 @@
 using namespace cmsext::net;
 using namespace cmsext::log;
 using namespace cmsext::thread;
-CMS_BEGIN(test_mod)
+CMS_BEGIN(test_mod, "")
 
 enum ProtocolCodes {
   SERVER_PING = 0x05,

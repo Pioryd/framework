@@ -8,7 +8,7 @@ using namespace cmsext::app;
 using namespace cmsext::gui;
 using namespace cmsext::log;
 
-CMS_BEGIN(ui_mod)
+CMS_BEGIN(ui_mod, "")
 void on_click() { info("button clicked"); }
 
 void create_ui() {
