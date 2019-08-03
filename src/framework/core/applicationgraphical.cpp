@@ -18,7 +18,7 @@ ApplicationGraphical::ApplicationGraphical() : ApplicationBase() {
   signals.onPollBegin.connect("FW::G::Window.poll", &FW::MM::Window::poll,
                               &FW::G::Window);
 
-  signals.onPollEnd.connect("[this]() { io_service_.poll(); } <1>",
+  signals.onPollDurring.connect("[this]() { io_service_.poll(); } <1>",
                             [this]() { io_service_.poll(); });
 
   signals.onPollEnd.connect("[this]() { io_service_.poll(); } <2>",
