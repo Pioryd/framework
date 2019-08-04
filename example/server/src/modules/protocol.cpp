@@ -43,22 +43,6 @@ void parse_client_ping(uint32_t connection_id) {
 void on_connected(uint32_t connection_id) { send_server_ping(connection_id); }
 
 void net_test() {
-  cms::immutable_dict<int, cms::string> ints = {
-      {1, "one"}, {2, "two"}, {3, "three"}};
-  {
-    cms::immutable_dict<int, cms::string> ints_2;
-    ints_2 = ints;
-    ints_2[1] = "heelo";
-    ints_2.update({{4, "gogo"}});
-  }
-  cms::immutable_dict<int, cms::string> sec = {{2, "test"}};
-  ints.update(sec);
-  int32_t i = 0;
-  while (i < cms::len(ints)) { 
-    info("key: " + cms::str(cms::dict_key(ints, i)));
-    info("value: " + cms::dict_value(ints, i));
-    i += 1;
-  }
   auto listener_id = tcp_listener_create("127.0.0.1", "7312", on_connected);
 
   tcp_listener_bind_paket_parse(listener_id, SERVER_PING_BACK,
