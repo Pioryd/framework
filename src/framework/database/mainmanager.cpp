@@ -38,7 +38,7 @@ void MainManager::join() {
   for (auto& db : db_vec_) db.event_manager->join();
 }
 
-bool MainManager::connect(const SqlConfig& sqlConfig) {
+int32_t MainManager::connect(const SqlConfig& sqlConfig) {
   if (sqlConfig.type == SqlConfig::SqlType::MySql)
     db_vec_.push_back(
         {nullptr,

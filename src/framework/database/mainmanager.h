@@ -44,7 +44,7 @@ class MainManager {
   void join();
 
  public:
-  bool connect(const SqlConfig& sqlConfig);
+  int32_t connect(const SqlConfig& sqlConfig);
 
   Result_sptr execute(int32_t sql_id, const std::string& query);
 
