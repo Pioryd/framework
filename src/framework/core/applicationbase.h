@@ -3,7 +3,7 @@
 
 #include "declarations.h"
 
-#include <framework/core/signal.h>
+#include "signal.h"
 #include <boost/asio.hpp>
 
 namespace FW::Core {
@@ -24,6 +24,8 @@ class ApplicationBase {
     FW_CORE_SIGNAL(onStartMainLoop, void(void));
   };
 
+  enum class Type { Unknown, Console, Graphical };
+
  protected:
   enum class State {
     Unknown,
@@ -35,7 +37,7 @@ class ApplicationBase {
   };
 
  public:
-  ApplicationBase();
+  ApplicationBase(Type type);
   virtual ~ApplicationBase() = default;
 
   void start(int32_t argc, char* argv[], const std::string& title);
@@ -45,6 +47,7 @@ class ApplicationBase {
   std::string getCompileInfo();
   std::filesystem::path getAssetsPath();
   std::wstring getWorkingDirectory();
+  Type get_type();
 
   bool isRunning();
 
@@ -66,6 +69,7 @@ class ApplicationBase {
   void asyncWaitForSignal();
 
   void connect_cms_modules();
+
  public:
   Signals signals;
 
@@ -76,6 +80,7 @@ class ApplicationBase {
 
  protected:
   State state_;
+  Type type_;
   boost::asio::io_service io_service_;
   boost::asio::signal_set signal_set_;
 };

@@ -19,8 +19,8 @@ void std_handler() {
 }
 
 namespace FW::Core {
-ApplicationBase::ApplicationBase()
-    : state_{State::Unknown}, signal_set_(io_service_) {
+ApplicationBase::ApplicationBase(Type type)
+    : state_{State::Unknown}, type_{type}, signal_set_(io_service_) {
   signal_set_.add(SIGINT);
   signal_set_.add(SIGTERM);
 #ifdef _WIN32
@@ -111,6 +111,8 @@ std::wstring ApplicationBase::getWorkingDirectory() {
 #endif  // #ifdef FW_DEF_PATH_WORK
   return workingDirectory;
 }
+
+ApplicationBase::Type ApplicationBase::get_type() { return type_; }
 
 bool ApplicationBase::isRunning() { return (state_ == State::Running); }
 

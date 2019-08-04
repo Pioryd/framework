@@ -6,7 +6,8 @@
 #include <framework/time/clock.h>
 
 namespace FW::Core {
-ApplicationGraphical::ApplicationGraphical() : ApplicationBase() {
+ApplicationGraphical::ApplicationGraphical()
+    : ApplicationBase(Type::Graphical) {
   // Inside constructor to be sure that will be called first, before user
   // instructions
   signals.onInit.connect("ApplicationGraphical::onInit",

@@ -4,7 +4,7 @@
 #include <framework/time/clock.h>
 
 namespace FW::Core {
-ApplicationConsole::ApplicationConsole() : ApplicationBase() {
+ApplicationConsole::ApplicationConsole() : ApplicationBase(Type::Console) {
   // Inside constructor to be sure that will be called first
   signals.onInit.connect("ApplicationConsole::onInit",
                          &ApplicationConsole::onInit, this);
