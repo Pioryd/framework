@@ -218,6 +218,11 @@ void list_box_add_item(const WidgetEx& widget, const cms::string& name) {
   if (!widget.getWidgetPtr() || widget->getWidgetType() != "ListBox") return;
   widget.getWidgetPtr()->cast<tgui::ListBox>()->addItem((std::string)name);
 }
+
+void list_box_clear_items(const WidgetEx& widget) {
+  if (!widget.getWidgetPtr() || widget->getWidgetType() != "ListBox") return;
+  widget.getWidgetPtr()->cast<tgui::ListBox>()->removeAllItems();
+}
 //////////////////////////// Progress Bar //////////////////////////////////////
 cms::string progress_bar_create(const WidgetEx& parent) {
   auto widget = tgui::ProgressBar::create();
@@ -323,6 +328,16 @@ void child_window_set_title(const WidgetEx& widget, const cms::string& name) {
     return;
   widget.getWidgetPtr()->cast<tgui::ChildWindow>()->setTitle((std::string)name);
 }
+
+void child_window_set_background_color(const WidgetEx& widget,
+                                       const cms::string& color) {
+  if (!widget.getWidgetPtr() || widget->getWidgetType() != "ChildWindow")
+    return;
+  widget.getWidgetPtr()
+      ->cast<tgui::ChildWindow>()
+      ->getRenderer()
+      ->setBackgroundColor(tgui::Color(color));
+}
 //////////////////////////////// Button ////////////////////////////////////////
 cms::string button_create(const WidgetEx& parent) {
   auto widget = tgui::Button::create();
@@ -357,7 +372,7 @@ void check_box_set_text(const WidgetEx& widget, const cms::string& text) {
   if (!widget.getWidgetPtr() || widget->getWidgetType() != "CheckBox") return;
   widget.getWidgetPtr()->cast<tgui::CheckBox>()->setText((std::string)text);
 }
-/////////////////////////////// ChatBox ///////////////////////////////////////
+/////////////////////////////// ChatBox ////////////////////////////////////////
 cms::string chat_box_create(const WidgetEx& parent) {
   auto widget = tgui::ChatBox::create();
   widget->setRenderer(FW::G::Window.theme.getRenderer("ChatBox"));

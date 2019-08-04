@@ -46,6 +46,7 @@ void text_box_set_read_only(const WidgetEx& widget, bool read_only);
 cms::string list_box_create(const WidgetEx& parent);
 void list_box_set_item_height(const WidgetEx& widget, int height);
 void list_box_add_item(const WidgetEx& widget, const cms::string& name);
+void list_box_clear_items(const WidgetEx& widget);
 // ProgressBar
 cms::string progress_bar_create(const WidgetEx& parent);
 void progress_bar_set_value(const WidgetEx& widget, int value);
@@ -65,6 +66,8 @@ void combo_box_set_selected_item(const WidgetEx& widget,
 // ChildWindow
 cms::string child_window_create(const WidgetEx& parent);
 void child_window_set_title(const WidgetEx& widget, const cms::string& name);
+void child_window_set_background_color(const WidgetEx& widget,
+                                       const cms::string& color);
 // Button
 cms::string button_create(const WidgetEx& parent);
 void button_set_text(const WidgetEx& widget, const cms::string& text);
