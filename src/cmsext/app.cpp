@@ -9,9 +9,7 @@
 namespace cmsext::app {
 void close() { FW::G::Application->close(); }
 
-cms::string get_compile_info() {
-  return FW::G::Application->getCompileInfo();
-}
+cms::string get_compile_info() { return FW::G::Application->getCompileInfo(); }
 
 cms::string get_assets_path() {
   return FW::G::Application->getAssetsPath().string();
@@ -20,6 +18,12 @@ cms::string get_assets_path() {
 cms::string get_working_directory() {
   return std::filesystem::path(FW::G::Application->getWorkingDirectory())
       .string();
+}
+
+cms::string get_type() {
+  return FW::G::Application->get_type() == FW::Core::Application::Type::Console
+             ? "console"
+             : "graphical";
 }
 
 bool is_running() { return FW::G::Application->isRunning(); }

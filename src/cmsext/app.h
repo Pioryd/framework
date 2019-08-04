@@ -9,7 +9,7 @@ void close();
 cms::string get_compile_info();
 cms::string get_assets_path();
 cms::string get_working_directory();
-
+cms::string get_type();
 bool is_running();
 }  // namespace cmsext::app
 #endif  // #ifndef FW_CMSEXT_APP_H
