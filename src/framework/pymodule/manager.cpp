@@ -126,6 +126,8 @@ void Manager::disconnect(const std::string& signal,
       signal, createCallBack(functionObject, globalVariableObject));
 }
 
+void Manager::run_script(const std::string& script) { pybind11::exec(script); }
+
 Module_ptr Manager::loadModule(const std::filesystem::path& path) {
   auto pathWithoutExtension = path.u8string();
   auto fileNameWithoutExtension = path.filename().u8string();

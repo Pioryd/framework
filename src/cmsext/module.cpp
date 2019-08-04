@@ -17,6 +17,10 @@ void reload(const cms::string& module_name) {
 
 void restartModules() { FW::G::PyModuleManager->restartModules(); }
 
+void run_script(const cms::string& script) {
+  FW::G::PyModuleManager->run_script(script);
+}
+
 PYBIND11_EMBEDDED_MODULE(cmsext_module, m) {
   m.def("load", &cmsext::module::load),  //
       m.def("reload", &cmsext::module::reload),

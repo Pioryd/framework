@@ -10,13 +10,14 @@ namespace cmsext::module {
 void load(const cms::string& module_name);
 void reload(const cms::string& module_name);
 void restartModules();
+void run_script(const cms::string& script);
 
 template <typename T>
 void connect(const cms::string& signal_id, T callbackCpp) {
-  if (FW::Core::Signal<T>::signals.count(signal_id)) {
+  if (FW::Core::Signal<T>::signals.count((std::string)signal_id)) {
     std::stringstream callbackd_id;
     callbackd_id << (std::string)signal_id
-                 << static_cast<const void*>(callbackCpp);
+                 << static_cast<const void*>(&callbackCpp);
     FW::Core::Signal<T>::signals[(std::string)signal_id]->connect(
         callbackd_id.str(), callbackCpp);
   }

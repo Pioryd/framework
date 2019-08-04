@@ -33,6 +33,8 @@ class Manager {
   void disconnect(const std::string& signal, pybind11::object functionObject,
                   pybind11::object* globalVariableObject = nullptr);
 
+  void run_script(const std::string& script);
+
  protected:
   Module_ptr loadModule(const std::filesystem::path& path);
   void loadModules();
