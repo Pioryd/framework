@@ -3,6 +3,7 @@
 	
 if(GRAPHICAL_APPLICATION STREQUAL "True")
   set(MODULES_SOURCES ${MODULES_SOURCES}
+	${CMAKE_CURRENT_LIST_DIR}/app_window.cpp
   )
 endif()
 
