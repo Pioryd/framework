@@ -7,7 +7,7 @@
 #include <pybind11/embed.h>
 
 namespace cmsext::db {
-bool connect(const cms::string& type, const cms::string& host,
+int connect(const cms::string& type, const cms::string& host,
              const cms::string& user, const cms::string& password,
              const cms::string& database_name, const cms::string& port,
              const cms::string& socket) {
@@ -15,7 +15,7 @@ bool connect(const cms::string& type, const cms::string& host,
   if (type == "mysql")
     config.type = FW::Database::SqlConfig::SqlType::MySql;
   else if (type == "sqlite")
-    config.type = FW::Database::SqlConfig::SqlType::MySql;
+    config.type = FW::Database::SqlConfig::SqlType::Sqlite;
   config.host = host;
   config.user = user;
   config.password = password;

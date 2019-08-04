@@ -5,7 +5,7 @@
 
 namespace cmsext::db {
 // Type {"mysql", "sqlite"}
-bool connect(const cms::string& type, const cms::string& host,
+int connect(const cms::string& type, const cms::string& host,
              const cms::string& user, const cms::string& password,
              const cms::string& database_name, const cms::string& port,
              const cms::string& socket);
