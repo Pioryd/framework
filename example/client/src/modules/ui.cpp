@@ -157,24 +157,16 @@ void createUI() {
     chat_box_add_line(chat_box, "texus: Thanks! :)", 0, 128, 0, 255);
     chat_box_add_line(chat_box, "Me: The widgets rock ^^", 255, 255, 0, 255);
 
-    // sf::Texture texture;
-    // sf::Sprite sprite;
-    // texture.loadFromFile(assetsPath.string() + "/image/ThinkLinux.jpg");
-    // sprite.setTexture(texture);
-    // sprite.setScale(200.f / texture.getSize().x, 140.f /
-    // texture.getSize().y);
-
-    // sf::Text text{"SFML Canvas", *FW::G::Window.gui->getFont(), 24};
-    // text.setPosition(25, 100);
-    // text.setColor({200, 200, 200});
-
-    // auto canvas = tgui::Canvas::create({200, 140});
-    // canvas->setPosition(420, 430);
-    // canvas->clear();
-    // canvas->draw(sprite);
-    // canvas->draw(text);
-    // canvas->display();
-    // FW::G::Window.gui->add(canvas);
+    auto canvas = canvas_create(root);
+    widget_set_position(canvas, 420, 430);
+    widget_set_size(canvas, 200, 140);
+    canvas_clear(canvas);
+    canvas_draw_sprite(canvas, get_assets_path() + "/image/ThinkLinux.jpg", 200,
+                       140);
+    // TODO
+    // Dont work. Fix it.
+    //canvas_draw_text(canvas, "SFML Canvas", 25, 100, 24, 200, 200, 200);
+    canvas_display(canvas);
 
     button = button_create(root);
     widget_set_position(button, get_window_width() - 115,
