@@ -8,14 +8,12 @@ using namespace cmsext::log;
 using namespace cmsext::thread;
 CMS_BEGIN(test_mod, "")
 
-enum ProtocolCodes {
-  SERVER_PING = 0x05,
-  SERVER_PING_BACK = 0x06,
-  CLIENT_PING = 0x07,
-  CLIENT_PING_BACK = 0x08,
-  SERVER_TEXT_MESSAGE = 0x09,
-  CLIENT_TEXT_MESSAGE = 0x0A
-};
+int SERVER_PING = 0x05;
+int SERVER_PING_BACK = 0x06;
+int CLIENT_PING = 0x07;
+int CLIENT_PING_BACK = 0x08;
+int SERVER_TEXT_MESSAGE = 0x09;
+int CLIENT_TEXT_MESSAGE = 0x0A;
 
 void send_client_ping(uint32_t connection_id) {
   paket_add_uint8(connection_id, CLIENT_PING);
