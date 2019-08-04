@@ -112,6 +112,10 @@ Connection_ptr TcpListener::getConnection(uint32_t id) {
   return nullptr;
 }
 
+std::unordered_set<Connection_ptr>& TcpListener::get_connections() {
+  return connections_;
+}
+
 bool TcpListener::isRunning() { return (state_ == State::RUNNING); }
 
 void TcpListener::asyncRestart() {

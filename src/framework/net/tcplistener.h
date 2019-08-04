@@ -39,6 +39,7 @@ class TcpListener : public std::enable_shared_from_this<TcpListener> {
   void closeConnections();
 
   Connection_ptr getConnection(uint32_t id);
+  std::unordered_set<Connection_ptr>& get_connections();
 
  private:
   void asyncRestart();
