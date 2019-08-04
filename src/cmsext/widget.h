@@ -36,6 +36,12 @@ void radio_button_set_text(const WidgetEx& widget, const cms::string& text);
 cms::string edit_box_create(const WidgetEx& parent);
 void edit_box_set_text_size(const WidgetEx& widget, int size);
 void edit_box_set_default_text(const WidgetEx& widget, const cms::string& text);
+// TextBox
+cms::string text_box_create(const WidgetEx& parent);
+void text_box_set_text_size(const WidgetEx& widget, int size);
+cms::string text_box_get_text(const WidgetEx& widget);
+void text_box_set_text(const WidgetEx& widget, const cms::string& text);
+void text_box_set_read_only(const WidgetEx& widget, bool read_only);
 // ListBox
 cms::string list_box_create(const WidgetEx& parent);
 void list_box_set_item_height(const WidgetEx& widget, int height);

@@ -163,6 +163,39 @@ void edit_box_set_default_text(const WidgetEx& widget,
   widget.getWidgetPtr()->cast<tgui::EditBox>()->setDefaultText(
       (std::string)text);
 }
+////////////////////////////// Text Box ////////////////////////////////////////
+cms::string text_box_create(const WidgetEx& parent) {
+  auto widget = tgui::TextBox::create();
+  widget->setRenderer(FW::G::Window.theme.getRenderer("TextBox"));
+  if (parent != nullptr && parent->getWidgetType() == "ChildWindow")
+    parent->cast<tgui::ChildWindow>()->add(widget);
+  else
+    FW::G::Window.gui->add(widget);
+  cms::string id(AUTO_ID.get_id());
+  widget->setUserData(id);
+  return id;
+}
+
+void text_box_set_text_size(const WidgetEx& widget, int size) {
+  if (!widget.getWidgetPtr() || widget->getWidgetType() != "TextBox") return;
+  widget.getWidgetPtr()->cast<tgui::TextBox>()->setTextSize(size);
+}
+
+cms::string text_box_get_text(const WidgetEx& widget) {
+  if (!widget.getWidgetPtr() || widget->getWidgetType() != "TextBox") return "";
+  return widget.getWidgetPtr()->cast<tgui::TextBox>()->getText();
+}
+
+void text_box_set_text(const WidgetEx& widget, const cms::string& text) {
+  if (!widget.getWidgetPtr() || widget->getWidgetType() != "TextBox") return;
+  return widget.getWidgetPtr()->cast<tgui::TextBox>()->setText(
+      (std::string)text);
+}
+
+void text_box_set_read_only(const WidgetEx& widget, bool read_only) {
+  if (!widget.getWidgetPtr() || widget->getWidgetType() != "TextBox") return;
+  widget.getWidgetPtr()->cast<tgui::TextBox>()->setReadOnly(read_only);
+}
 ////////////////////////////// List Box ////////////////////////////////////////
 cms::string list_box_create(const WidgetEx& parent) {
   auto widget = tgui::ListBox::create();
