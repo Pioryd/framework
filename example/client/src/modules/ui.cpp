@@ -1,6 +1,6 @@
 #include <cmsext/cmsext.h>
 
-CMS_BEGIN(ui_mod, "")
+CMS_BEGIN(ui, "")
 cms::string label_click;
 
 int click_count = -1;

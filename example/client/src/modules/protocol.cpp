@@ -1,6 +1,6 @@
 #include <cmsext/cmsext.h>
 
-CMS_BEGIN(test_mod, "")
+CMS_BEGIN(protocol, "")
 
 int SERVER_PING = 0x05;
 int SERVER_PING_BACK = 0x06;
