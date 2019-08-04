@@ -7,6 +7,17 @@ using namespace cmsext::app;
 using namespace cmsext::gui;
 
 CMS_BEGIN(ui_mod, "")
+cms::string label_click;
+
+int click_count = -1;
+
+void update_label_click() {
+  click_count += 1;
+  label_set_text(label_click, "Clicked: " + cms::str(click_count));
+}
+
+void on_press_button_exit() { cmsext::app::close(); }
+
 void createUI() {
   {
     cms::string root = "root";
@@ -121,21 +132,21 @@ void createUI() {
     widget_set_size(child_window, 250, 120);
     child_window_set_title(child_window, "Child window");
 
-    label = label_create(child_window);
-    widget_set_position(label, 30, 30);
-    label_set_text(label, "Hi! I'm a child");
-    label_set_text_size(label, 15);
+    label_click = label_create(child_window);
+    widget_set_position(label_click, 30, 30);
+    label_set_text_size(label_click, 15);
+    update_label_click();
 
     auto button = button_create(child_window);
     widget_set_position(button, 75, 70);
     widget_set_size(button, 100, 30);
-    // widget_connect(button, "pressed", [=]() { child->setVisible(false); });
+    widget_connect(button, "pressed", update_label_click);
     button_set_text(button, "OK");
 
     auto check_box = check_box_create(root);
     widget_set_position(check_box, 420, 240);
     widget_set_size(check_box, 25, 25);
-    check_box_set_text(check_box, "Ok, I got it");
+    check_box_set_text(check_box, "Ok, I got it " + cms::string(__TIME__));
 
     check_box = check_box_create(root);
     widget_set_position(check_box, 570, 240);
@@ -165,16 +176,15 @@ void createUI() {
                        140);
     // TODO
     // Dont work. Fix it.
-    //canvas_draw_text(canvas, "SFML Canvas", 25, 100, 24, 200, 200, 200);
+    // canvas_draw_text(canvas, "SFML Canvas", 25, 100, 24, 200, 200, 200);
     canvas_display(canvas);
 
-    button = button_create(root);
-    widget_set_position(button, get_window_width() - 115,
+    auto button_exit = button_create(root);
+    widget_set_position(button_exit, get_window_width() - 115,
                         get_window_height() - 50);
-    widget_set_size(button, 100, 40);
-    // widget_connect(button, "pressed", [&]() { FW::G::Window.window->close();
-    // });
-    button_set_text(button, "Exit");
+    widget_set_size(button_exit, 100, 40);
+    widget_connect(button_exit, "pressed", on_press_button_exit);
+    button_set_text(button_exit, "Exit");
   }
 }
 
