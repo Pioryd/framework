@@ -77,7 +77,15 @@ void chat_box_set_text_size(const WidgetEx& widget, int size);
 void chat_box_set_lines_start_from_top(const WidgetEx& widget);
 void chat_box_add_line(const WidgetEx& widget, const cms::string& text, int r,
                        int g, int b, int a);
-
+// Canvas
+cms::string canvas_create(const WidgetEx& parent);
+void canvas_clear(const WidgetEx& widget);
+void canvas_draw_sprite(const WidgetEx& widget, const cms::string& path,
+                        float width_scale, float height_scale);
+void canvas_draw_text(const WidgetEx& widget, const cms::string& text,
+                      int32_t x, int32_t y, uint32_t size, uint8_t r, uint8_t g,
+                      uint8_t b);
+void canvas_display(const WidgetEx& widget);
 }  // namespace cmsext::widget
 
 struct WidgetEx {

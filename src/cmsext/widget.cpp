@@ -386,6 +386,52 @@ void chat_box_add_line(const WidgetEx& widget, const cms::string& text, int r,
   widget.getWidgetPtr()->cast<tgui::ChatBox>()->addLine((std::string)text,
                                                         sf::Color(r, g, b, a));
 }
+///////////////////////////////// Canvas ///////////////////////////////////////
+cms::string canvas_create(const WidgetEx& parent) {
+  auto widget = tgui::Canvas::create();
+  //widget->setRenderer(FW::G::Window.theme.getRenderer("Canvas"));
+  if (parent != nullptr && parent->getWidgetType() == "ChildWindow")
+    parent->cast<tgui::ChildWindow>()->add(widget);
+  else
+    FW::G::Window.gui->add(widget);
+  cms::string id(AUTO_ID.get_id());
+  widget->setUserData(id);
+  return id;
+}
+
+void canvas_clear(const WidgetEx& widget) {
+  if (!widget.getWidgetPtr() || widget->getWidgetType() != "Canvas") return;
+  widget.getWidgetPtr()->cast<tgui::Canvas>()->clear();
+}
+
+void canvas_draw_sprite(const WidgetEx& widget, const cms::string& path,
+                        float width_scale, float height_scale) {
+  if (!widget.getWidgetPtr() || widget->getWidgetType() != "Canvas") return;
+
+  sf::Texture texture;
+  sf::Sprite sprite;
+  texture.loadFromFile((std::string)path);
+  sprite.setTexture(texture);
+  sprite.setScale(width_scale / texture.getSize().x,
+                  height_scale / texture.getSize().y);
+  widget.getWidgetPtr()->cast<tgui::Canvas>()->draw(sprite);
+}
+
+void canvas_draw_text(const WidgetEx& widget, const cms::string& text,
+                      int32_t x, int32_t y, uint32_t size, uint8_t r, uint8_t g,
+                      uint8_t b) {
+  if (!widget.getWidgetPtr() || widget->getWidgetType() != "Canvas") return;
+
+  sf::Text sf_text{(std::string(text)), *FW::G::Window.gui->getFont(), size};
+  sf_text.setPosition(x, y);
+  sf_text.setFillColor({r, g, b});
+  widget.getWidgetPtr()->cast<tgui::Canvas>()->draw(sf_text);
+}
+
+void canvas_display(const WidgetEx& widget) {
+  if (!widget.getWidgetPtr() || widget->getWidgetType() != "Canvas") return;
+  widget.getWidgetPtr()->cast<tgui::Canvas>()->display();
+}
 }  // namespace cmsext::widget
 
 PYBIND11_EMBEDDED_MODULE(cmsext_widget, m) {
