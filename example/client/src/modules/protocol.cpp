@@ -1,11 +1,5 @@
-#include <cmsext/log.h>
-#include <cmsext/module.h>
-#include <cmsext/net.h>
-#include <cmsext/thread.h>
+#include <cmsext/cmsext.h>
 
-using namespace cmsext::net;
-using namespace cmsext::log;
-using namespace cmsext::thread;
 CMS_BEGIN(test_mod, "")
 
 int SERVER_PING = 0x05;

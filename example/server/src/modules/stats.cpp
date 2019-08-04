@@ -1,16 +1,4 @@
-#include <cmsext/db.h>
-#include <cmsext/gui.h>
-#include <cmsext/log.h>
-#include <cmsext/net.h>
-#include <cmsext/thread.h>
-#include <cmsext/widget.h>
-
-using namespace cmsext::widget;
-using namespace cmsext::net;
-using namespace cmsext::gui;
-using namespace cmsext::log;
-using namespace cmsext::thread;
-using namespace cmsext::db;
+#include <cmsext/cmsext.h>
 
 CMS_BEGIN(stats, "")
 cms::string list_box_clients;

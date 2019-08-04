@@ -1,10 +1,4 @@
-#include <cmsext/app.h>
-#include <cmsext/gui.h>
-#include <cmsext/widget.h>
-
-using namespace cmsext::widget;
-using namespace cmsext::app;
-using namespace cmsext::gui;
+#include <cmsext/cmsext.h>
 
 CMS_BEGIN(ui_mod, "")
 cms::string label_click;

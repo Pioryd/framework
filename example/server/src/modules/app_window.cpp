@@ -1,12 +1,4 @@
-#include <cmsext/app.h>
-#include <cmsext/gui.h>
-#include <cmsext/log.h>
-#include <cmsext/widget.h>
-
-using namespace cmsext::widget;
-using namespace cmsext::app;
-using namespace cmsext::gui;
-using namespace cmsext::log;
+#include <cmsext/cmsext.h>
 
 CMS_BEGIN(app_window, "try_run_first")
 

@@ -1,14 +1,4 @@
-#include <cmsext/app.h>
-#include <cmsext/gui.h>
-#include <cmsext/log.h>
-#include <cmsext/module.h>
-#include <cmsext/widget.h>
-
-using namespace cmsext::widget;
-using namespace cmsext::app;
-using namespace cmsext::gui;
-using namespace cmsext::log;
-using namespace cmsext::module;
+#include <cmsext/cmsext.h>
 
 CMS_BEGIN(fast_script, "")
 cms::string text_box_script;

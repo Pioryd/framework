@@ -1,11 +1,4 @@
-#include <cmsext/log.h>
-#include <cmsext/module.h>
-#include <cmsext/net.h>
-#include <cmsext/thread.h>
-
-using namespace cmsext::net;
-using namespace cmsext::log;
-using namespace cmsext::thread;
+#include <cmsext/cmsext.h>
 
 CMS_BEGIN(protocol_mod, "")
 
