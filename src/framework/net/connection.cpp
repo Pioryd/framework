@@ -383,4 +383,6 @@ void Connection::parsePacket() {
 boost::asio::ip::tcp::socket& Connection::getSocket() { return socket_; }
 
 int32_t Connection::get_id() { return id_; }
+
+Connection::State Connection::get_state() { return state_; }
 }  // namespace FW::Net

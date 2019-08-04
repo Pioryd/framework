@@ -65,6 +65,7 @@ class Connection : public std::enable_shared_from_this<Connection> {
   std::string getPortAsString();
   std::string getInfo();
   int32_t get_id();
+  State get_state();
 
  protected:
   void readPacket();
