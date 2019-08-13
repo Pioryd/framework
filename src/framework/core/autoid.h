@@ -24,7 +24,7 @@ class AutoId {
     std::lock_guard<std::recursive_mutex> lock(mutex_);
     if (id < ids_.size()) ids_[id].reset();
   }
-  std::shared_ptr<T> getObject(int32_t id) {
+  std::shared_ptr<T> get_object(int32_t id) {
     std::lock_guard<std::recursive_mutex> lock(mutex_);
     if (id >= ids_.size()) return nullptr;
     if (auto object = ids_[id].lock()) return object;

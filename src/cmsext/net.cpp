@@ -68,25 +68,25 @@ void tcp_client_connect(int32_t tcp_client_id) {
 }
 
 uint8_t paket_get_uint8(int32_t connection_id) {
-  auto connection = FW::Net::Connection::auto_id.getObject(connection_id);
+  auto connection = FW::Net::Connection::auto_id.get_object(connection_id);
   if (!connection) return false;
   return connection->inMsg.getUInt8();
 }
 
 void paket_add_uint8(int32_t connection_id, uint8_t value) {
-  auto connection = FW::Net::Connection::auto_id.getObject(connection_id);
+  auto connection = FW::Net::Connection::auto_id.get_object(connection_id);
   if (!connection) return;
   connection->outMsg->putUInt8(value);
 }
 
 void paket_send(int32_t connection_id) {
-  auto connection = FW::Net::Connection::auto_id.getObject(connection_id);
+  auto connection = FW::Net::Connection::auto_id.get_object(connection_id);
   if (!connection) return;
   connection->send();
 }
 
 bool is_client_connected(int32_t connection_id) {
-  auto connection = FW::Net::Connection::auto_id.getObject(connection_id);
+  auto connection = FW::Net::Connection::auto_id.get_object(connection_id);
   return (connection->get_state() == FW::Net::Connection::State::CONNECTED);
 }
 }  // namespace cmsext::net
