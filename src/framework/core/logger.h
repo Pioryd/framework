@@ -8,14 +8,14 @@ namespace FW::Core {
 class Logger : protected FW::Thread::EventManager {
  public:
   struct Config {
-    bool showTime = true;
-    bool showInfo = true;
-    bool showWarning = true;
-    bool showError = true;
-    bool showFatalError = true;
-    bool showDebug = true;
-    bool logToConsole = true;
-    bool logToFile = true;
+    bool show_time = true;
+    bool show_info = true;
+    bool show_warning = true;
+    bool show_error = true;
+    bool show_fatal_error = true;
+    bool show_debug = true;
+    bool log_to_console = true;
+    bool log_to_file = true;
     bool debug_enabled = true;
   };
 
@@ -29,7 +29,7 @@ class Logger : protected FW::Thread::EventManager {
   Logger(const Logger&) = delete;
   Logger& operator=(const Logger&) = delete;
 
-  void start(const std::string& logFile);
+  void start(const std::string& log_file);
   using EventManager::join;
   using EventManager::terminate;
 
@@ -54,7 +54,7 @@ class Logger : protected FW::Thread::EventManager {
   Config config;
 
  protected:
-  std::ofstream logFile_;
+  std::ofstream log_file_;
 };
 }  // namespace FW::Core
 #endif  // #ifndef FW_CORE_LOGGER_H

@@ -8,13 +8,13 @@ Logger::Logger(const std::string& traceInfo) : EventManager(traceInfo) {}
 void Logger::start(const std::string& file) {
   EventManager::start();
 
-  if (config.logToFile) {
-    logFile_.open(file.c_str(), std::ios::out | std::ios::trunc);
-    if (!logFile_.is_open() || !logFile_.good()) {
+  if (config.log_to_file) {
+    log_file_.open(file.c_str(), std::ios::out | std::ios::trunc);
+    if (!log_file_.is_open() || !log_file_.good()) {
       error("Unable to write log to file: " + file);
       return;
     }
-    logFile_.flush();
+    log_file_.flush();
   }
 
   info("Log started at: " + Time::Now::getTime());
@@ -53,41 +53,41 @@ void Logger::log(Level level, const std::string& message,
 
 void Logger::addEventLog(Level level, const std::string& message,
                          const std::string& caller, const std::string& trace) {
-  std::string logMessage;
+  std::string log_message;
 
-  if (level == Level::Info && config.showInfo)
-    logMessage.append("Info");
-  else if (level == Level::Warn && config.showWarning)
-    logMessage.append("Warning");
-  else if (level == Level::Error && config.showError)
-    logMessage.append("Error");
-  else if (level == Level::Fatal && config.showFatalError)
-    logMessage.append("Fatal error");
-  else if (level == Level::Debug && config.showDebug)
-    logMessage.append("Debug");
+  if (level == Level::Info && config.show_info)
+    log_message.append("Info");
+  else if (level == Level::Warn && config.show_warning)
+    log_message.append("Warning");
+  else if (level == Level::Error && config.show_error)
+    log_message.append("Error");
+  else if (level == Level::Fatal && config.show_fatal_error)
+    log_message.append("Fatal error");
+  else if (level == Level::Debug && config.show_debug)
+    log_message.append("Debug");
   else
     return;
 
-  if (config.showTime) {
+  if (config.show_time) {
     time_t time = std::time(nullptr);
     tm localTime = *std::localtime(&time);
     std::stringstream stringTime;
     stringTime << std::put_time(&localTime, "%H:%M:%S");
-    logMessage.append("[" + stringTime.str() + "]");
+    log_message.append("[" + stringTime.str() + "]");
   }
 
   const std::string space = "    ";
-  if (caller != "") logMessage.append("\n" + space + "F >> [" + caller + "]");
-  if (trace != "") logMessage.append("\n" + space + "T >> [" + trace + "]");
+  if (caller != "") log_message.append("\n" + space + "F >> [" + caller + "]");
+  if (trace != "") log_message.append("\n" + space + "T >> [" + trace + "]");
 
-  logMessage.append("\n" + space + "M >> " + message);
+  log_message.append("\n" + space + "M >> " + message);
 
-  if (config.logToConsole) std::cout << logMessage << std::endl;
+  if (config.log_to_console) std::cout << log_message << std::endl;
 
-  if (config.logToFile) {
-    if (logFile_.good()) {
-      logFile_ << logMessage << std::endl;
-      logFile_.flush();
+  if (config.log_to_file) {
+    if (log_file_.good()) {
+      log_file_ << log_message << std::endl;
+      log_file_.flush();
     }
   }
 }
