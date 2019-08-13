@@ -15,7 +15,7 @@ SqliteManager::~SqliteManager() {
 bool SqliteManager::connect(const SqlConfig& sqlConfig) {
   SqlManager::connect(sqlConfig);
 
-  std::filesystem::path path(G::Application->getWorkingDirectory());
+  std::filesystem::path path(G::Application->get_working_directory());
   path.append(sqlConfig.databaseName.c_str());
 
   if (!std::filesystem::exists(path)) {

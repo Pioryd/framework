@@ -9,14 +9,14 @@
 namespace cmsext::app {
 void close() { FW::G::Application->close(); }
 
-cms::string get_compile_info() { return FW::G::Application->getCompileInfo(); }
+cms::string get_compile_info() { return FW::G::Application->get_compile_info(); }
 
 cms::string get_assets_path() {
-  return FW::G::Application->getAssetsPath().string();
+  return FW::G::Application->get_assets_path().string();
 }
 
 cms::string get_working_directory() {
-  return std::filesystem::path(FW::G::Application->getWorkingDirectory())
+  return std::filesystem::path(FW::G::Application->get_working_directory())
       .string();
 }
 
@@ -26,7 +26,7 @@ cms::string get_type() {
              : "graphical";
 }
 
-bool is_running() { return FW::G::Application->isRunning(); }
+bool is_running() { return FW::G::Application->is_running(); }
 }  // namespace cmsext::app
 
 PYBIND11_EMBEDDED_MODULE(cmsext_app, m) {

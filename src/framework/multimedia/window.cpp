@@ -15,7 +15,7 @@ void Window::init(MM::SizeInt size, const std::string& name, bool fullScreen,
 
   gui = std::make_unique<tgui::Gui>(*window);
 
-  theme = tgui::Theme{FW::G::Application->getAssetsPath().string() +
+  theme = tgui::Theme{FW::G::Application->get_assets_path().string() +
                       "/themes/Black.txt"};
 }
 

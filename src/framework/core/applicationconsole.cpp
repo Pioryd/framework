@@ -6,29 +6,29 @@
 namespace FW::Core {
 ApplicationConsole::ApplicationConsole() : ApplicationBase(Type::Console) {
   // Inside constructor to be sure that will be called first
-  signals.onInit.connect("ApplicationConsole::onInit",
-                         &ApplicationConsole::onInit, this);
-  signals.onTerminate.connect("ApplicationConsole::onTerminate",
-                              &ApplicationConsole::onTerminate, this);
-  signals.onJoin.connect("ApplicationConsole::onJoin",
-                         &ApplicationConsole::onJoin, this);
-  signals.onPollEnd.connect("[this]() { io_service_.poll(); }",
+  signals.on_init.connect("ApplicationConsole::on_init",
+                         &ApplicationConsole::on_init, this);
+  signals.on_terminate.connect("ApplicationConsole::on_terminate",
+                              &ApplicationConsole::on_terminate, this);
+  signals.on_join.connect("ApplicationConsole::on_join",
+                         &ApplicationConsole::on_join, this);
+  signals.on_poll_end.connect("[this]() { io_service_.poll(); }",
                             [this]() { io_service_.poll(); });
 }
 
 ApplicationConsole::~ApplicationConsole() {
-  signals.onInit.disconnect("ApplicationConsole::onInit");
-  signals.onInit.disconnect("ApplicationConsole::onTerminate");
-  signals.onJoin.disconnect("ApplicationConsole::onJoin");
-  signals.onPollEnd.disconnect("[this]() { io_service_.poll(); }");
+  signals.on_init.disconnect("ApplicationConsole::on_init");
+  signals.on_init.disconnect("ApplicationConsole::on_terminate");
+  signals.on_join.disconnect("ApplicationConsole::on_join");
+  signals.on_poll_end.disconnect("[this]() { io_service_.poll(); }");
 }
 
-void ApplicationConsole::startMainLoop() {
+void ApplicationConsole::start_main_loop() {
   FW::G::Clock.update();
   poll();
 
   FW::G::Clock.update();
-  signals.onStartMainLoop.send();
+  signals.on_start_main_loop.send();
 
   while (state_ == State::Running) {
     FW::G::Clock.update();
@@ -36,14 +36,14 @@ void ApplicationConsole::startMainLoop() {
   }
 }
 
-void ApplicationConsole::onInit(const std::vector<std::string>&,
+void ApplicationConsole::on_init(const std::vector<std::string>&,
                                 const std::string& title) {
 #ifdef _WIN32
   SetConsoleTitle(title.c_str());
 #endif
 }
 
-void ApplicationConsole::onTerminate() {}
+void ApplicationConsole::on_terminate() {}
 
-void ApplicationConsole::onJoin() {}
+void ApplicationConsole::on_join() {}
 }  // namespace  FW::Core

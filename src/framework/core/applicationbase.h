@@ -10,18 +10,18 @@ namespace FW::Core {
 class ApplicationBase {
  public:
   struct Signals {
-    FW_CORE_SIGNAL(onInit,
+    FW_CORE_SIGNAL(on_init,
                    void(const std::vector<std::string>&, const std::string&));
-    FW_CORE_SIGNAL(onTerminate, void(void));
+    FW_CORE_SIGNAL(on_terminate, void(void));
     // Send signal before application join
-    FW_CORE_SIGNAL(onJoin, void(void));
+    FW_CORE_SIGNAL(on_join, void(void));
 
     // When graphical, INDEX[0] is FW::G::Window.poll()
-    FW_CORE_SIGNAL(onPollBegin, void(void));
-    FW_CORE_SIGNAL(onPollDurring, void(void));
-    FW_CORE_SIGNAL(onPollEnd, void(void));
+    FW_CORE_SIGNAL(on_poll_begin, void(void));
+    FW_CORE_SIGNAL(on_poll_durring, void(void));
+    FW_CORE_SIGNAL(on_poll_end, void(void));
     // Step before while loop start.
-    FW_CORE_SIGNAL(onStartMainLoop, void(void));
+    FW_CORE_SIGNAL(on_start_main_loop, void(void));
   };
 
   enum class Type { Unknown, Console, Graphical };
@@ -44,12 +44,12 @@ class ApplicationBase {
   void close();
 
   boost::asio::io_service& get_io_service();
-  std::string getCompileInfo();
-  std::filesystem::path getAssetsPath();
-  std::wstring getWorkingDirectory();
+  std::string get_compile_info();
+  std::filesystem::path get_assets_path();
+  std::wstring get_working_directory();
   Type get_type();
 
-  bool isRunning();
+  bool is_running();
 
  protected:
   void init(const std::vector<std::string>& argv, const std::string& title);
@@ -58,15 +58,15 @@ class ApplicationBase {
 
   void poll();
 
-  virtual void startMainLoop() = 0;
+  virtual void start_main_loop() = 0;
 
-  virtual void onInit(const std::vector<std::string>&,
+  virtual void on_init(const std::vector<std::string>&,
                       const std::string& title) = 0;
-  virtual void onTerminate() = 0;
-  virtual void onJoin() = 0;
+  virtual void on_terminate() = 0;
+  virtual void on_join() = 0;
 
   static void handleSystemSignal(int32_t signal);
-  void asyncWaitForSignal();
+  void async_wait_for_signal();
 
   void connect_cms_modules();
 

@@ -27,15 +27,15 @@ ApplicationBase::ApplicationBase(Type type)
   signal(SIGBREAK, &ApplicationBase::handleSystemSignal);
 #endif  // #ifdef _WIN32
 
-  asyncWaitForSignal();
+  async_wait_for_signal();
 
   connect_cms_modules();
 }
 
 void ApplicationBase::start(int32_t argc, char* argv[],
                             const std::string& title) {
-  std::vector<std::string> argvVector;
-  for (int32_t i = 0; i < argc; i++) argvVector.push_back(argv[i]);
+  std::vector<std::string> argv_vector;
+  for (int32_t i = 0; i < argc; i++) argv_vector.push_back(argv[i]);
 
   // Init
   FW::G::FontManager.init();
@@ -49,11 +49,11 @@ void ApplicationBase::start(int32_t argc, char* argv[],
 
   FW::G::PyModuleManager->init();
 
-  init(argvVector, title);
+  init(argv_vector, title);
 
   if (state_ == State::Initiated) {
     state_ = State::Running;
-    startMainLoop();
+    start_main_loop();
   }
 
   terminate();
@@ -66,7 +66,7 @@ boost::asio::io_service& ApplicationBase::get_io_service() {
   return io_service_;
 }
 
-std::string ApplicationBase::getCompileInfo() {
+std::string ApplicationBase::get_compile_info() {
   return "Compile info:\n\tCompiler: " + std::string(BOOST_COMPILER) +
          "\n\tTime: " + std::string(__DATE__) + ' ' + __TIME__ +
          "\n\tPlatform: " + FW::Platform::name() + "\n\tArchitecture: " +
@@ -90,17 +90,17 @@ std::string ApplicationBase::getCompileInfo() {
 #endif  // #if defined(BOOST_ARCH_X86)
 }
 
-std::filesystem::path ApplicationBase::getAssetsPath() {
-  std::filesystem::path assetsPath;
+std::filesystem::path ApplicationBase::get_assets_path() {
+  std::filesystem::path assets_path;
 
-  if (FW_DEF_PATH_ASSETS == "assets") assetsPath.append(getWorkingDirectory());
+  if (FW_DEF_PATH_ASSETS == "assets") assets_path.append(get_working_directory());
 
-  assetsPath.append(FW_DEF_PATH_ASSETS);
+  assets_path.append(FW_DEF_PATH_ASSETS);
 
-  return assetsPath;
+  return assets_path;
 }
 
-std::wstring ApplicationBase::getWorkingDirectory() {
+std::wstring ApplicationBase::get_working_directory() {
   std::wstring workingDirectory;
 #ifdef FW_DEF_PATH_WORK
 #define WSTRINGIFY(x) L##x
@@ -114,7 +114,7 @@ std::wstring ApplicationBase::getWorkingDirectory() {
 
 ApplicationBase::Type ApplicationBase::get_type() { return type_; }
 
-bool ApplicationBase::isRunning() { return (state_ == State::Running); }
+bool ApplicationBase::is_running() { return (state_ == State::Running); }
 
 void ApplicationBase::init(const std::vector<std::string>& argv,
                            const std::string& title) {
@@ -125,18 +125,18 @@ void ApplicationBase::init(const std::vector<std::string>& argv,
   FW::G::PyModuleManager->init();
 
   FW::G::eventManager.start();
-  signals.onPollEnd.connect("FW::G::eventManager.syncPoll()",
-                            &FW::Thread::EventManager::syncPoll,
+  signals.on_poll_end.connect("FW::G::eventManager.syncPoll()",
+                              &FW::Thread::EventManager::syncPoll,
                             &FW::G::eventManager);
 
-  signals.onInit.send(argv, title);
+  signals.on_init.send(argv, title);
 
   if (state_ == State::Initiating) state_ = State::Initiated;
 }
 
 void ApplicationBase::terminate() {
   state_ = State::Terminating;
-  signals.onTerminate.send();
+  signals.on_terminate.send();
 
   FW::G::PyModuleManager->terminate();
   FW::G::eventManager.terminate();
@@ -146,16 +146,16 @@ void ApplicationBase::terminate() {
 }
 
 void ApplicationBase::join() {
-  signals.onJoin.send();
+  signals.on_join.send();
 
   FW::G::eventManager.join();
   FW::G::Logger.join();
 }
 
 void ApplicationBase::poll() {
-  signals.onPollBegin.send();
-  signals.onPollDurring.send();
-  signals.onPollEnd.send();
+  signals.on_poll_begin.send();
+  signals.on_poll_durring.send();
+  signals.on_poll_end.send();
 }
 
 void ApplicationBase::handleSystemSignal(int32_t signal) {
@@ -178,7 +178,7 @@ void ApplicationBase::handleSystemSignal(int32_t signal) {
 #endif
 }
 
-void ApplicationBase::asyncWaitForSignal() {
+void ApplicationBase::async_wait_for_signal() {
   signal_set_.async_wait([this](boost::system::error_code ec, int32_t signal) {
     if (ec) {
       std::cerr << "Unable to handle system signal. Error: " << ec.message()
@@ -186,7 +186,7 @@ void ApplicationBase::asyncWaitForSignal() {
     } else {
       std::cerr << "Recived system signal: " << signal << std::endl;
       ApplicationBase::handleSystemSignal(signal);
-      asyncWaitForSignal();
+      async_wait_for_signal();
     }
   });
 }
@@ -194,13 +194,13 @@ void ApplicationBase::asyncWaitForSignal() {
 void ApplicationBase::connect_cms_modules() {
   for (int32_t i = 0; i < ApplicationBase::on_init_vec.size(); i++) {
     auto on_init = ApplicationBase::on_init_vec[i];
-    signals.onInit.connect("cms_onInit_" + std::to_string(i),
+    signals.on_init.connect("cms_on_init_" + std::to_string(i),
                            [on_init](const std::vector<std::string>&,
                                      const std::string& title) { on_init(); });
   }
 
   for (int32_t i = 0; i < ApplicationBase::on_terminate_vec.size(); i++) {
-    signals.onTerminate.connect("cms_onTerminate_" + std::to_string(i),
+    signals.on_terminate.connect("cms_on_terminate_" + std::to_string(i),
                                 ApplicationBase::on_terminate_vec[i]);
   }
 }

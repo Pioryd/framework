@@ -58,7 +58,7 @@ int32_t MainManager::connect(const SqlConfig& sqlConfig) {
 
   db_vec_[sql_id].event_manager->start();
 
-  FW::G::Application->signals.onJoin.connect(
+  FW::G::Application->signals.on_join.connect(
       "MainManager::join, this", std::bind(&MainManager::join, this));
   return sql_id;
 }

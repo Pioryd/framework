@@ -6,7 +6,7 @@
 
 namespace FW::MM {
 void ImageManager::init() {
-  imagesPath_ = G::Application->getAssetsPath();
+  imagesPath_ = G::Application->get_assets_path();
   imagesPath_.append("image");
 }
 

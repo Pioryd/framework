@@ -6,7 +6,7 @@
 
 namespace FW::MM {
 void SoundManager::init() {
-  soundsPath_ = G::Application->getAssetsPath();
+  soundsPath_ = G::Application->get_assets_path();
   soundsPath_.append("sound");
 }
 

@@ -6,7 +6,7 @@
 
 namespace FW::MM {
 void FontManager::init() {
-  fontsPath_ = G::Application->getAssetsPath();
+  fontsPath_ = G::Application->get_assets_path();
   fontsPath_.append("font");
 }
 

@@ -10,37 +10,37 @@ ApplicationGraphical::ApplicationGraphical()
     : ApplicationBase(Type::Graphical) {
   // Inside constructor to be sure that will be called first, before user
   // instructions
-  signals.onInit.connect("ApplicationGraphical::onInit",
-                         &ApplicationGraphical::onInit, this);
-  signals.onTerminate.connect("ApplicationGraphical::onTerminate",
-                              &ApplicationGraphical::onTerminate, this);
-  signals.onJoin.connect("ApplicationGraphical::onJoin",
-                         &ApplicationGraphical::onJoin, this);
-  signals.onPollBegin.connect("FW::G::Window.poll", &FW::MM::Window::poll,
+  signals.on_init.connect("ApplicationGraphical::on_init",
+                         &ApplicationGraphical::on_init, this);
+  signals.on_terminate.connect("ApplicationGraphical::on_terminate",
+                              &ApplicationGraphical::on_terminate, this);
+  signals.on_join.connect("ApplicationGraphical::on_join",
+                         &ApplicationGraphical::on_join, this);
+  signals.on_poll_begin.connect("FW::G::Window.poll", &FW::MM::Window::poll,
                               &FW::G::Window);
 
-  signals.onPollDurring.connect("[this]() { io_service_.poll(); } <1>",
+  signals.on_poll_durring.connect("[this]() { io_service_.poll(); } <1>",
                             [this]() { io_service_.poll(); });
 
-  signals.onPollEnd.connect("[this]() { io_service_.poll(); } <2>",
+  signals.on_poll_end.connect("[this]() { io_service_.poll(); } <2>",
                             [this]() { io_service_.poll(); });
 }
 
 ApplicationGraphical::~ApplicationGraphical() {
-  signals.onInit.disconnect("ApplicationGraphical::onInit");
-  signals.onTerminate.disconnect("ApplicationGraphical::onTerminate");
-  signals.onJoin.disconnect("ApplicationGraphical::onJoin");
-  signals.onPollBegin.disconnect("FW::G::Window.poll");
-  signals.onPollEnd.disconnect("[this]() { io_service_.poll(); } <1>");
-  signals.onPollEnd.disconnect("[this]() { io_service_.poll(); } <2>");
+  signals.on_init.disconnect("ApplicationGraphical::on_init");
+  signals.on_terminate.disconnect("ApplicationGraphical::on_terminate");
+  signals.on_join.disconnect("ApplicationGraphical::on_join");
+  signals.on_poll_begin.disconnect("FW::G::Window.poll");
+  signals.on_poll_end.disconnect("[this]() { io_service_.poll(); } <1>");
+  signals.on_poll_end.disconnect("[this]() { io_service_.poll(); } <2>");
 }
 
-void ApplicationGraphical::startMainLoop() {
+void ApplicationGraphical::start_main_loop() {
   FW::G::Clock.update();
   poll();
 
   FW::G::Clock.update();
-  signals.onStartMainLoop.send();
+  signals.on_start_main_loop.send();
 
   while (state_ == State::Running && FW::G::Window.isOpen()) {
     FW::G::Clock.update();
@@ -54,13 +54,13 @@ void ApplicationGraphical::startMainLoop() {
   }
 }
 
-void ApplicationGraphical::onInit(const std::vector<std::string>&,
+void ApplicationGraphical::on_init(const std::vector<std::string>&,
                                   const std::string& title) {
   FW::G::Window.init({800, 600}, title, false, 60);
 }
 
-void ApplicationGraphical::onTerminate() {
+void ApplicationGraphical::on_terminate() {
 }
 
-void ApplicationGraphical::onJoin() {  }
+void ApplicationGraphical::on_join() {  }
 }  // namespace  FW::Core

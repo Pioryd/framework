@@ -6,7 +6,7 @@
 
 namespace FW::MM {
 void TextureManager::init() {
-  texturesPath_ = G::Application->getAssetsPath();
+  texturesPath_ = G::Application->get_assets_path();
   texturesPath_.append("texture");
 }
 

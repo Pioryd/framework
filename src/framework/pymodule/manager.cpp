@@ -22,7 +22,7 @@ constexpr auto INIT_FILE = "__init__.py";
 namespace FW::PyModule {
 void Manager::init() {
   if (FW_DEF_PATH_MODULES == "modules") {
-    modulesPath_.append(G::Application->getWorkingDirectory());
+    modulesPath_.append(G::Application->get_working_directory());
     modulesPath_.append(FW_DEF_PATH_MODULES);
   } else {
     modulesPath_ = std::filesystem::path(FW_DEF_PATH_MODULES);
