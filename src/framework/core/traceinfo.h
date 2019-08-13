@@ -5,13 +5,13 @@
 
 namespace FW::Core {
 struct TraceInfo {
-  TraceInfo(const std::string& traceInfo) : _trace_info{traceInfo} {
-    if (_trace_info != "") _trace_info = "[" + _trace_info + "] ";
+  TraceInfo(const std::string& traceInfo) : trace_info_{traceInfo} {
+    if (trace_info_ != "") trace_info_ = "[" + trace_info_ + "] ";
   }
   virtual ~TraceInfo() = default;
 
  protected:
-  std::string _trace_info;
+  std::string trace_info_;
 };
 }  // namespace FW::Core
 #endif  // #ifndef FW_CORE_DEBUGINFO_H
