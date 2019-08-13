@@ -70,10 +70,10 @@ void Logger::addEventLog(Level level, const std::string& message,
 
   if (config.show_time) {
     time_t time = std::time(nullptr);
-    tm localTime = *std::localtime(&time);
-    std::stringstream stringTime;
-    stringTime << std::put_time(&localTime, "%H:%M:%S");
-    log_message.append("[" + stringTime.str() + "]");
+    tm local_time = *std::localtime(&time);
+    std::stringstream string_time;
+    string_time << std::put_time(&local_time, "%H:%M:%S");
+    log_message.append("[" + string_time.str() + "]");
   }
 
   const std::string space = "    ";
