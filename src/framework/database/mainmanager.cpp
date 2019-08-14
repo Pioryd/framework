@@ -7,26 +7,26 @@
 
 namespace FW::Database {
 Query::Query(std::string query, bool fullQuery)
-    : completeQuery_{query}, allowAddRows_(fullQuery), store_{false} {}
+    : complete_query_{query}, allow_add_rows_(fullQuery), store_{false} {}
 
 Query::Query(std::string query, std::vector<std::string>& addidtionalRows)
-    : completeQuery_{query}, allowAddRows_(true), store_{false} {
-  for (const auto row : addidtionalRows) addRow(row);
+    : complete_query_{query}, allow_add_rows_(true), store_{false} {
+  for (const auto row : addidtionalRows) add_row(row);
 }
 
-bool Query::addRow(const std::string& row) {
-  if (completeQuery_.empty()) return false;
+bool Query::add_row(const std::string& row) {
+  if (complete_query_.empty()) return false;
 
-  if (completeQuery_.back() == ')') completeQuery_.push_back(',');
+  if (complete_query_.back() == ')') complete_query_.push_back(',');
 
-  completeQuery_.push_back('(');
-  completeQuery_.append(row);
-  completeQuery_.push_back(')');
+  complete_query_.push_back('(');
+  complete_query_.append(row);
+  complete_query_.push_back(')');
 
   return true;
 }
 
-const std::string& Query::toString() const { return completeQuery_; }
+const std::string& Query::to_string() const { return complete_query_; }
 
 MainManager::MainManager() {}
 
@@ -38,20 +38,20 @@ void MainManager::join() {
   for (auto& db : db_vec_) db.event_manager->join();
 }
 
-int32_t MainManager::connect(const SqlConfig& sqlConfig) {
-  if (sqlConfig.type == SqlConfig::SqlType::MySql)
+int32_t MainManager::connect(const SqlConfig& sql_config) {
+  if (sql_config.type == SqlConfig::SqlType::MySql)
     db_vec_.push_back(
         {nullptr,
-         std::make_unique<FW::Thread::EventManager>(sqlConfig.databaseName),
+         std::make_unique<FW::Thread::EventManager>(sql_config.database_name),
          std::make_unique<MySqlManager>()});
-  else if (sqlConfig.type == SqlConfig::SqlType::Sqlite)
+  else if (sql_config.type == SqlConfig::SqlType::Sqlite)
     db_vec_.push_back(
         {nullptr,
-         std::make_unique<FW::Thread::EventManager>(sqlConfig.databaseName),
+         std::make_unique<FW::Thread::EventManager>(sql_config.database_name),
          std::make_unique<SqliteManager>()});
 
   int32_t sql_id = db_vec_.size() - 1;
-  if (!db_vec_[sql_id].sql->connect(sqlConfig)) {
+  if (!db_vec_[sql_id].sql->connect(sql_config)) {
     db_vec_.erase(db_vec_.end() - 1);
     return -1;
   }
@@ -67,66 +67,66 @@ Result_sptr MainManager::execute(int32_t sql_id, const std::string& query) {
   return db_vec_[sql_id].sql->execute(query);
 }
 
-bool MainManager::beginTransaction(int32_t sql_id) {
-  return db_vec_[sql_id].sql->beginTransaction();
+bool MainManager::begin_transaction(int32_t sql_id) {
+  return db_vec_[sql_id].sql->begin_transaction();
 }
 
-bool MainManager::commitTransaction(int32_t sql_id) {
-  return db_vec_[sql_id].sql->commitTransaction();
+bool MainManager::commit_transaction(int32_t sql_id) {
+  return db_vec_[sql_id].sql->commit_transaction();
 }
 
-bool MainManager::rollbackTransaction(int32_t sql_id) {
-  return db_vec_[sql_id].sql->rollbackTransaction();
+bool MainManager::rollback_transaction(int32_t sql_id) {
+  return db_vec_[sql_id].sql->rollback_transaction();
 }
 
-std::string MainManager::escapeNumber(int32_t sql_id, int64_t number) const {
-  return db_vec_[sql_id].sql->escapeNumber(number);
+std::string MainManager::escape_number(int32_t sql_id, int64_t number) const {
+  return db_vec_[sql_id].sql->escape_number(number);
 }
 
-std::string MainManager::escapeString(int32_t sql_id,
+std::string MainManager::escape_string(int32_t sql_id,
                                       const std::string& string) const {
-  return db_vec_[sql_id].sql->escapeString(string);
+  return db_vec_[sql_id].sql->escape_string(string);
 }
 
-std::string MainManager::escapeBlob(int32_t sql_id, const char* c_string,
+std::string MainManager::escape_blob(int32_t sql_id, const char* c_string,
                                     uint32_t length) const {
-  return db_vec_[sql_id].sql->escapeBlob(c_string, length);
+  return db_vec_[sql_id].sql->escape_blob(c_string, length);
 }
 
-bool MainManager::optimizeTables(int32_t sql_id) {
-  return db_vec_[sql_id].sql->optimizeTables();
+bool MainManager::optimize_tables(int32_t sql_id) {
+  return db_vec_[sql_id].sql->optimize_tables();
 }
 
-bool MainManager::triggerExists(int32_t sql_id, std::string trigger) {
-  return db_vec_[sql_id].sql->triggerExists(trigger);
+bool MainManager::trigger_exists(int32_t sql_id, std::string trigger) {
+  return db_vec_[sql_id].sql->trigger_exists(trigger);
 }
-bool MainManager::tableExists(int32_t sql_id, std::string table) {
-  return db_vec_[sql_id].sql->tableExists(table);
-}
-
-bool MainManager::databaseExists(int32_t sql_id) {
-  return db_vec_[sql_id].sql->databaseExists();
+bool MainManager::table_exists(int32_t sql_id, std::string table) {
+  return db_vec_[sql_id].sql->table_exists(table);
 }
 
-std::string MainManager::getSqlClientVersion(int32_t sql_id) const {
-  return db_vec_[sql_id].sql->getSqlClientVersion();
+bool MainManager::database_exists(int32_t sql_id) {
+  return db_vec_[sql_id].sql->database_exists();
 }
 
-int64_t MainManager::getLastInsertId(int32_t sql_id) const {
-  return db_vec_[sql_id].sql->getLastInsertId();
+std::string MainManager::get_sql_client_version(int32_t sql_id) const {
+  return db_vec_[sql_id].sql->get_sql_client_version();
+}
+
+int64_t MainManager::get_last_insert_id(int32_t sql_id) const {
+  return db_vec_[sql_id].sql->get_last_insert_id();
 }
 
 void MainManager::executeAsync(int32_t sql_id, const Query& query) {
   db_vec_[sql_id].event_manager->add_async_event(
       std::bind(static_cast<void (MainManager::*)(int32_t, const Query&)>(
-                    &MainManager::internalExecute),
+                    &MainManager::internal_execute),
                 this, sql_id, query));
 }
 
 bool MainManager::executeSync(int32_t sql_id, const Query& query) {
   db_vec_[sql_id].current_result =
       nullptr;  // TODO - Check if it's really needed.
-  db_vec_[sql_id].current_result = execute(sql_id, query.toString());
+  db_vec_[sql_id].current_result = execute(sql_id, query.to_string());
   return (db_vec_[sql_id].current_result != nullptr);
 }
 
@@ -134,11 +134,11 @@ Result_sptr MainManager::get_current_result(int32_t sql_id) {
   return db_vec_[sql_id].current_result;
 }
 
-void MainManager::internalExecute(int32_t sql_id, const Query& query) {
+void MainManager::internal_execute(int32_t sql_id, const Query& query) {
   bool success = true;
   Result_sptr result;
   try {
-    result = execute(sql_id, query.toString());
+    result = execute(sql_id, query.to_string());
   } catch (...) { success = false; }
 
   if (query.callback_) {

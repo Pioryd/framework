@@ -35,7 +35,7 @@ class InputMessage : public NetworkMessage {
   int32_t getInt32();
   int64_t getInt64();
 
-  std::string getString();
+  std::string get_string();
 
   void skipBytes(int16_t count);
 

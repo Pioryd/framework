@@ -19,7 +19,7 @@ int connect(const cms::string& type, const cms::string& host,
   config.host = host;
   config.user = user;
   config.password = password;
-  config.databaseName = database_name;
+  config.database_name = database_name;
   config.port = std::stoi((std::string)port);
   config.socket = socket;
 
@@ -27,52 +27,52 @@ int connect(const cms::string& type, const cms::string& host,
 }
 
 bool begin_transaction(int32_t sql_id) {
-  return FW::G::DB_MainManager.beginTransaction(sql_id);
+  return FW::G::DB_MainManager.begin_transaction(sql_id);
 }
 
 bool commit_transaction(int32_t sql_id) {
-  return FW::G::DB_MainManager.commitTransaction(sql_id);
+  return FW::G::DB_MainManager.commit_transaction(sql_id);
 }
 
 bool rollback_transaction(int32_t sql_id) {
-  return FW::G::DB_MainManager.rollbackTransaction(sql_id);
+  return FW::G::DB_MainManager.rollback_transaction(sql_id);
 }
 
 cms::string escape_number(int32_t sql_id, int64_t number) {
-  return FW::G::DB_MainManager.escapeNumber(sql_id, number);
+  return FW::G::DB_MainManager.escape_number(sql_id, number);
 }
 
 cms::string escape_string(int32_t sql_id, const cms::string& string) {
-  return FW::G::DB_MainManager.escapeString(sql_id, string);
+  return FW::G::DB_MainManager.escape_string(sql_id, string);
 }
 
 cms::string escape_blob(int32_t sql_id, const cms::string& blob) {
-  return FW::G::DB_MainManager.escapeBlob(sql_id, ((std::string)blob).c_str(),
+  return FW::G::DB_MainManager.escape_blob(sql_id, ((std::string)blob).c_str(),
                                       ((std::string)blob).size());
 }
 
 bool optimize_tables(int32_t sql_id) {
-  return FW::G::DB_MainManager.optimizeTables(sql_id);
+  return FW::G::DB_MainManager.optimize_tables(sql_id);
 }
 
 bool trigger_exists(int32_t sql_id, const cms::string& trigger) {
-  return FW::G::DB_MainManager.triggerExists(sql_id, trigger);
+  return FW::G::DB_MainManager.trigger_exists(sql_id, trigger);
 }
 
 bool table_exists(int32_t sql_id, const cms::string& table) {
-  return FW::G::DB_MainManager.tableExists(sql_id, table);
+  return FW::G::DB_MainManager.table_exists(sql_id, table);
 }
 
 bool database_exists(int32_t sql_id) {
-  return FW::G::DB_MainManager.databaseExists(sql_id);
+  return FW::G::DB_MainManager.database_exists(sql_id);
 }
 
 cms::string get_sql_client_version(int32_t sql_id) {
-  return FW::G::DB_MainManager.getSqlClientVersion(sql_id);
+  return FW::G::DB_MainManager.get_sql_client_version(sql_id);
 }
 
 int64_t get_last_insert_id(int32_t sql_id) {
-  return FW::G::DB_MainManager.getLastInsertId(sql_id);
+  return FW::G::DB_MainManager.get_last_insert_id(sql_id);
 }
 
 bool execute_sync(int32_t sql_id, const cms::string& query) {
@@ -80,11 +80,11 @@ bool execute_sync(int32_t sql_id, const cms::string& query) {
 }
 
 cms::string get_string(int32_t sql_id, const cms::string& column) {
-  return FW::G::DB_MainManager.get_current_result(sql_id)->getString(column);
+  return FW::G::DB_MainManager.get_current_result(sql_id)->get_string(column);
 }
 
 int64_t get_number(int32_t sql_id, const cms::string& column) {
-  return FW::G::DB_MainManager.get_current_result(sql_id)->getNumber(column);
+  return FW::G::DB_MainManager.get_current_result(sql_id)->get_number(column);
 }
 }  // namespace cmsext::db
 

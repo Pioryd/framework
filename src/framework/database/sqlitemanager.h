@@ -16,25 +16,25 @@ class SqliteManager : public SqlManager {
   SqliteManager(const SqliteManager&) = delete;
   SqliteManager& operator=(const SqliteManager&) = delete;
 
-  bool connect(const SqlConfig& sqlConfig) override;
+  bool connect(const SqlConfig& sql_config) override;
 
   Result_sptr execute(const std::string& query) override;
 
-  bool beginTransaction() override;
-  bool commitTransaction() override;
-  bool rollbackTransaction() override;
+  bool begin_transaction() override;
+  bool commit_transaction() override;
+  bool rollback_transaction() override;
 
-  std::string escapeNumber(int64_t number) const override;
-  std::string escapeString(const std::string& string) const override;
-  std::string escapeBlob(const char* blob, uint32_t length) const override;
+  std::string escape_number(int64_t number) const override;
+  std::string escape_string(const std::string& string) const override;
+  std::string escape_blob(const char* blob, uint32_t length) const override;
 
-  bool optimizeTables() override;
-  bool triggerExists(std::string trigger) override;
-  bool tableExists(std::string table) override;
-  bool databaseExists() override;
+  bool optimize_tables() override;
+  bool trigger_exists(std::string trigger) override;
+  bool table_exists(std::string table) override;
+  bool database_exists() override;
 
-  std::string getSqlClientVersion() const override;
-  int64_t getLastInsertId() const override;
+  std::string get_sql_client_version() const override;
+  int64_t get_last_insert_id() const override;
 
  protected:
   sqlite3* handle_ = nullptr;
@@ -48,9 +48,9 @@ class SqliteResult : public Result {
   SqliteResult(const Result&) = delete;
   SqliteResult& operator=(const Result&) = delete;
 
-  int64_t getNumber(const std::string& columnName) const override;
-  std::string getString(const std::string& columnName) const override;
-  const char* getStream(const std::string& columnName,
+  int64_t get_number(const std::string& column_name) const override;
+  std::string get_string(const std::string& column_name) const override;
+  const char* get_stream(const std::string& column_name,
                         unsigned long& size) const override;
 
  public:

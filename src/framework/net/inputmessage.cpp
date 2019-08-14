@@ -106,7 +106,7 @@ int64_t InputMessage::getInt64() {
   return value;
 }
 
-std::string InputMessage::getString() {
+std::string InputMessage::get_string() {
   uint16_t stringLength = getUInt16();
   throwIfCantRead(stringLength);
   char* value = reinterpret_cast<char*>(buffer_) + position_;

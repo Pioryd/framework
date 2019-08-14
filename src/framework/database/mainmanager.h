@@ -14,14 +14,14 @@ class Query {
   Query(std::string query, std::vector<std::string>& addidtionalValues);
   virtual ~Query() = default;
 
-  bool addRow(const std::string& row);
+  bool add_row(const std::string& row);
 
   // Return complete query
-  const std::string& toString() const;
+  const std::string& to_string() const;
 
  public:
-  std::string completeQuery_;
-  bool allowAddRows_;
+  std::string complete_query_;
+  bool allow_add_rows_;
   std::function<void(Result_sptr, bool)> callback_;
   bool store_;
 };
@@ -44,26 +44,26 @@ class MainManager {
   void join();
 
  public:
-  int32_t connect(const SqlConfig& sqlConfig);
+  int32_t connect(const SqlConfig& sql_config);
 
   Result_sptr execute(int32_t sql_id, const std::string& query);
 
-  bool beginTransaction(int32_t sql_id);
-  bool commitTransaction(int32_t sql_id);
-  bool rollbackTransaction(int32_t sql_id);
+  bool begin_transaction(int32_t sql_id);
+  bool commit_transaction(int32_t sql_id);
+  bool rollback_transaction(int32_t sql_id);
 
-  std::string escapeNumber(int32_t sql_id, int64_t number) const;
-  std::string escapeString(int32_t sql_id, const std::string& string) const;
-  std::string escapeBlob(int32_t sql_id, const char* blob,
+  std::string escape_number(int32_t sql_id, int64_t number) const;
+  std::string escape_string(int32_t sql_id, const std::string& string) const;
+  std::string escape_blob(int32_t sql_id, const char* blob,
                          uint32_t length) const;
 
-  bool optimizeTables(int32_t sql_id);
-  bool triggerExists(int32_t sql_id, std::string trigger);
-  bool tableExists(int32_t sql_id, std::string table);
-  bool databaseExists(int32_t sql_id);
+  bool optimize_tables(int32_t sql_id);
+  bool trigger_exists(int32_t sql_id, std::string trigger);
+  bool table_exists(int32_t sql_id, std::string table);
+  bool database_exists(int32_t sql_id);
 
-  std::string getSqlClientVersion(int32_t sql_id) const;
-  int64_t getLastInsertId(int32_t sql_id) const;
+  std::string get_sql_client_version(int32_t sql_id) const;
+  int64_t get_last_insert_id(int32_t sql_id) const;
 
  public:
   // TODO
@@ -75,7 +75,7 @@ class MainManager {
   Result_sptr get_current_result(int32_t sql_id);
 
  protected:
-  void internalExecute(int32_t sql_id, const Query& query);
+  void internal_execute(int32_t sql_id, const Query& query);
 
  protected:
   std::vector<DB> db_vec_;
