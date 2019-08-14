@@ -12,7 +12,7 @@
 namespace cmsext::net {
 int32_t tcp_listener_create(const cms::string& host, const cms::string& port,
                             void (*on_connected)(uint32_t connection_id)) {
-  return FW::G::NetManager.create_tcp_listener(
+  return FW::G::Net_Manager.create_tcp_listener(
       [on_connected](FW::Net::Connection_ptr& connection) {
         on_connected(connection->get_id());
       },
@@ -21,7 +21,7 @@ int32_t tcp_listener_create(const cms::string& host, const cms::string& port,
 
 void tcp_listener_bind_paket_parse(int32_t tcp_listener_id, uint8_t code,
                                    void (*callback)(uint32_t connection_id)) {
-  auto listener = FW::G::NetManager.get_tcp_listener(tcp_listener_id);
+  auto listener = FW::G::Net_Manager.get_tcp_listener(tcp_listener_id);
   listener->packetParseCallbacks->add(
       code, [callback](FW::Net::Connection_ptr& connection) {
         callback(connection->get_id());
@@ -29,7 +29,7 @@ void tcp_listener_bind_paket_parse(int32_t tcp_listener_id, uint8_t code,
 }
 
 bool tcp_listener_start(int32_t tcp_listener_id) {
-  auto listener = FW::G::NetManager.get_tcp_listener(tcp_listener_id);
+  auto listener = FW::G::Net_Manager.get_tcp_listener(tcp_listener_id);
   if (!listener) return false;
   listener->start();
   return true;
@@ -37,7 +37,7 @@ bool tcp_listener_start(int32_t tcp_listener_id) {
 
 void tcp_listener_get_connections(int32_t tcp_listener_id,
                                   cms::immutable_list<int>& ids) {
-  auto listener = FW::G::NetManager.get_tcp_listener(tcp_listener_id);
+  auto listener = FW::G::Net_Manager.get_tcp_listener(tcp_listener_id);
   if (!listener) return;
   for (auto& connection : listener->get_connections()) {
     ids.append(connection->get_id());
@@ -46,7 +46,7 @@ void tcp_listener_get_connections(int32_t tcp_listener_id,
 
 int32_t tcp_client_create(const cms::string& host, const cms::string& port,
                           void (*on_connected)(uint32_t connection_id)) {
-  return FW::G::NetManager.create_tcp_client(
+  return FW::G::Net_Manager.create_tcp_client(
       [on_connected](FW::Net::Connection_ptr& connection) {
         on_connected(connection->get_id());
       },
@@ -55,7 +55,7 @@ int32_t tcp_client_create(const cms::string& host, const cms::string& port,
 
 void tcp_client_bind_paket_parse(int32_t tcp_client_id, uint8_t code,
                                  void (*callback)(uint32_t connection_id)) {
-  auto client = FW::G::NetManager.get_tcp_client(tcp_client_id);
+  auto client = FW::G::Net_Manager.get_tcp_client(tcp_client_id);
   client->packetParseCallbacks->add(
       code, [callback](FW::Net::Connection_ptr& connection) {
         callback(connection->get_id());
@@ -63,7 +63,7 @@ void tcp_client_bind_paket_parse(int32_t tcp_client_id, uint8_t code,
 }
 
 void tcp_client_connect(int32_t tcp_client_id) {
-  auto client = FW::G::NetManager.get_tcp_client(tcp_client_id);
+  auto client = FW::G::Net_Manager.get_tcp_client(tcp_client_id);
   client->connect();
 }
 

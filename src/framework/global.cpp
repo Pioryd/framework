@@ -22,10 +22,10 @@ namespace FW::G {
 FW::Core::Logger Logger("FW::G::Logger");
 FW::Time::Clock Clock;
 FW::Crypt::Rsa Rsa(1024);
-FW::Thread::EventManager eventManager("FW::G::eventManager");
-FW::Database::MainManager db_manager;
-FW::Net::Manager NetManager;
-FW::Thread::LookAfter<FW::PyModule::Manager> PyModuleManager;
+FW::Thread::EventManager EventManager("FW::G::EventManager");
+FW::Database::MainManager DB_MainManager;
+FW::Net::Manager Net_Manager;
+FW::Thread::LookAfter<FW::PyModule::Manager> PyModule_Manager;
 FW::Thread::LookAfter<FW::Core::Application> Application;
 
 #ifdef FW_DEF_GRAPHICAL_APPLICATION

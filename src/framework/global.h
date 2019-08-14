@@ -33,10 +33,10 @@ namespace FW::G {
 extern FW::Core::Logger Logger;
 extern FW::Time::Clock Clock;
 extern FW::Crypt::Rsa Rsa;
-extern FW::Thread::EventManager eventManager;
-extern FW::Database::MainManager db_manager;
-extern FW::Net::Manager NetManager;
-extern FW::Thread::LookAfter<FW::PyModule::Manager> PyModuleManager;
+extern FW::Thread::EventManager EventManager;
+extern FW::Database::MainManager DB_MainManager;
+extern FW::Net::Manager Net_Manager;
+extern FW::Thread::LookAfter<FW::PyModule::Manager> PyModule_Manager;
 extern FW::Thread::LookAfter<FW::Core::Application> Application;
 
 #ifdef FW_DEF_GRAPHICAL_APPLICATION

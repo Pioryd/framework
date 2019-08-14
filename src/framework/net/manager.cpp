@@ -12,7 +12,7 @@ int32_t Manager::create_tcp_listener(
     const std::string& port) {
   tcp_listeners_.push_back(std::make_shared<FW::Net::TcpListener>(
       FW::G::Application.force()->get_io_service(), on_connected, host, port,
-      FW::G::eventManager));
+      FW::G::EventManager));
   return tcp_listeners_.size() - 1;
 }
 
@@ -21,7 +21,7 @@ int32_t Manager::create_tcp_client(
     const std::string& port) {
   tcp_clients_.push_back(std::make_shared<FW::Net::TcpClient>(
       FW::G::Application.force()->get_io_service(), on_connected, host, port,
-      FW::G::eventManager));
+      FW::G::EventManager));
   return tcp_clients_.size() - 1;
 }
 

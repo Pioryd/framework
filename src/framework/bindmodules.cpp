@@ -11,7 +11,7 @@ PYBIND11_EMBEDDED_MODULE(fw_module_manager, m) {
   m.def("connect",
         [](const std::string& signal, pybind11::object function,
            pybind11::object* globalVariable = nullptr) {
-          FW::G::PyModuleManager->connect(signal, function, globalVariable);
+          FW::G::PyModule_Manager->connect(signal, function, globalVariable);
         },
         "Connect to signal", pybind11::arg("signal"), pybind11::arg("object"),
         pybind11::arg("globalVariable") = (pybind11::object*)nullptr),
@@ -19,7 +19,7 @@ PYBIND11_EMBEDDED_MODULE(fw_module_manager, m) {
       m.def("disconnect",
             [](const std::string& signal, pybind11::object function,
                pybind11::object* globalVariable = nullptr) {
-              FW::G::PyModuleManager->disconnect(signal, function, globalVariable);
+              FW::G::PyModule_Manager->disconnect(signal, function, globalVariable);
             },
             "Disconnect to signal", pybind11::arg("signal"), pybind11::arg("object"),
             pybind11::arg("globalVariable") = (pybind11::object*)nullptr);

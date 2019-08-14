@@ -47,7 +47,7 @@ void ApplicationBase::start(int32_t argc, char* argv[],
   FW::G::TextureManager.init();
   FW::G::TextureManager.loadTextures();
 
-  FW::G::PyModuleManager->init();
+  FW::G::PyModule_Manager->init();
 
   init(argv_vector, title);
 
@@ -122,12 +122,12 @@ void ApplicationBase::init(const std::vector<std::string>& argv,
   std::set_new_handler(std_handler);
 
   FW::G::Logger.start("log.txt");
-  FW::G::PyModuleManager->init();
+  FW::G::PyModule_Manager->init();
 
-  FW::G::eventManager.start();
-  signals.on_poll_end.connect("FW::G::eventManager.syncPoll()",
+  FW::G::EventManager.start();
+  signals.on_poll_end.connect("FW::G::EventManager.syncPoll()",
                               &FW::Thread::EventManager::syncPoll,
-                            &FW::G::eventManager);
+                            &FW::G::EventManager);
 
   signals.on_init.send(argv, title);
 
@@ -138,8 +138,8 @@ void ApplicationBase::terminate() {
   state_ = State::Terminating;
   signals.on_terminate.send();
 
-  FW::G::PyModuleManager->terminate();
-  FW::G::eventManager.terminate();
+  FW::G::PyModule_Manager->terminate();
+  FW::G::EventManager.terminate();
   FW::G::Logger.terminate();
 
   state_ = State::Terminated;
@@ -148,7 +148,7 @@ void ApplicationBase::terminate() {
 void ApplicationBase::join() {
   signals.on_join.send();
 
-  FW::G::eventManager.join();
+  FW::G::EventManager.join();
   FW::G::Logger.join();
 }
 
@@ -160,18 +160,18 @@ void ApplicationBase::poll() {
 
 void ApplicationBase::handleSystemSignal(int32_t signal) {
   if (signal == SIGINT)
-    G::eventManager.addAsyncEvent([]() {
+    G::EventManager.addAsyncEvent([]() {
       FW::G::Application->terminate();
       FW::G::Application->join();
     });
   else if (signal == SIGTERM)
-    G::eventManager.addAsyncEvent([]() {
+    G::EventManager.addAsyncEvent([]() {
       FW::G::Application->terminate();
       FW::G::Application->join();
     });
 #ifdef _WIN32
   else if (signal == SIGBREAK)
-    G::eventManager.addAsyncEvent([]() {
+    G::EventManager.addAsyncEvent([]() {
       FW::G::Application->terminate();
       FW::G::Application->join();
     });

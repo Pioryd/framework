@@ -116,13 +116,13 @@ void Manager::connect(const std::string& signal,
 }
 
 void Manager::connect(const std::string& signal, Callback_ptr callback) {
-  FW::G::PyModuleManager->signalManager.connect(signal, callback);
+  FW::G::PyModule_Manager->signalManager.connect(signal, callback);
 }
 
 void Manager::disconnect(const std::string& signal,
                          pybind11::object functionObject,
                          pybind11::object* globalVariableObject) {
-  FW::G::PyModuleManager->signalManager.disconnect(
+  FW::G::PyModule_Manager->signalManager.disconnect(
       signal, createCallBack(functionObject, globalVariableObject));
 }
 
