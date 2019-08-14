@@ -29,22 +29,24 @@ void update_clients_online() {
   }
 }
 
-void set_up_max_clients_online() {
+bool set_up_max_clients_online() {
   sql_id =
       cmsext::db::connect("mysql", "127.0.0.1", "root", "", "test", "3306", "");
 
   if (sql_id == -1) {
     error("Unable to connect to database.");
-    return;
+    return false;
   }
 
   if (!execute_sync(sql_id, "SELECT `max_clients` FROM `stats`")) {
     error("Unable to execute query.");
-    return;
+    return false;
   }
 
   max_clients_online = get_number(sql_id, "max_clients");
   update_label();
+
+  return true;
 }
 
 void update_max_clients_online() {
@@ -82,8 +84,9 @@ void create_ui() {
 
   add_sync_event(update_clients_online, 1, 0, 100);
 
-  set_up_max_clients_online();
-  add_sync_event(update_max_clients_online, 1, 0, 100);
+  if (set_up_max_clients_online()) {
+    add_sync_event(update_max_clients_online, 1, 0, 100);
+  }
 }
 // Signals
 void on_load() {}
