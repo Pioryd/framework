@@ -14,19 +14,19 @@ class Stopper {
   void stop();
   void restart();
 
-  bool isRunning();
+  bool is_running();
 
   // Return -1 if not running
-  ticks_t elapsedTimeInMicros();
+  ticks_t elapsed_time_in_micros();
   // Return -1 if not running
-  ticks_t elapsedTimeInMillis();
+  ticks_t elapsed_time_in_millis();
   // Return -1 if not running
-  ticks_t elapsedTimeInSeconds();
+  ticks_t elapsed_time_in_seconds();
 
  private:
-  Time startTime_;
-  Time elapsedTime_;
-  Time setTime_;
+  Time start_time_;
+  Time elapsed_time_;
+  Time set_time_;
   bool running_;
 };
 }  // namespace FW::Time

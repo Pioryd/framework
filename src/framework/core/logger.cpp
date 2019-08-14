@@ -17,7 +17,7 @@ void Logger::start(const std::string& file) {
     log_file_.flush();
   }
 
-  info("Log started at: " + Time::Now::getTime());
+  info("Log started at: " + Time::Now::get_time());
 }
 
 void Logger::debug(const std::string& what, const std::string& caller,

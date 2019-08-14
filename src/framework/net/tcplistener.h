@@ -32,7 +32,7 @@ class TcpListener : public std::enable_shared_from_this<TcpListener> {
  public:
   void start();
   void stop();
-  bool isRunning();
+  bool is_running();
 
   Connection_ptr createConnection();
   void onConnectionClose(Connection_ptr& connection);

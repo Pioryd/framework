@@ -116,7 +116,7 @@ std::unordered_set<Connection_ptr>& TcpListener::get_connections() {
   return connections_;
 }
 
-bool TcpListener::isRunning() { return (state_ == State::RUNNING); }
+bool TcpListener::is_running() { return (state_ == State::RUNNING); }
 
 void TcpListener::asyncRestart() {
   if (!config.enableRestart || state_ == State::RESTARTING) return;

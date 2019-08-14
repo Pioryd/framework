@@ -1,11 +1,11 @@
 #include "clock.h"
 
 namespace FW::Time {
-void Clock::update() { time_.resetToCurrentTime(); }
+void Clock::update() { time_.reset_to_current_time(); }
 
-ticks_t Clock::toMicros() { return time_.toMicros(); }
+ticks_t Clock::to_micros() { return time_.to_micros(); }
 
-ticks_t Clock::toMillis() { return time_.toMillis(); }
+ticks_t Clock::to_millis() { return time_.to_millis(); }
 
-ticks_t Clock::toSeconds() { return time_.toSeconds(); }
+ticks_t Clock::to_seconds() { return time_.to_seconds(); }
 }  // namespace FW::Time

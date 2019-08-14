@@ -7,17 +7,17 @@ namespace FW::Time {
 struct Time {
   Time();
 
-  void resetToCurrentTime();
-  void resetToMicros(ticks_t micros);
-  void resetToMillis(ticks_t milis);
-  void resetToSecond(ticks_t seconds);
+  void reset_to_current_time();
+  void reset_to_micros(ticks_t micros);
+  void reset_to_millis(ticks_t milis);
+  void reset_to_second(ticks_t seconds);
 
-  ticks_t toMicros();
-  ticks_t toMillis();
-  ticks_t toSeconds();
+  ticks_t to_micros();
+  ticks_t to_millis();
+  ticks_t to_seconds();
 
-  void setNull();
-  bool isNull();
+  void set_null();
+  bool is_null();
 
  protected:
   ticks_t micros_;
@@ -26,10 +26,10 @@ struct Time {
 };
 
 namespace Now {
-std::string getTime();
-ticks_t getMicros();
-ticks_t getMillis();
-ticks_t getSeconds();
+std::string get_time();
+ticks_t get_micros();
+ticks_t get_millis();
+ticks_t get_seconds();
 }  // namespace Now
 }  // namespace FW::Time
 #endif  // #ifndef FW_TIME_TIME_H

@@ -6,55 +6,55 @@ Timer::Timer() : running_{false} {}
 void Timer::start() {
   if (running_) return;
   running_ = true;
-  startTime_.resetToCurrentTime();
+  start_time_.reset_to_current_time();
 }
 
 void Timer::stop() {
   if (!running_) return;
-  remainingTime_.resetToMicros(remainingTimeInMicros());
+  remaining_time_.reset_to_micros(remaining_time_in_micros());
   running_ = false;
 }
 
 void Timer::reset() {
-  startTime_.setNull();
-  remainingTime_ = setTime_;
+  start_time_.set_null();
+  remaining_time_ = set_time_;
 }
 
-bool Timer::isRunning() { return running_; }
+bool Timer::is_running() { return running_; }
 
-void Timer::setCountdownInMicros(ticks_t micros) {
-  setTime_.resetToMicros(micros);
-  remainingTime_ = setTime_;
+void Timer::set_countdown_in_micros(ticks_t micros) {
+  set_time_.reset_to_micros(micros);
+  remaining_time_ = set_time_;
 }
 
-void Timer::setCountdownInMillis(ticks_t millis) {
-  setTime_.resetToMillis(millis);
-  remainingTime_ = setTime_;
+void Timer::set_countdown_in_millis(ticks_t millis) {
+  set_time_.reset_to_millis(millis);
+  remaining_time_ = set_time_;
 }
 
-void Timer::setCountdownInSecond(ticks_t seconds) {
-  setTime_.resetToSecond(seconds);
-  remainingTime_ = setTime_;
+void Timer::set_countdown_in_seconds(ticks_t seconds) {
+  set_time_.reset_to_second(seconds);
+  remaining_time_ = set_time_;
 }
 
-ticks_t Timer::remainingTimeInMicros() {
+ticks_t Timer::remaining_time_in_micros() {
   if (!running_) return -1;
-  ticks_t timeDiff = Now::getMicros() - setTime_.toMicros();
-  if (timeDiff > remainingTime_.toMicros()) return 0;
+  ticks_t timeDiff = Now::get_micros() - set_time_.to_micros();
+  if (timeDiff > remaining_time_.to_micros()) return 0;
   return timeDiff;
 }
 
-ticks_t Timer::remainingTimeInMillis() {
+ticks_t Timer::remaining_time_in_millis() {
   if (!running_) return -1;
-  ticks_t timeDiff = Now::getMillis() - setTime_.toMillis();
-  if (timeDiff > remainingTime_.toMillis()) return 0;
+  ticks_t timeDiff = Now::get_millis() - set_time_.to_millis();
+  if (timeDiff > remaining_time_.to_millis()) return 0;
   return timeDiff;
 }
 
-ticks_t Timer::remainingTimeInSeconds() {
+ticks_t Timer::remaining_time_in_seconds() {
   if (!running_) return -1;
-  ticks_t timeDiff = Now::getSeconds() - setTime_.toSeconds();
-  if (timeDiff > remainingTime_.toSeconds()) return 0;
+  ticks_t timeDiff = Now::get_seconds() - set_time_.to_seconds();
+  if (timeDiff > remaining_time_.to_seconds()) return 0;
   return timeDiff;
 }
 

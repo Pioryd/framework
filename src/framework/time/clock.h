@@ -10,9 +10,9 @@ class Clock {
  public:
   void update();
 
-  ticks_t toMicros();
-  ticks_t toMillis();
-  ticks_t toSeconds();
+  ticks_t to_micros();
+  ticks_t to_millis();
+  ticks_t to_seconds();
 
  private:
   Time time_;

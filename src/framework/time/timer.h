@@ -14,26 +14,26 @@ class Timer {
   void stop();
   void reset();
 
-  bool isRunning();
+  bool is_running();
 
   // Remaining time is reset after set
-  void setCountdownInMicros(ticks_t micros);
+  void set_countdown_in_micros(ticks_t micros);
   // Remaining time is reset after set
-  void setCountdownInMillis(ticks_t milis);
+  void set_countdown_in_millis(ticks_t milis);
   // Remaining time is reset after set
-  void setCountdownInSecond(ticks_t seconds);
+  void set_countdown_in_seconds(ticks_t seconds);
 
   // Return -1 if not running. Return 0 if the countdown has been completed.
-  ticks_t remainingTimeInMicros();
+  ticks_t remaining_time_in_micros();
   // Return -1 if not running. Return 0 if the countdown has been completed
-  ticks_t remainingTimeInMillis();
+  ticks_t remaining_time_in_millis();
   // Return -1 if not running. Return 0 if the countdown has been completed
-  ticks_t remainingTimeInSeconds();
+  ticks_t remaining_time_in_seconds();
 
  private:
-  Time startTime_;
-  Time remainingTime_;
-  Time setTime_;
+  Time start_time_;
+  Time remaining_time_;
+  Time set_time_;
   bool running_;
 };
 }  // namespace FW::Time

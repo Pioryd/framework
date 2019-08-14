@@ -80,7 +80,7 @@ EventPoll::State EventPoll::getState() {
   if (!instantEventList.empty()) return State::READY_TO_EXECUTE;
   if (!delayedEventQueue.empty()) {
     Event_ptr delaydEvent = delayedEventQueue.top();
-    if (delaydEvent->executeTime < Time::Now::getMillis())
+    if (delaydEvent->executeTime < Time::Now::get_millis())
       return State::READY_TO_EXECUTE;
     else
       return State::DELAYED_EVENTS;
@@ -113,7 +113,7 @@ void EventPoll::shutdown() {
 
 void EventPoll::poll() {
   // For sync need we will take time one once per poll
-  pollStartTime = Time::Now::getMillis();
+  pollStartTime = Time::Now::get_millis();
   int executedEventsCount = 0;
 
   auto sizeOfDelayedEventQueue = delayedEventQueue.size();
@@ -175,7 +175,7 @@ bool EventPoll::isExecutedEventsLimitExceeded(uint32_t executedEventsCount) {
   //    })
 
   if (executedEventsCount > 50) {
-    auto takenTime = Time::Now::getMillis() - pollStartTime;
+    auto takenTime = Time::Now::get_millis() - pollStartTime;
     // if (takenTime > 100)
     //  FW_G_LOGGER_ERROR_TRACE("EventPoll[" + std::to_string(id) +
     //                          "] take too long(" + std::to_string(takenTime) +
@@ -198,7 +198,7 @@ Event_ptr EventPoll::createEvent(std::function<void(void)> callback,
   // Try to get free id
   const uint32_t fatalLoopNumber = lastSetEventGUID.id;
   // We will iterate only by ID to make it faster
-  lastSetEventGUID.timeOfIdSet = Time::Now::getMillis();
+  lastSetEventGUID.timeOfIdSet = Time::Now::get_millis();
   lastSetEventGUID.eventPollId = id;
   while (true) {
     ++lastSetEventGUID.id;
@@ -218,13 +218,13 @@ Event_ptr EventPoll::createEvent(std::function<void(void)> callback,
   if (executeDelay == Event::NO_DELAY)
     event->executeTime = Event::NO_DELAY;
   else
-    event->executeTime = Time::Now::getMillis() + executeDelay;
+    event->executeTime = Time::Now::get_millis() + executeDelay;
   event->maxExecuteRepeats = maxExecuteRepeats;
   event->waitTimeBetweenRepeats = waitTimeBetweenRepeats;
   if (expiration == Event::DO_NOT_EXPIRE)
     event->expirationTime = Event::DO_NOT_EXPIRE;
   else
-    event->expirationTime = Time::Now::getMillis() + expiration;
+    event->expirationTime = Time::Now::get_millis() + expiration;
 
   return event;
 }
