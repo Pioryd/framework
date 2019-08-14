@@ -18,13 +18,13 @@ class Size {
   // After set, value is valid().
   Size() : width{0}, height{0} { valid(); };
   // After set, value is valid().
-  Size(T newWidth, T newHeight) : width{newWidth}, height{newHeight} {
+  Size(T new_width, T new_height) : width{new_width}, height{new_height} {
     valid();
   };
 
   // After set, value is valid().
   Size(const Size<T>& object)
-      : width{object.getWidth()}, height{object.getHeight()} {
+      : width{object.get_width()}, height{object.get_height()} {
     valid();
   };
   // After set, value is valid().
@@ -74,24 +74,24 @@ class Size {
 
   // Throw if value is less or equal to 0;
   Size<T> operator*(float value) const {
-    throwIfCantDivideOrMultiply(value);
+    throw_if_cant_divide_or_multiply(value);
     return Size<T>((T)width * value, (T)height * value);
   }
   // Throw if value is less or equal to 0;
   Size<T>& operator*=(float value) {
-    throwIfCantDivideOrMultiply(value);
+    throw_if_cant_divide_or_multiply(value);
     width = (T)width * value;
     height = (T)height * value;
     return *this;
   }
   // Throw if value is less or equal to 0;
   Size<T> operator/(float value) const {
-    throwIfCantDivideOrMultiply(value);
+    throw_if_cant_divide_or_multiply(value);
     return Size<T>((T)width / value, (T)height / value);
   }
   // Throw if value is less or equal to 0;
   Size<T>& operator/=(float value) {
-    throwIfCantDivideOrMultiply(value);
+    throw_if_cant_divide_or_multiply(value);
     width /= value;
     height /= value;
     return *this;
@@ -99,72 +99,72 @@ class Size {
 
   // Compare areas
   bool operator<=(const Size<T>& object) const {
-    return getArea() <= object.getArea();
+    return get_area() <= object.get_area();
   }
   // Compare areas
   bool operator>=(const Size<T>& object) const {
-    return getArea() >= object.getArea();
+    return get_area() >= object.get_area();
   }
   // Compare areas
   bool operator<(const Size<T>& object) const {
-    return getArea() < object.getArea();
+    return get_area() < object.get_area();
   }
   // Compare areas
   bool operator>(const Size<T>& object) const {
-    return getArea() > object.getArea();
+    return get_area() > object.get_area();
   }
 
   // Compare areas
   bool operator==(const Size<T>& object) const {
-    return getArea() == object.getArea();
+    return get_area() == object.get_area();
   }
   // Compare areas
   bool operator!=(const Size<T>& object) const {
-    return getArea() != object.getArea();
+    return get_area() != object.get_area();
   }
 
-  int getWidth() const { return width; }
-  int getHeight() const { return height; }
+  int get_width() const { return width; }
+  int get_height() const { return height; }
 
-  T getArea() const { return width * height; }
+  T get_area() const { return width * height; }
 
   // After set, value is valid().
-  void setWidth(T newWidth) {
-    width = newWidth;
+  void set_width(T new_width) {
+    width = new_width;
     valid();
   }
   // After set, value is valid().
-  void setHeight(T newHeight) {
-    height = newHeight;
+  void set_height(T new_height) {
+    height = new_height;
     valid();
   }
 
   // After set, value is valid().
-  void resize(T newWidth, T newHeight, bool keepAspectRatio = false) {
-    if (keepAspectRatio == false) {
-      width = newWidth;
-      height = newHeight;
+  void resize(T new_width, T new_height, bool keep_aspect_ratio = false) {
+    if (keep_aspect_ratio == false) {
+      width = new_width;
+      height = new_height;
     } else {
-      T scaledWidthRatio = (newHeight * width) / height;
-      T scaledHeightRatio = (newWidth * height) / width;
+      T scaled_width_ratio = (new_height * width) / height;
+      T scaled_height_ratio = (new_width * height) / width;
 
-      if (scaledWidthRatio <= newWidth) {
-        width = scaledWidthRatio;
-        height = newHeight;
+      if (scaled_width_ratio <= new_width) {
+        width = scaled_width_ratio;
+        height = new_height;
       } else {
-        width = newWidth;
-        height = scaledHeightRatio;
+        width = new_width;
+        height = scaled_height_ratio;
       }
     }
     valid();
   }
   // After set, value is valid().
-  void resize(const Size<T>& size, bool keepAspectRatio = false) {
-    resize(size.width, size.height, keepAspectRatio);
+  void resize(const Size<T>& size, bool keep_aspect_ratio = false) {
+    resize(size.width, size.height, keep_aspect_ratio);
   }
 
   // Check if width and height is greater or equal to 0;
-  bool isValid() const { return width >= 0 && height >= 0; }
+  bool is_valid() const { return width >= 0 && height >= 0; }
 
  protected:
   // If width or height is less then "0", then set to "0".
@@ -174,7 +174,7 @@ class Size {
   }
   template <typename V>
   // Throw if value is less or equal to "0".
-  void throwIfCantDivideOrMultiply(V value) {
+  void throw_if_cant_divide_or_multiply(V value) {
     if (value <= 0)
       throw std::runtime_error("Value[" + std::to_string(value) +
                                "] is wrong. Can't divide or multiply.");

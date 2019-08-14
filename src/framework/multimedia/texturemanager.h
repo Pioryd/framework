@@ -15,19 +15,19 @@ class TextureManager {
  public:
   void init();
 
-  Texture_ptr getTexture(const std::string& textureName);
+  Texture_ptr get_texture(const std::string& texture_name);
 
-  void loadTextures();
+  void load_textures();
 
  protected:
-  void loadTexture(const std::filesystem::path& texturePath);
+  void load_texture(const std::filesystem::path& texture_path);
 
  public:
   Config config;
 
  protected:
   std::map<std::string, Texture_ptr> textures_;
-  std::filesystem::path texturesPath_;
+  std::filesystem::path textures_path_;
 };
 }  // namespace FW::MM
 #endif  // #ifndef FW_MULTIMEDIA_TEXTUREMANAGER_H

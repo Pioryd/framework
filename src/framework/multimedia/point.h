@@ -68,9 +68,9 @@ class Point {
   }
 
   float distance(const Point& other) const {
-    const float xDiff = x - other.x;
-    const float yDiff = y - other.y;
-    return std::sqrt(xDiff * xDiff + yDiff * yDiff);
+    const float x_diff = x - other.x;
+    const float y_diff = y - other.y;
+    return std::sqrt(x_diff * x_diff + y_diff * y_diff);
   }
 
   T x;

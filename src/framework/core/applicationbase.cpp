@@ -39,13 +39,13 @@ void ApplicationBase::start(int32_t argc, char* argv[],
 
   // Init
   FW::G::FontManager.init();
-  FW::G::FontManager.loadFonts();
+  FW::G::FontManager.load_fonts();
   FW::G::SoundManager.init();
-  FW::G::SoundManager.loadSounds();
+  FW::G::SoundManager.load_sounds();
   FW::G::ImageManager.init();
-  FW::G::ImageManager.loadImages();
+  FW::G::ImageManager.load_images();
   FW::G::TextureManager.init();
-  FW::G::TextureManager.loadTextures();
+  FW::G::TextureManager.load_textures();
 
   FW::G::PyModule_Manager->init();
 

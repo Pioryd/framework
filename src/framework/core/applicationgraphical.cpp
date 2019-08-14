@@ -42,7 +42,7 @@ void ApplicationGraphical::start_main_loop() {
   FW::G::Clock.update();
   signals.on_start_main_loop.send();
 
-  while (state_ == State::Running && FW::G::Window.isOpen()) {
+  while (state_ == State::Running && FW::G::Window.is_open()) {
     FW::G::Clock.update();
     poll();
 

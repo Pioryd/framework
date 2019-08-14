@@ -14,20 +14,20 @@
 namespace FW::MM {
 class Window {
  public:
-  void init(MM::SizeInt size, const std::string& name, bool fullScreen,
-            uint32_t fpsLimit);
+  void init(MM::SizeInt size, const std::string& name, bool full_screen,
+            uint32_t fps_limit);
   void poll();
 
   void draw(const sf::Drawable& drawable);
   void draw(const Color& color, const RectInt& rect);
   void draw(const Color& color, const RectInt& rect, const Texture_ptr texture,
-            const RectInt& textureRect);
+            const RectInt& texture_rect);
 
   void clear(FW::MM::Color color);
   void display();
 
-  bool isOpen();
-  SizeInt getSize();
+  bool is_open();
+  SizeInt get_size();
 
  public:
   std::unique_ptr<sf::RenderWindow> window;

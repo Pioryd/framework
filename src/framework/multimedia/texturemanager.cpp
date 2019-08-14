@@ -6,60 +6,60 @@
 
 namespace FW::MM {
 void TextureManager::init() {
-  texturesPath_ = G::Application->get_assets_path();
-  texturesPath_.append("texture");
+  textures_path_ = G::Application->get_assets_path();
+  textures_path_.append("texture");
 }
 
-Texture_ptr TextureManager::getTexture(const std::string& textureName) {
-  std::filesystem::path searchTexturePath(textureName);
-  searchTexturePath.make_preferred();
+Texture_ptr TextureManager::get_texture(const std::string& texture_name) {
+  std::filesystem::path search_texture_path(texture_name);
+  search_texture_path.make_preferred();
 
   for (auto& [path, texture] : textures_)
-    if (path.find(searchTexturePath.string()) != std::string::npos)
+    if (path.find(search_texture_path.string()) != std::string::npos)
       return texture;
 
   FW_DEBUG_INSTRUCTIONS(
-      FW::G::Logger.debug("Texture: [" + textureName + "] is not loaded.");)
+      FW::G::Logger.debug("Texture: [" + texture_name + "] is not loaded.");)
   return nullptr;
 }
 
-void TextureManager::loadTextures() {
+void TextureManager::load_textures() {
   FW_DEBUG_INSTRUCTIONS(FW::G::Logger.debug(
-      "Check if directory [" + texturesPath_.string() + "] exist.");)
+      "Check if directory [" + textures_path_.string() + "] exist.");)
 
-  if (!std::filesystem::exists(texturesPath_)) {
-    FW::G::Logger.error("Path [" + texturesPath_.string() +
+  if (!std::filesystem::exists(textures_path_)) {
+    FW::G::Logger.error("Path [" + textures_path_.string() +
                         "] does NOT exist.");
     return;
   }
 
   for (const auto& entry :
-       std::filesystem::recursive_directory_iterator(texturesPath_))
-    loadTexture(entry.path());
+       std::filesystem::recursive_directory_iterator(textures_path_))
+    load_texture(entry.path());
 }
 
-void TextureManager::loadTexture(const std::filesystem::path& texturePath) {
+void TextureManager::load_texture(const std::filesystem::path& texture_path) {
   FW_DEBUG_INSTRUCTIONS(FW::G::Logger.debug(
-      "Load texture: [" + texturePath.filename().string() + "].");)
+      "Load texture: [" + texture_path.filename().string() + "].");)
 
   const std::set<std::string> extensions = {".bmp", ".png", ".tga", ".jpg",
                                             ".gif", ".psd", ".hdr", ".pic"};
-  if (extensions.find(texturePath.extension().string()) == extensions.end()) {
+  if (extensions.find(texture_path.extension().string()) == extensions.end()) {
     G::Logger.warning(
         "Unable to load texture. Wrong extension: [" +
-        texturePath.extension().string() +
+        texture_path.extension().string() +
         "]. Supported are: .bmp, .png, .tga, .jpg, .gif, .psd, .hdr and .pic.");
     return;
   }
 
   auto texture = std::make_shared<Texture>();
 
-  if (!texture->loadFromFile(texturePath.string())) {
+  if (!texture->loadFromFile(texture_path.string())) {
     G::Logger.error("Unable to load texture file. Full name: " +
-                    texturePath.string());
+                    texture_path.string());
     return;
   }
 
-  textures_[texturePath.string()] = texture;
+  textures_[texture_path.string()] = texture;
 }
 }  // namespace FW::MM

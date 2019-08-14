@@ -22,14 +22,14 @@ class Rect {
   Rect(T x, T y, T width, T height)
       : x1(x), y1(y), x2(x + width), y2(y + height) {}
   Rect(T x, T y, const Size<T>& size)
-      : x1(x), y1(y), x2(x + size.getWidth()), y2(y + size.getHeight()) {}
-  Rect(const Point<T>& topLeft, const Size<T>& size)
-      : x1(topLeft.x),
-        y1(topLeft.y),
-        x2(x1 + size.getWidth()),
-        y2(y1 + size.getHeight()) {}
-  Rect(const Point<T>& topLeft, const Point<T>& bottomRight)
-      : x1(topLeft.x), y1(topLeft.y), x2(bottomRight.x), y2(bottomRight.y) {}
+      : x1(x), y1(y), x2(x + size.get_width()), y2(y + size.get_height()) {}
+  Rect(const Point<T>& top_left, const Size<T>& size)
+      : x1(top_left.x),
+        y1(top_left.y),
+        x2(x1 + size.get_width()),
+        y2(y1 + size.get_height()) {}
+  Rect(const Point<T>& top_left, const Point<T>& bottom_right)
+      : x1(top_left.x), y1(top_left.y), x2(bottom_right.x), y2(bottom_right.y) {}
 
   Rect(const Rect<T>& other)
       : x1(other.x1), y1(other.y1), x2(other.x2), y2(other.y2) {}
@@ -42,139 +42,139 @@ class Rect {
   }
 
   operator sf::Rect<T>() const {
-    return sf::Rect<T>(getLeft(), getTop(), getWidth(), getHeight());
+    return sf::Rect<T>(get_left(), get_top(), get_width(), get_height());
   }
   operator const sf::Rect<T>() {
-    return sf::Rect<T>(getLeft(), getTop(), getWidth(), getHeight());
+    return sf::Rect<T>(get_left(), get_top(), get_width(), get_height());
   }
 
-  bool isValid() const { return x1 < x2 && y1 < y2; }
+  bool is_valid() const { return x1 < x2 && y1 < y2; }
 
-  T getX() const { return x1; }
-  T getY() const { return y1; }
-  T getWidth() const { return x2 - x1; }
-  T getHeight() const { return y2 - y1; }
-  Size<T> getSize() const { return Size<T>(getWidth(), getHeight()); }
+  T get_x() const { return x1; }
+  T get_y() const { return y1; }
+  T get_width() const { return x2 - x1; }
+  T get_height() const { return y2 - y1; }
+  Size<T> get_size() const { return Size<T>(get_width(), get_height()); }
 
-  T getLeft() const { return x1; }
-  T getTop() const { return y1; }
-  T getRight() const { return x2; }
-  T getBottom() const { return y2; }
+  T get_left() const { return x1; }
+  T get_top() const { return y1; }
+  T get_right() const { return x2; }
+  T get_bottom() const { return y2; }
 
-  Point<T> getTopLeft() const { return Point<T>(x1, y1); }
-  Point<T> getTopRight() const { return Point<T>(x2, y1); }
-  Point<T> getBottomLeft() const { return Point<T>(x1, y2); }
-  Point<T> getBottomRight() const { return Point<T>(x2, y2); }
+  Point<T> get_top_left() const { return Point<T>(x1, y1); }
+  Point<T> get_top_right() const { return Point<T>(x2, y1); }
+  Point<T> get_bottom_left() const { return Point<T>(x1, y2); }
+  Point<T> get_bottom_right() const { return Point<T>(x2, y2); }
 
-  Point<T> getCenter() const { return Point<T>((x1 + x2) / 2, (y1 + y2) / 2); }
-  Point<T> getTopCenter() const { return Point<T>((x1 + x2) / 2, y1); }
-  Point<T> getBottomCenter() const { return Point<T>((x1 + x2) / 2, y2); }
-  Point<T> getCenterLeft() const { return Point<T>(x1, (y1 + y2) / 2); }
-  Point<T> getCenterRight() const { return Point<T>(x2, (y1 + y2) / 2); }
-  T getHorizontalDistanceToCenter() const { return x1 + (x2 - x1) / 2; }
-  T getVerticalDistanceToCenter() const { return y1 + (y2 - y1) / 2; }
+  Point<T> get_center() const { return Point<T>((x1 + x2) / 2, (y1 + y2) / 2); }
+  Point<T> get_top_center() const { return Point<T>((x1 + x2) / 2, y1); }
+  Point<T> get_bottom_center() const { return Point<T>((x1 + x2) / 2, y2); }
+  Point<T> get_center_left() const { return Point<T>(x1, (y1 + y2) / 2); }
+  Point<T> get_center_right() const { return Point<T>(x2, (y1 + y2) / 2); }
+  T get_horizontal_distance_to_center() const { return x1 + (x2 - x1) / 2; }
+  T get_vertical_distance_to_center() const { return y1 + (y2 - y1) / 2; }
 
-  void setRect(T x, T y, Size<T> size) {
+  void set_rect(T x, T y, Size<T> size) {
     x1 = x;
     y1 = y;
     x2 = (x + size.x);
     y2 = (y + size.y);
   }
-  void setRect(int left, int top, int right, int bottom) {
+  void set_rect(int left, int top, int right, int bottom) {
     x1 = left;
     y1 = top;
     x2 = right;
     y2 = bottom;
   }
 
-  void setX(T x) { x1 = x; }
-  void setY(T y) { y1 = y; }
-  void setWidth(T width) { x2 = x1 + width; }
-  void setHeight(T height) { y2 = y1 + height; }
-  void setSize(const Size<T>& size) {
-    setSize(size.getWidth(), size.getHeight());
+  void set_x(T x) { x1 = x; }
+  void set_y(T y) { y1 = y; }
+  void set_width(T width) { x2 = x1 + width; }
+  void set_height(T height) { y2 = y1 + height; }
+  void set_size(const Size<T>& size) {
+    set_size(size.get_width(), size.get_height());
   }
-  void setSize(T width, T height) {
+  void set_size(T width, T height) {
     x2 = x1 + width;
     y2 = y1 + height;
   }
 
-  void setLeft(T left) { x1 = left; }
-  void setTop(T top) { y1 = top; }
-  void setRight(T right) { x2 = right; }
-  void setBottom(T bottom) { y2 = bottom; }
+  void set_left(T left) { x1 = left; }
+  void set_top(T top) { y1 = top; }
+  void set_right(T right) { x2 = right; }
+  void set_bottom(T bottom) { y2 = bottom; }
 
-  void setTopLeft(const Point<T>& point) {
+  void set_top_left(const Point<T>& point) {
     x1 = point.x;
     y1 = point.y;
   }
-  void setTopRight(const Point<T>& point) {
+  void set_top_right(const Point<T>& point) {
     x2 = point.x;
     y1 = point.y;
   }
-  void setBottomLeft(const Point<T>& point) {
+  void set_bottom_left(const Point<T>& point) {
     x1 = point.x;
     y2 = point.y;
   }
-  void setBottomRight(const Point<T>& point) {
+  void set_bottom_right(const Point<T>& point) {
     x2 = point.x;
     y2 = point.y;
   }
 
-  void expandToLeft(T value) { x1 -= value; }
-  void expandToTop(T value) { y1 -= value; }
-  void expandToRight(T value) { x2 += value; }
-  void expandToBottom(T value) { y2 += value; }
-  void expandAll(T valueLeft, T valueTop, T valueRight, T valueBottom) {
-    x1 -= valueLeft;
-    y1 -= valueTop;
-    x2 += valueRight;
-    y2 += valueBottom;
+  void expand_to_left(T value) { x1 -= value; }
+  void expand_to_top(T value) { y1 -= value; }
+  void expand_to_right(T value) { x2 += value; }
+  void expand_to_bottom(T value) { y2 += value; }
+  void expand_all(T value_left, T value_top, T value_right, T value_bottom) {
+    x1 -= value_left;
+    y1 -= value_top;
+    x2 += value_right;
+    y2 += value_bottom;
   }
-  void expandAll(T value) {
+  void expand_all(T value) {
     x1 -= value;
     y1 -= value;
     x2 += value;
     y2 += value;
   }
 
-  void moveByDistance(T x, T y) {
+  void move_by_distance(T x, T y) {
     x1 += x;
     y1 += y;
     x2 += x;
     y2 += y;
   }
-  void moveByDistance(const Point<T>& point) {
+  void move_by_distance(const Point<T>& point) {
     x1 += point.x;
     y1 += point.y;
     x2 += point.x;
     y2 += point.y;
   }
 
-  void moveTo(T x, T y) {
+  void move_to(T x, T y) {
     x2 += x - x1;
     y2 += y - y1;
     x1 = x;
     y1 = y;
   }
-  void moveTo(const Point<T>& point) { moveTo(point.x, point.y); }
-  void moveToLeft(T left) {
+  void move_to(const Point<T>& point) { move_to(point.x, point.y); }
+  void move_to_left(T left) {
     x2 += (left - x1);
     x1 = left;
   }
-  void moveToTop(T top) {
+  void move_to_top(T top) {
     y2 += (top - y1);
     y1 = top;
   }
-  void moveToRight(T right) {
+  void move_to_right(T right) {
     x1 += (right - x2);
     x2 = right;
   }
-  void moveToBottom(T bottom) {
+  void move_to_bottom(T bottom) {
     y1 += (bottom - y2);
     y2 = bottom;
   }
-  void moveToCenter(const Point<T>& point) {
+  void move_to_center(const Point<T>& point) {
     T width = x2 - x1;
     T height = y2 - y1;
     x1 = point.x - width / 2;
@@ -182,48 +182,48 @@ class Rect {
     x2 = x1 + width;
     y2 = y1 + height;
   }
-  void moveToHorizontalCenter(T x) {
+  void move_to_horizontal_center(T x) {
     T width = x2 - x1;
     x1 = x - width / 2;
     x2 = x1 + width;
   }
-  void moveToVerticalCenter(T y) {
+  void move_to_vertical_center(T y) {
     T height = y2 - y1;
     y1 = y - height / 2;
     y2 = y1 + height;
   }
 
-  void moveToTopLeft(const Point<T>& point) {
-    moveToTop(point.y);
-    moveToLeft(point.x);
+  void move_to_top_left(const Point<T>& point) {
+    move_to_top(point.y);
+    move_to_left(point.x);
   }
-  void moveToTopRight(const Point<T>& point) {
-    moveToTop(point.y);
-    moveToRight(point.x);
+  void move_to_top_right(const Point<T>& point) {
+    move_to_top(point.y);
+    move_to_right(point.x);
   }
-  void moveToBottomLeft(const Point<T>& point) {
-    moveToBottom(point.y);
-    moveToLeft(point.x);
+  void move_to_bottom_left(const Point<T>& point) {
+    move_to_bottom(point.y);
+    move_to_left(point.x);
   }
-  void moveToBottomRight(const Point<T>& point) {
-    moveToBottom(point.y);
-    moveToRight(point.x);
+  void move_to_bottom_right(const Point<T>& point) {
+    move_to_bottom(point.y);
+    move_to_right(point.x);
   }
-  void moveToTopCenter(const Point<T>& point) {
-    moveToTop(point.y);
-    moveToHorizontalCenter(point.x);
+  void move_to_top_center(const Point<T>& point) {
+    move_to_top(point.y);
+    move_to_horizontal_center(point.x);
   }
-  void moveToBottomCenter(const Point<T>& point) {
-    moveToBottom(point.y);
-    moveToHorizontalCenter(point.x);
+  void move_to_bottom_center(const Point<T>& point) {
+    move_to_bottom(point.y);
+    move_to_horizontal_center(point.x);
   }
-  void moveToLeftCenter(const Point<T>& point) {
-    moveToLeft(point.x);
-    moveToVerticalCenter(point.y);
+  void move_to_left_center(const Point<T>& point) {
+    move_to_left(point.x);
+    move_to_vertical_center(point.y);
   }
-  void moveToRightCenter(const Point<T>& point) {
-    moveToRight(point.x);
-    moveToVerticalCenter(point.y);
+  void move_to_right_center(const Point<T>& point) {
+    move_to_right(point.x);
+    move_to_vertical_center(point.y);
   }
 
   // Check if constains given point.
@@ -240,53 +240,53 @@ class Rect {
   }
   // Check if constains given rect.
   bool contains(const Rect<T>& rect) const {
-    if (contains(rect.getTopLeft()) && contains(rect.getBottomRight()))
+    if (contains(rect.get_top_left()) && contains(rect.get_bottom_right()))
       return true;
     return false;
   }
 
   // Return true if is intersected with given rect.
   bool intersects(const Rect<T>& rect) const {
-    if (rect.getLeft() < std::min(x1, static_cast<T>(x2))) return true;
-    if (rect.getTop() < std::min(y1, static_cast<T>(y2))) return true;
-    if (rect.getLeft() >= std::max(x1, static_cast<T>(x2))) return true;
-    if (rect.getTop() >= std::max(y1, static_cast<T>(y2))) return true;
+    if (rect.get_left() < std::min(x1, static_cast<T>(x2))) return true;
+    if (rect.get_top() < std::min(y1, static_cast<T>(y2))) return true;
+    if (rect.get_left() >= std::max(x1, static_cast<T>(x2))) return true;
+    if (rect.get_top() >= std::max(y1, static_cast<T>(y2))) return true;
 
-    if (rect.getRight() < std::min(x1, static_cast<T>(x2))) return true;
-    if (rect.getBottom() < std::min(y1, static_cast<T>(y2))) return true;
-    if (rect.getRight() >= std::max(x1, static_cast<T>(x2))) return true;
-    if (rect.getBottom() >= std::max(y1, static_cast<T>(y2))) return true;
+    if (rect.get_right() < std::min(x1, static_cast<T>(x2))) return true;
+    if (rect.get_bottom() < std::min(y1, static_cast<T>(y2))) return true;
+    if (rect.get_right() >= std::max(x1, static_cast<T>(x2))) return true;
+    if (rect.get_bottom() >= std::max(y1, static_cast<T>(y2))) return true;
 
     return false;
   }
 
   // Return intersected rect.
   Rect<T> intersection(const Rect<T>& rect) const {
-    if (!isValid() || !rect.isValid()) return Rect<T>();
+    if (!is_valid() || !rect.is_valid()) return Rect<T>();
 
-    Rect<T> intersectedRect = *this;
+    Rect<T> intersected_rect = *this;
 
-    if (contains(rect.getTopLeft()))
-      intersectedRect.setTopLeft(rect.getTopLeft());
-    if (contains(rect.getTopRight()))
-      intersectedRect.setTopRight(rect.getTopRight());
-    if (contains(rect.getBottomLeft()))
-      intersectedRect.setBottomLeft(rect.getBottomLeft());
-    if (contains(rect.getBottomRight()))
-      intersectedRect.setBottomRight(rect.getBottomRight());
+    if (contains(rect.get_top_left()))
+      intersected_rect.set_top_left(rect.get_top_left());
+    if (contains(rect.get_top_right()))
+      intersected_rect.set_top_right(rect.get_top_right());
+    if (contains(rect.get_bottom_left()))
+      intersected_rect.set_bottom_left(rect.get_bottom_left());
+    if (contains(rect.get_bottom_right()))
+      intersected_rect.set_bottom_right(rect.get_bottom_right());
 
-    return intersectedRect;
+    return intersected_rect;
   }
 
   // Is moving from bootom-right to top-left. Event if given rect is smaller,
   // will try to clip to top-left.
-  void moveToInside(const Rect<T>& rect) {
-    if (!isValid() || !rect.isValid()) return;
+  void move_to_inside(const Rect<T>& rect) {
+    if (!is_valid() || !rect.is_valid()) return;
 
-    if (getBottom() > rect.getBottom()) moveToBottom(rect.getBottom());
-    if (getRight() > rect.getRight()) moveToRight(rect.getRight());
-    if (getTop() < rect.getTop()) moveToTop(rect.getTop());
-    if (getLeft() < rect.getLeft()) moveToLeft(rect.getLeft());
+    if (get_bottom() > rect.get_bottom()) move_to_bottom(rect.get_bottom());
+    if (get_right() > rect.get_right()) move_to_right(rect.get_right());
+    if (get_top() < rect.get_top()) move_to_top(rect.get_top());
+    if (get_left() < rect.get_left()) move_to_left(rect.get_left());
   }
 
   // Return true if all cordinates are equal.

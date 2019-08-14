@@ -32,11 +32,11 @@ class Color {
   bool operator==(const Color& object);
   bool operator!=(const Color& object);
 
-  uint32_t getRGBA() const;
-  void setRGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a = MAX_RGBA_VALUE);
-  void setRGBA(uint32_t rgba);
+  uint32_t get_rgba() const;
+  void set_rgba(uint8_t r, uint8_t g, uint8_t b, uint8_t a = MAX_RGBA_VALUE);
+  void set_rgba(uint32_t rgba);
 
-  bool isVisible();
+  bool is_visible();
 
   uint8_t r;
   uint8_t g;
@@ -64,7 +64,7 @@ class Color {
 };
 
 inline Color& Color::operator=(const Color& object) {
-  setRGBA(object.getRGBA());
+  set_rgba(object.get_rgba());
   return *this;
 }
 
@@ -114,11 +114,11 @@ inline Color Color::operator*=(const Color& object) {
 }
 
 inline bool Color::operator==(const Color& object) {
-  return getRGBA() == object.getRGBA();
+  return get_rgba() == object.get_rgba();
 }
 
 inline bool Color::operator!=(const Color& object) {
-  return getRGBA() != object.getRGBA();
+  return get_rgba() != object.get_rgba();
 }
 }  // namespace FW::MM
 #endif  // #ifndef FW_MULTIMEDIA_COLOR_H

@@ -12,19 +12,19 @@ class ImageManager {
  public:
   void init();
 
-  Image_ptr getImage(const std::string& imageName);
+  Image_ptr get_image(const std::string& image_name);
 
-  void loadImages();
+  void load_images();
 
  protected:
-  void loadImage(const std::filesystem::path& imagePath);
+  void load_image(const std::filesystem::path& image_path);
 
  public:
   Config config;
 
  protected:
   std::map<std::string, Image_ptr> images_;
-  std::filesystem::path imagesPath_;
+  std::filesystem::path images_path_;
 };
 }  // namespace FW::MM
 #endif  // #ifndef FW_MULTIMEDIA_IMAGEMANAGER_H

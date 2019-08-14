@@ -15,19 +15,19 @@ class SoundManager {
  public:
   void init();
 
-  SoundBuffer_ptr getSoundBuffer(const std::string& soundName);
+  SoundBuffer_ptr get_sound_buffer(const std::string& sound_name);
 
-  void loadSounds();
+  void load_sounds();
 
  protected:
-  void loadSoundBuffer(const std::filesystem::path& soundPath);
+  void load_sound_buffer(const std::filesystem::path& sound_path);
 
  public:
   Config config;
 
  protected:
   std::map<std::string, SoundBuffer_ptr> buffers_;
-  std::filesystem::path soundsPath_;
+  std::filesystem::path sounds_path_;
 };
 }  // namespace FW::MM
 #endif  // #ifndef FW_MULTIMEDIA_SOUNDMANAGER_H
