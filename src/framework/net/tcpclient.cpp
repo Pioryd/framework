@@ -82,7 +82,7 @@ void TcpClient::disconnect() {
   }
 }
 
-bool TcpClient::isConnected() { return (state_ == State::CONNECTED); }
+bool TcpClient::is_connected() { return (state_ == State::CONNECTED); }
 
 void TcpClient::onResolve(
     const boost::system::error_code& error,

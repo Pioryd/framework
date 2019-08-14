@@ -8,14 +8,14 @@
 
 namespace cmsext::module {
 void load(const cms::string& module_name) {
-  FW::G::PyModule_Manager->loadAndImportModule(module_name);
+  FW::G::PyModule_Manager->load_and_import_module(module_name);
 }
 
 void reload(const cms::string& module_name) {
-  FW::G::PyModule_Manager->reloadModule(module_name);
+  FW::G::PyModule_Manager->reload_module(module_name);
 }
 
-void restartModules() { FW::G::PyModule_Manager->restartModules(); }
+void restart_modules() { FW::G::PyModule_Manager->restart_modules(); }
 
 void run_script(const cms::string& script) {
   FW::G::PyModule_Manager->run_script(script);
@@ -24,9 +24,9 @@ void run_script(const cms::string& script) {
 PYBIND11_EMBEDDED_MODULE(cmsext_module, m) {
   m.def("load", &cmsext::module::load),  //
       m.def("reload", &cmsext::module::reload),
-      m.def("restartModules", &cmsext::module::restartModules),
-      m.def("connect", &cmsext::module::restartModules),
-      m.def("disconnect", &cmsext::module::restartModules),
+      m.def("restart_modules", &cmsext::module::restart_modules),
+      m.def("connect", &cmsext::module::restart_modules),
+      m.def("disconnect", &cmsext::module::restart_modules),
       m.def(
           "connect",
           [](const std::string& signal, pybind11::object function,

@@ -22,10 +22,10 @@ constexpr auto INIT_FILE = "__init__.py";
 namespace FW::PyModule {
 void Manager::init() {
   if (FW_DEF_PATH_MODULES == "modules") {
-    modulesPath_.append(G::Application->get_working_directory());
-    modulesPath_.append(FW_DEF_PATH_MODULES);
+    modules_path_.append(G::Application->get_working_directory());
+    modules_path_.append(FW_DEF_PATH_MODULES);
   } else {
-    modulesPath_ = std::filesystem::path(FW_DEF_PATH_MODULES);
+    modules_path_ = std::filesystem::path(FW_DEF_PATH_MODULES);
   }
 
   std::wstring pyPath;
@@ -37,24 +37,24 @@ void Manager::init() {
 #endif  // #ifdef FW_DEF_PATH_PYTHON_LIB
 
 #if defined(FW_PLATFORM_WINDOWS)
-  Py_SetPath((pyPath + L";" + modulesPath_.wstring()).c_str());
-  Py_SetPythonHome((modulesPath_.wstring()).c_str());
+  Py_SetPath((pyPath + L";" + modules_path_.wstring()).c_str());
+  Py_SetPythonHome((modules_path_.wstring()).c_str());
 #elif defined(FW_PLATFORM_LINUX)
-  Py_SetPath((pyPath + L":" + modulesPath_.wstring()).c_str());
+  Py_SetPath((pyPath + L":" + modules_path_.wstring()).c_str());
 #endif  // #if defined(FW_PLATFORM_WINDOWS)
 
   Py_OptimizeFlag = 1;
   Py_SetProgramName(L"Modular Scripting");
 
-  initModules();
+  init_modules();
 }
 
-void Manager::terminate() { terminateModules(); }
+void Manager::terminate() { terminate_modules(); }
 
-bool Manager::loadAndImportModule(const std::string& name) {
+bool Manager::load_and_import_module(const std::string& name) {
   FW_DEBUG_INSTRUCTIONS(
       FW::G::Logger.debug("Load and import module[" + name + "]");)
-  std::filesystem::path path(modulesPath_);
+  std::filesystem::path path(modules_path_);
   path.append(name);
   if (!std::filesystem::exists(path)) {
     path.replace_extension(".py");
@@ -65,174 +65,174 @@ bool Manager::loadAndImportModule(const std::string& name) {
     }
   }
 
-  auto module = loadModule(path);
+  auto module = load_module(path);
 
   if (module == nullptr) return false;
-  if (!importModule(module)) {
-    removeModule(module);
+  if (!import_module(module)) {
+    remove_module(module);
     return false;
   }
   FW_DEBUG_INSTRUCTIONS(FW::G::Logger.debug("Done # Load and import");)
   return true;
 }
 
-void Manager::restartModules() {
+void Manager::restart_modules() {
   FW_DEBUG_INSTRUCTIONS(FW::G::Logger.debug("Restart modules... ");)
-  terminateModules();
-  initModules();
+  terminate_modules();
+  init_modules();
   FW_DEBUG_INSTRUCTIONS(FW::G::Logger.debug("[DONE]");)
 }
 
-void Manager::reloadModule(const std::string& globalName) {
+void Manager::reload_module(const std::string& global_name) {
   std::string script = R"(
 import TO_REPLACE
 import importlib
 print("Reload module: [TO_REPLACE].")
 importlib.reload(TO_REPLACE)
     )";
-  boost::replace_all(script, "TO_REPLACE", globalName);
+  boost::replace_all(script, "TO_REPLACE", global_name);
   pybind11::exec(script);
 
-  // Connected to onReload can be only top level module, so we send signal to
+  // Connected to on_reload can be only top level module, so we send signal to
   // top level module with information of reloaded sub module.
   std::vector<std::string> splittedModuleGlobalName;
-  boost::algorithm::split(splittedModuleGlobalName, globalName,
+  boost::algorithm::split(splittedModuleGlobalName, global_name,
                           boost::algorithm::is_any_of("."));
   // INDEX[0] is top level module name
   if (splittedModuleGlobalName.empty() ||
-      !moduleMap_.count(splittedModuleGlobalName[0])) {
+      !module_map_.count(splittedModuleGlobalName[0])) {
     FW::G::Logger.error("Cant send reload signal to top level module [" +
                         splittedModuleGlobalName[0] + "] is not mapped.");
     return;
   }
-  moduleMap_[splittedModuleGlobalName[0]]->getObject().attr(Signal::onReload)(
-      globalName);
+  module_map_[splittedModuleGlobalName[0]]->get_object().attr(Signal::on_reload)(
+      global_name);
 }
 
 void Manager::connect(const std::string& signal,
-                      pybind11::object functionObject,
-                      pybind11::object* globalVariableObject) {
-  connect(signal, createCallBack(functionObject, globalVariableObject));
+                      pybind11::object function_object,
+                      pybind11::object* global_variable_object) {
+  connect(signal, create_call_back(function_object, global_variable_object));
 }
 
 void Manager::connect(const std::string& signal, Callback_ptr callback) {
-  FW::G::PyModule_Manager->signalManager.connect(signal, callback);
+  FW::G::PyModule_Manager->signal_manager.connect(signal, callback);
 }
 
 void Manager::disconnect(const std::string& signal,
-                         pybind11::object functionObject,
-                         pybind11::object* globalVariableObject) {
-  FW::G::PyModule_Manager->signalManager.disconnect(
-      signal, createCallBack(functionObject, globalVariableObject));
+                         pybind11::object function_object,
+                         pybind11::object* global_variable_object) {
+  FW::G::PyModule_Manager->signal_manager.disconnect(
+      signal, create_call_back(function_object, global_variable_object));
 }
 
 void Manager::run_script(const std::string& script) { pybind11::exec(script); }
 
-Module_ptr Manager::loadModule(const std::filesystem::path& path) {
-  auto pathWithoutExtension = path.u8string();
-  auto fileNameWithoutExtension = path.filename().u8string();
-  bool isPackage = false;
+Module_ptr Manager::load_module(const std::filesystem::path& path) {
+  auto path_without_extension = path.u8string();
+  auto file_name_without_extension = path.filename().u8string();
+  bool is_package = false;
 
   try {
     if (std::filesystem::is_directory(path)) {
-      if (!std::filesystem::exists(pathWithoutExtension + "/" + INIT_FILE)) {
+      if (!std::filesystem::exists(path_without_extension + "/" + INIT_FILE)) {
         FW::G::Logger.error("Unable to load package: [" +
-                            fileNameWithoutExtension +
+                            file_name_without_extension +
                             "] does not constains [" + INIT_FILE + "].");
         return nullptr;
       }
-      isPackage = true;
+      is_package = true;
     } else if (std::filesystem::is_regular_file(path)) {
       if (path.extension().u8string() != ".py")
         return nullptr;  // Not module file
       std::filesystem::path filename = path.filename();
-      fileNameWithoutExtension = filename.replace_extension("").u8string();
+      file_name_without_extension = filename.replace_extension("").u8string();
     } else {
       return nullptr;  // Unknown file
     }
 
-    const auto& moduleName = fileNameWithoutExtension;
+    const auto& module_name = file_name_without_extension;
 
-    if (moduleMap_.count(moduleName)) {
-      FW::G::Logger.error("Unable to add module[" + moduleName +
+    if (module_map_.count(module_name)) {
+      FW::G::Logger.error("Unable to add module[" + module_name +
                           "]. Already exist.");
       return nullptr;
     }
 
     FW_DEBUG_INSTRUCTIONS(FW::G::Logger.debug(
-        "  Found module name: [" + moduleName + "]. Full name: [" +
-        pathWithoutExtension + "]. Package: [" +
-        (isPackage ? "true" : "false") + "].");)
-    moduleMap_[moduleName] =
-        std::make_shared<Module>(moduleName, pathWithoutExtension, isPackage);
+        "  Found module name: [" + module_name + "]. Full name: [" +
+        path_without_extension + "]. Package: [" +
+        (is_package ? "true" : "false") + "].");)
+    module_map_[module_name] =
+        std::make_shared<Module>(module_name, path_without_extension, is_package);
   } catch (std::exception& e) {
-    FW::G::Logger.error("Unable to add module [" + fileNameWithoutExtension +
+    FW::G::Logger.error("Unable to add module [" + file_name_without_extension +
                         "]. Exception :\n\t " + std::string(e.what()));
   } catch (...) {
-    FW::G::Logger.error("Unable to add module [" + fileNameWithoutExtension +
+    FW::G::Logger.error("Unable to add module [" + file_name_without_extension +
                         "]. Exception: \n\tUnknown error.");
     return nullptr;
   }
-  return moduleMap_[fileNameWithoutExtension];
+  return module_map_[file_name_without_extension];
 }
 
-void Manager::loadModules() {
+void Manager::load_modules() {
   pybind11::exec(R"(
             import sys
             sys.dont_write_bytecode = True
         )");
 
   FW_DEBUG_INSTRUCTIONS(FW::G::Logger.debug(
-      ">>>> Check if directory [" + modulesPath_.string() + "] exist.");)
+      ">>>> Check if directory [" + modules_path_.string() + "] exist.");)
 
-  if (!std::filesystem::exists(modulesPath_)) {
-    FW::G::Logger.error("Path [" + modulesPath_.string() + "] does NOT exist.");
+  if (!std::filesystem::exists(modules_path_)) {
+    FW::G::Logger.error("Path [" + modules_path_.string() + "] does NOT exist.");
     return;
   }
 
   FW_DEBUG_INSTRUCTIONS(
       FW::G::Logger.debug(">>>> Discover files in given directory [" +
-                          modulesPath_.string() + "]");)
+                          modules_path_.string() + "]");)
 
-  for (const auto& entry : std::filesystem::directory_iterator(modulesPath_))
-    loadModule(entry.path());
+  for (const auto& entry : std::filesystem::directory_iterator(modules_path_))
+    load_module(entry.path());
 
-  auto moduleMap_it = moduleMap_.begin();
-  while (moduleMap_it != moduleMap_.end()) {
-    if (importModule((*moduleMap_it).second)) {
-      moduleMap_it++;
+  auto module_map_it = module_map_.begin();
+  while (module_map_it != module_map_.end()) {
+    if (import_module((*module_map_it).second)) {
+      module_map_it++;
     } else {
-      auto module = (*moduleMap_it).second;
-      moduleMap_it = moduleMap_.erase(moduleMap_it);
-      removeModule(module);
+      auto module = (*module_map_it).second;
+      module_map_it = module_map_.erase(module_map_it);
+      remove_module(module);
     }
   }
 }
 
-bool Manager::importModule(Module_ptr& module) {
+bool Manager::import_module(Module_ptr& module) {
   FW_DEBUG_INSTRUCTIONS(
-      FW::G::Logger.debug(">>>> Import module: [" + module->getName() + "].");)
+      FW::G::Logger.debug(">>>> Import module: [" + module->get_name() + "].");)
 
   try {
-    module->setObject(pybind11::module::import(module->getName().c_str()));
+    module->set_object(pybind11::module::import(module->get_name().c_str()));
     // These signals can be only connected to top level modules
     {
-      auto splittedFunctionGlobalName =
+      auto splitted_function_global_name =
           std::make_shared<std::vector<std::string>>();
-      splittedFunctionGlobalName->push_back(module->getName());
-      splittedFunctionGlobalName->push_back(std::string(Signal::onLoad));
+      splitted_function_global_name->push_back(module->get_name());
+      splitted_function_global_name->push_back(std::string(Signal::on_load));
 
-      connect(std::string(Signal::onLoad),
-              std::make_shared<Callback>(module, splittedFunctionGlobalName));
+      connect(std::string(Signal::on_load),
+              std::make_shared<Callback>(module, splitted_function_global_name));
     }
     {
-      auto splittedFunctionGlobalName =
+      auto splitted_function_global_name =
           std::make_shared<std::vector<std::string>>();
-      splittedFunctionGlobalName->push_back(module->getName());
-      splittedFunctionGlobalName->push_back(std::string(Signal::onReload));
+      splitted_function_global_name->push_back(module->get_name());
+      splitted_function_global_name->push_back(std::string(Signal::on_reload));
 
-      connect(std::string(Signal::onReload),
-              std::make_shared<Callback>(module, splittedFunctionGlobalName));
+      connect(std::string(Signal::on_reload),
+              std::make_shared<Callback>(module, splitted_function_global_name));
     }
   } catch (std::exception& e) {
     FW::G::Logger.error("Unable to import module, error : " +
@@ -243,58 +243,58 @@ bool Manager::importModule(Module_ptr& module) {
   return true;
 }
 
-void Manager::removeModule(Module_ptr& module) {
+void Manager::remove_module(Module_ptr& module) {
   FW_DEBUG_INSTRUCTIONS(
-      FW::G::Logger.debug(">>>> Remove module: [" + module->getName() + "].");)
+      FW::G::Logger.debug(">>>> Remove module: [" + module->get_name() + "].");)
 
-  moduleMap_.erase(module->getName());
-  signalManager.disconnect(module);
+  module_map_.erase(module->get_name());
+  signal_manager.disconnect(module);
 
   FW_DEBUG_INSTRUCTIONS(FW::G::Logger.debug("Done # Remove module");)
 }
 
-Callback_ptr Manager::createCallBack(
-    pybind11::object functionObject,
-    pybind11::object* globalVariableObject) const {
-  std::string moduleGlobalName =
-      functionObject.attr("__module__").cast<std::string>();
+Callback_ptr Manager::create_call_back(
+    pybind11::object function_object,
+    pybind11::object* global_variable_object) const {
+  std::string module_global_name =
+      function_object.attr("__module__").cast<std::string>();
 
-  std::shared_ptr<std::vector<std::string>> splittedFunctionGlobalName =
+  std::shared_ptr<std::vector<std::string>> splitted_function_global_name =
       std::make_shared<std::vector<std::string>>();
-  boost::algorithm::split((*splittedFunctionGlobalName), moduleGlobalName,
+  boost::algorithm::split((*splitted_function_global_name), module_global_name,
                           boost::algorithm::is_any_of("."));
 
-  std::string globalVariable;
-  if (globalVariableObject != nullptr && !globalVariableObject->is_none()) {
+  std::string global_variable;
+  if (global_variable_object != nullptr && !global_variable_object->is_none()) {
     auto globals = pybind11::globals();
 
     for (auto [name, object] : globals) {
-      if (name.is(*globalVariableObject)) globalVariable = pybind11::str(name);
+      if (name.is(*global_variable_object)) global_variable = pybind11::str(name);
     }
   }
-  bool callFromGlobalVariable = !globalVariable.empty();
+  bool call_from_global_variable = !global_variable.empty();
 
-  if (callFromGlobalVariable)
-    splittedFunctionGlobalName->push_back(globalVariable);
+  if (call_from_global_variable)
+    splitted_function_global_name->push_back(global_variable);
 
-  std::string function = functionObject.attr("__name__").cast<std::string>();
-  splittedFunctionGlobalName->push_back(function);
+  std::string function = function_object.attr("__name__").cast<std::string>();
+  splitted_function_global_name->push_back(function);
 
-  auto& topLevelModuleName = (*splittedFunctionGlobalName)[0];
-  auto module_it = moduleMap_.find(topLevelModuleName);
-  if (module_it == moduleMap_.end()) {
+  auto& top_level_module_name = (*splitted_function_global_name)[0];
+  auto module_it = module_map_.find(top_level_module_name);
+  if (module_it == module_map_.end()) {
     FW::G::Logger.error("Unable to create callback. Function[" + function +
-                        "]. Global variable [" + globalVariable +
-                        "]. Module [" + topLevelModuleName +
+                        "]. Global variable [" + global_variable +
+                        "]. Module [" + top_level_module_name +
                         "] is not mapped.");
     return nullptr;
   }
 
   auto& module = module_it->second;
-  return std::make_shared<Callback>(module, splittedFunctionGlobalName,
-                                    callFromGlobalVariable);
+  return std::make_shared<Callback>(module, splitted_function_global_name,
+                                    call_from_global_variable);
 }
-void Manager::initModules() {
+void Manager::init_modules() {
   if (Py_IsInitialized()) {
     FW::G::Logger.error(
         "Cant initialize modules. You need to terminate modules before new "
@@ -302,14 +302,14 @@ void Manager::initModules() {
     return;
   }
   pybind11::initialize_interpreter();
-  loadModules();
-  signalManager.send(Signal::onLoad);
+  load_modules();
+  signal_manager.send(Signal::on_load);
 }
 
-void Manager::terminateModules() {
+void Manager::terminate_modules() {
   if (!Py_IsInitialized()) return;
-  signalManager.terminate();
-  moduleMap_.clear();
+  signal_manager.terminate();
+  module_map_.clear();
   pybind11::finalize_interpreter();
 }
 }  // namespace FW::PyModule

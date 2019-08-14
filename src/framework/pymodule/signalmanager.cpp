@@ -12,9 +12,9 @@ SignalManager::SignalManager() : state_{State::INITIALIZED} {}
 bool SignalManager::connect(const std::string& signal, Callback_ptr callback) {
   FW_DEBUG_INSTRUCTIONS(
       G::Logger.debug("Connect to sginal: [" + signal + "]. Function: [" +
-                      callback->getFunctionGlobalName() + "].");)
+                      callback->get_function_global_name() + "].");)
 
-  if (isConnected(signal, callback)) return false;
+  if (is_connected(signal, callback)) return false;
 
   map_[signal].push_back(callback);
   return true;
@@ -24,17 +24,17 @@ bool SignalManager::disconnect(const std::string& signal,
                                Callback_ptr callback) {
   FW_DEBUG_INSTRUCTIONS(
       G::Logger.debug("Disonnect from sginal: [" + signal + "]. Function: [" +
-                      callback->getFunctionGlobalName() + "].");)
+                      callback->get_function_global_name() + "].");)
 
   if (!contains(signal) || map_[signal].empty()) return false;
 
   bool found = false;
-  auto& callbackList = map_[signal];
-  auto callback_it = callbackList.begin();
-  while (callback_it != callbackList.end()) {
-    auto& listedCallback = (*callback_it);
-    if ((*listedCallback) == (*callback)) {
-      callback_it = callbackList.erase(callback_it);
+  auto& callback_list = map_[signal];
+  auto callback_it = callback_list.begin();
+  while (callback_it != callback_list.end()) {
+    auto& listed_callback = (*callback_it);
+    if ((*listed_callback) == (*callback)) {
+      callback_it = callback_list.erase(callback_it);
       found = true;
     } else {
       ++callback_it;
@@ -47,11 +47,11 @@ bool SignalManager::disconnect(Module_ptr& module) {
   if (module == nullptr) return false;
 
   bool found = false;
-  for (auto& [signal, callbackList] : map_) {
-    auto callback_it = callbackList.begin();
-    while (callback_it != callbackList.end()) {
-      if ((*callback_it)->getTopLevelModule().get() == module.get()) {
-        callback_it = callbackList.erase(callback_it);
+  for (auto& [signal, callback_list] : map_) {
+    auto callback_it = callback_list.begin();
+    while (callback_it != callback_list.end()) {
+      if ((*callback_it)->get_top_level_module().get() == module.get()) {
+        callback_it = callback_list.erase(callback_it);
         found = true;
       } else {
         ++callback_it;
@@ -66,11 +66,11 @@ void SignalManager::terminate() {
   state_ == State::TERMINATED;
 }
 
-bool SignalManager::isConnected(const std::string& signal,
+bool SignalManager::is_connected(const std::string& signal,
                                 Callback_ptr& callback) {
   if (!contains(signal)) return false;
-  const auto& callbackList = map_[signal];
-  for (const auto& mappedCallback : callbackList) {
+  const auto& callback_list = map_[signal];
+  for (const auto& mappedCallback : callback_list) {
     if ((*mappedCallback) == (*callback)) return true;
   }
   return false;

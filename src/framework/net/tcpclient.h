@@ -33,7 +33,7 @@ class TcpClient : public std::enable_shared_from_this<TcpClient> {
  public:
   void connect();
   void disconnect();
-  bool isConnected();
+  bool is_connected();
 
  private:
   void onResolve(const boost::system::error_code& error,

@@ -13,47 +13,47 @@ class Manager {
   };
 
   struct Signal {
-    static constexpr auto onLoad = "onLoad";
-    static constexpr auto onReload = "onReload";
+    static constexpr auto on_load = "on_load";
+    static constexpr auto on_reload = "on_reload";
   };
 
  public:
   void init();
   void terminate();
 
-  bool loadAndImportModule(const std::string& name);
-  void restartModules();
+  bool load_and_import_module(const std::string& name);
+  void restart_modules();
   // If reload package, the only wil realoaded __init__.py
-  void reloadModule(const std::string& globalName);
+  void reload_module(const std::string& global_name);
 
-  void connect(const std::string& signal, pybind11::object functionObject,
-               pybind11::object* globalVariableObject = nullptr);
+  void connect(const std::string& signal, pybind11::object function_object,
+               pybind11::object* global_variable_object = nullptr);
   void connect(const std::string& signal, Callback_ptr callback);
 
-  void disconnect(const std::string& signal, pybind11::object functionObject,
-                  pybind11::object* globalVariableObject = nullptr);
+  void disconnect(const std::string& signal, pybind11::object function_object,
+                  pybind11::object* global_variable_object = nullptr);
 
   void run_script(const std::string& script);
 
  protected:
-  Module_ptr loadModule(const std::filesystem::path& path);
-  void loadModules();
-  bool importModule(Module_ptr& module);
+  Module_ptr load_module(const std::filesystem::path& path);
+  void load_modules();
+  bool import_module(Module_ptr& module);
   // Can be risky with C++14/17 iter loop, be sure is not inside that loops.
-  void removeModule(Module_ptr& module);
-  Callback_ptr createCallBack(pybind11::object functionObject,
-                              pybind11::object* globalVariableObject) const;
+  void remove_module(Module_ptr& module);
+  Callback_ptr create_call_back(pybind11::object function_object,
+                              pybind11::object* global_variable_object) const;
 
-  void initModules();
-  void terminateModules();
+  void init_modules();
+  void terminate_modules();
 
  public:
   Config config;
-  SignalManager signalManager;
+  SignalManager signal_manager;
 
  protected:
-  std::filesystem::path modulesPath_;
-  std::map<std::string, Module_ptr> moduleMap_;
+  std::filesystem::path modules_path_;
+  std::map<std::string, Module_ptr> module_map_;
 };
 }  // namespace FW::PyModule
 #endif  // #ifndef FW_PYMODULE_MANAGER_H

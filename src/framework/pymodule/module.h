@@ -10,20 +10,20 @@
 
 namespace FW::PyModule {
 struct Module {
-  Module(const std::string& fileNameWithoutExtension,
-         const std::string& pathWithoutExtension, bool isPackage = false);
+  Module(const std::string& file_name_without_extension,
+         const std::string& path_without_extension, bool is_package = false);
 
-  std::string getName() const;
-  std::string getPathWithoutExtension() const;
-  pybind11::module getObject() const;
+  std::string get_name() const;
+  std::string get_path_without_extension() const;
+  pybind11::module get_object() const;
 
-  void setObject(const pybind11::module& newObject);
+  void set_object(const pybind11::module& newObject);
 
  protected:
-  std::string fileNameWithoutExtension_;
+  std::string file_name_without_extension_;
   // Contains modules path
-  std::string pathWithoutExtension_;
-  bool isPackage_;
+  std::string path_without_extension_;
+  bool is_package_;
   pybind11::module object_;
 };
 }  // namespace FW::PyModule

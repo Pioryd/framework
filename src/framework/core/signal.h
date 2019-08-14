@@ -45,7 +45,7 @@ class Signal {
       auto& cpp_callback = cpp_callbacks_pair.second;
       cpp_callback(std::forward<Args>(args)...);
     }
-    G::PyModule_Manager->signalManager.send(signal_id_,
+    G::PyModule_Manager->signal_manager.send(signal_id_,
                                            std::forward<Args>(args)...);
   }
 

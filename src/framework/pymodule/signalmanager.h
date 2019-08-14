@@ -32,7 +32,7 @@ class SignalManager {
   template <typename... Args>
   void send(const std::string& signal, const Args&... args);
 
-  bool isConnected(const std::string& signal, Callback_ptr& callback);
+  bool is_connected(const std::string& signal, Callback_ptr& callback);
   bool contains(const std::string& signal) const;
   bool empty() const;
   void clear();
@@ -56,8 +56,8 @@ void SignalManager::send(const std::string& signal, const Args&... args) {
     return;
   }
 
-  const auto& callbackList = map_[signal];
-  for (const auto& callback : callbackList) callback->call(args...);
+  const auto& callback_list = map_[signal];
+  for (const auto& callback : callback_list) callback->call(args...);
 }
 }  // namespace FW::PyModule
 #endif  // #ifndef FW_PYMODULE_SIGNALMANAGER_H

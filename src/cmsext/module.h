@@ -9,7 +9,7 @@
 namespace cmsext::module {
 void load(const cms::string& module_name);
 void reload(const cms::string& module_name);
-void restartModules();
+void restart_modules();
 void run_script(const cms::string& script);
 
 template <typename T>
