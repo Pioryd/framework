@@ -7,30 +7,31 @@ using namespace FW::Crypt;
 
 static CryptoPP::AutoSeededRandomPool prng;
 
-Rsa::Rsa(std::size_t const keySize) : keySize(keySize), msgSize(keySize / 8) {}
+Rsa::Rsa(std::size_t const key_size)
+    : key_size_(key_size), msg_size_(key_size / 8) {}
 
 Rsa::~Rsa() {}
 
 void Rsa::encrypt(unsigned char *msg) const {
-  CryptoPP::Integer m{msg, msgSize};
-  CryptoPP::Integer enc = publicKey.ApplyFunction(m);
-  enc.Encode(msg, msgSize);
+  CryptoPP::Integer m{msg, msg_size_};
+  CryptoPP::Integer enc = public_key_.ApplyFunction(m);
+  enc.Encode(msg, msg_size_);
 }
 
 void Rsa::decrypt(unsigned char *msg) const {
-  CryptoPP::Integer m{msg, msgSize};
-  auto ci = privateKey.CalculateInverse(prng, m);
-  ci.Encode(msg, msgSize);
+  CryptoPP::Integer m{msg, msg_size_};
+  auto ci = private_key_.CalculateInverse(prng, m);
+  ci.Encode(msg, msg_size_);
 }
 
-void Rsa::generatePrivateAndPublicKey(std::stringstream &ss) const {
+void Rsa::generate_private_and_public_key(std::stringstream &ss) const {
   CryptoPP::AutoSeededRandomPool rng;
   CryptoPP::InvertibleRSAFunction params;
 
-  params.GenerateRandomWithKeySize(rng, this->keySize);
+  params.GenerateRandomWithKeySize(rng, key_size_);
 
-  CryptoPP::RSA::PublicKey genPublicKey = CryptoPP::RSA::PublicKey(params);
-  CryptoPP::RSA::PrivateKey genPrivateKey = CryptoPP::RSA::PrivateKey(params);
+  auto gen_public_key = CryptoPP::RSA::PublicKey(params);
+  auto gen_private_key = CryptoPP::RSA::PrivateKey(params);
 
   CryptoPP::Integer const &n = params.GetModulus();
   CryptoPP::Integer const &p = params.GetPrime1();
@@ -38,14 +39,31 @@ void Rsa::generatePrivateAndPublicKey(std::stringstream &ss) const {
   CryptoPP::Integer const &d = params.GetPrivateExponent();
   CryptoPP::Integer const &e = params.GetPublicExponent();
 
-  ss << "Public key values:" << std::endl
-     << " (HEX) n: " << std::hex << n << std::endl
-     << " n: " << std::dec << n << std::endl
-     << " (HEX) e: " << std::hex << e << std::endl
-     << " e: " << std::dec << e << std::endl
-     << " public PEM: " << std::endl
-     << "-----BEGIN PUBLIC KEY-----" << std::endl
-     << getAsString(genPublicKey) << "-----END PUBLIC KEY-----" << std::endl;
+  auto to_string = [](const CryptoPP::RSAFunction& key) {
+    std::string string_key;
+    CryptoPP::Base64Encoder key_sink;
+
+    key.DEREncode(key_sink);
+    key_sink.MessageEnd();
+
+    auto size = key_sink.MaxRetrievable();
+    if (size) {
+      string_key.resize(size);
+      key_sink.Get((unsigned char *)&string_key[0], string_key.size());
+    }
+
+    return string_key;
+  };
+
+  ss  << "Public key values:" << std::endl
+                    << " (HEX) n: " << std::hex << n << std::endl
+                    << " n: " << std::dec << n << std::endl
+                    << " (HEX) e: " << std::hex << e << std::endl
+                    << " e: " << std::dec << e << std::endl
+                    << " public PEM: " << std::endl
+                    << "-----BEGIN PUBLIC KEY-----" << std::endl
+     << to_string(gen_public_key) << "-----END PUBLIC KEY-----"
+                    << std::endl;
 
   ss << "Private key values:" << std::endl
      << " (HEX) p: " << std::hex << p << std::endl
@@ -56,53 +74,21 @@ void Rsa::generatePrivateAndPublicKey(std::stringstream &ss) const {
      << " d: " << std::dec << d << std::endl
      << " private PEM: " << std::endl
      << "-----BEGIN RSA PRIVATE KEY-----" << std::endl
-     << getAsString(genPrivateKey) << "-----END RSA PRIVATE KEY-----"
+     << to_string(gen_private_key) << "-----END RSA PRIVATE KEY-----"
      << std::endl;
 }
 
-void Rsa::setPublicKey(const char *n, const char *e) {
+void Rsa::set_public_key(const char *n, const char *e) {
   CryptoPP::Integer iN{n};
   CryptoPP::Integer iE{e};
-  publicKey.Initialize(iN, iE);
+  public_key_.Initialize(iN, iE);
 }
 
-void Rsa::setPrivateKey(const char *n, const char *e, const char *d) {
+void Rsa::set_private_key(const char *n, const char *e, const char *d) {
   CryptoPP::Integer iN{n};
   CryptoPP::Integer iE{e};
   CryptoPP::Integer iD{d};
 
-  privateKey.Initialize(iN, iE, iD);
+  private_key_.Initialize(iN, iE, iD);
 }
 
-std::string Rsa::getAsString(CryptoPP::RSA::PublicKey const &publicKey) const {
-  std::string stringKey;
-  CryptoPP::Base64Encoder keySink;
-
-  publicKey.DEREncode(keySink);
-  keySink.MessageEnd();
-
-  auto size = keySink.MaxRetrievable();
-  if (size) {
-    stringKey.resize(size);
-    keySink.Get((unsigned char *)&stringKey[0], stringKey.size());
-  }
-
-  return stringKey;
-}
-
-std::string Rsa::getAsString(
-    CryptoPP::RSA::PrivateKey const &privateKey) const {
-  std::string stringKey;
-  CryptoPP::Base64Encoder keySink;
-
-  privateKey.DEREncode(keySink);
-  keySink.MessageEnd();
-
-  auto size = keySink.MaxRetrievable();
-  if (size) {
-    stringKey.resize(size);
-    keySink.Get((unsigned char *)&stringKey[0], stringKey.size());
-  }
-
-  return stringKey;
-}
