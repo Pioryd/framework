@@ -117,7 +117,7 @@ void TcpClient::asyncReconnect() {
     disconnect();
 
     state_ = State::RECONNECTING;
-    eventManager_.addAsyncEvent(
+    eventManager_.add_async_event(
         std::bind(&TcpClient::connect, shared_from_this()),
         config.reconnectPerTime);
   } catch (boost::system::system_error& e) {

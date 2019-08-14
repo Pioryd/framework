@@ -2,24 +2,24 @@
 
 namespace FW::Thread {
 Event::Event()
-    : guid{Event::FATAL_GUID},
-      callback(nullptr),
-      executeTime{NO_DELAY},
-      expirationTime{DO_NOT_EXPIRE},
-      waitTimeBetweenRepeats{MINIMUM_WAIT_TIME},
-      maxExecuteRepeats{REPEAT_ONCE},
-      active{true},
-      executeCount{0} {}
+    : guid_{Event::FATAL_GUID},
+      callback_(nullptr),
+      execute_time_{NO_DELAY},
+      expiration_time_{DO_NOT_EXPIRE},
+      wait_time_between_repeats_{MINIMUM_WAIT_TIME},
+      max_execute_repeats_{REPEAT_ONCE},
+      active_{true},
+      execute_count_{0} {}
 
-void Event::execute(Time::ticks_t syncTime) {
-  if (active && callback && canExecuteRepeat(syncTime)) {
-    callback();
+void Event::execute(Time::ticks_t sync_time) {
+  if (active_ && callback_ && canExecuteRepeat(sync_time)) {
+    callback_();
 
     // prepare next repeat
-    executeCount++;
+    execute_count_++;
 
-    if (canExecuteRepeat(syncTime)) {
-      executeTime += waitTimeBetweenRepeats;
+    if (canExecuteRepeat(sync_time)) {
+      execute_time_ += wait_time_between_repeats_;
       return;
     }
   }
@@ -27,20 +27,20 @@ void Event::execute(Time::ticks_t syncTime) {
 }
 
 void Event::cancel() {
-  active = false;
-  callback = nullptr;
+  active_ = false;
+  callback_ = nullptr;
 }
 
-bool Event::canExecuteRepeat(Time::ticks_t syncTime) const {
+bool Event::canExecuteRepeat(Time::ticks_t sync_time) const {
   // The order of checking is important
-  if (active == false) return false;
+  if (active_ == false) return false;
 
-  if ((expirationTime != DO_NOT_EXPIRE) && (expirationTime < syncTime))
+  if ((expiration_time_ != DO_NOT_EXPIRE) && (expiration_time_ < sync_time))
     return false;
 
-  if (maxExecuteRepeats == REPEAT_ALL_THE_TIME)
+  if (max_execute_repeats_ == REPEAT_ALL_THE_TIME)
     return true;
-  else if (executeCount < maxExecuteRepeats)
+  else if (execute_count_ < max_execute_repeats_)
     return true;
 
   return false;

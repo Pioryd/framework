@@ -26,81 +26,81 @@ class EventManager : public Core::TraceInfo {
   EventManager& operator=(const EventManager&) = delete;
 
   // Returns GUID of set event. If fail event.id is Event::FATAL_ID.
-  EventGUID addSyncEvent(
+  EventGUID add_sync_event(
       std::function<void(void)> callback,
-      Time::ticks_t executeDelay = Event::NO_DELAY,
-      int32_t maxExecuteRepeats = Event::REPEAT_ONCE,
-      Time::ticks_t waitTimeBetweenRepeats = Event::MINIMUM_WAIT_TIME,
-      Time::ticks_t expiration = Event::DO_NOT_EXPIRE, bool pushFront = false);
+      Time::ticks_t execute_delay = Event::NO_DELAY,
+      int32_t max_execute_repeats = Event::REPEAT_ONCE,
+      Time::ticks_t wait_time_between_repeats = Event::MINIMUM_WAIT_TIME,
+      Time::ticks_t expiration = Event::DO_NOT_EXPIRE, bool push_front = false);
   template <class T>
-  EventGUID addSyncEvent(
+  EventGUID add_sync_event(
       std::shared_future<typename std::result_of<T()>::type>& future,
-      const T& callback, Time::ticks_t executeDelay = Event::NO_DELAY,
-      int32_t maxExecuteRepeats = Event::REPEAT_ONCE,
-      Time::ticks_t waitTimeBetweenRepeats = Event::MINIMUM_WAIT_TIME,
-      Time::ticks_t expiration = Event::DO_NOT_EXPIRE, bool pushFront = false);
-  EventGUID addAsyncEvent(
+      const T& callback, Time::ticks_t execute_delay = Event::NO_DELAY,
+      int32_t max_execute_repeats = Event::REPEAT_ONCE,
+      Time::ticks_t wait_time_between_repeats = Event::MINIMUM_WAIT_TIME,
+      Time::ticks_t expiration = Event::DO_NOT_EXPIRE, bool push_front = false);
+  EventGUID add_async_event(
       std::function<void(void)> callback,
-      Time::ticks_t executeDelay = Event::NO_DELAY,
-      int32_t maxExecuteRepeats = Event::REPEAT_ONCE,
-      Time::ticks_t waitTimeBetweenRepeats = Event::MINIMUM_WAIT_TIME,
-      Time::ticks_t expiration = Event::DO_NOT_EXPIRE, bool pushFront = false);
+      Time::ticks_t execute_delay = Event::NO_DELAY,
+      int32_t max_execute_repeats = Event::REPEAT_ONCE,
+      Time::ticks_t wait_time_between_repeats = Event::MINIMUM_WAIT_TIME,
+      Time::ticks_t expiration = Event::DO_NOT_EXPIRE, bool push_front = false);
   template <class T>
-  EventGUID addAsyncEvent(
+  EventGUID add_async_event(
       std::shared_future<typename std::result_of<T()>::type>& future,
-      const T& callback, Time::ticks_t executeDelay = Event::NO_DELAY,
-      int32_t maxExecuteRepeats = Event::REPEAT_ONCE,
-      Time::ticks_t waitTimeBetweenRepeats = Event::MINIMUM_WAIT_TIME,
-      Time::ticks_t expiration = Event::DO_NOT_EXPIRE, bool pushFront = false);
-  bool removeEvent(EventGUID eventGUID);
+      const T& callback, Time::ticks_t execute_delay = Event::NO_DELAY,
+      int32_t max_execute_repeats = Event::REPEAT_ONCE,
+      Time::ticks_t wait_time_between_repeats = Event::MINIMUM_WAIT_TIME,
+      Time::ticks_t expiration = Event::DO_NOT_EXPIRE, bool push_front = false);
+  bool remove_event(EventGUID event_guid);
 
-  void syncPoll();
+  void sync_poll();
 
   void start();
   void join();
   void terminate();
 
  protected:
-  void asyncPoll();
+  void async_poll();
 
  protected:
-  EventPoll syncEventPoll;
+  EventPoll sync_event_poll_;
 
-  EventPoll asyncEventPoll;
-  std::thread asyncThread;
-  std::mutex asyncMutex;
-  std::atomic<State> asyncState;
-  std::condition_variable asyncCondition;
+  EventPoll async_event_poll_;
+  std::thread async_thread_;
+  std::mutex async_mutex_;
+  std::atomic<State> async_state_;
+  std::condition_variable asyn_condition_;
 };
 
 template <class T>
-EventGUID EventManager::addSyncEvent(
+EventGUID EventManager::add_sync_event(
     std::shared_future<typename std::result_of<T()>::type>& future,
-    const T& callback, Time::ticks_t executeDelay, int32_t maxExecuteRepeats,
-    Time::ticks_t waitTimeBetweenRepeats, Time::ticks_t expiration,
-    bool pushFront) {
+    const T& callback, Time::ticks_t execute_delay, int32_t max_execute_repeats,
+    Time::ticks_t wait_time_between_repeats, Time::ticks_t expiration,
+    bool push_front) {
   auto promise =
       std::make_shared<std::promise<typename std::result_of<T()>::type>>();
-  auto eventGUID = addSyncEvent([=]() { promise->set_value(callback()); },
-                                executeDelay, maxExecuteRepeats,
-                                waitTimeBetweenRepeats, expiration, pushFront);
+  auto event_guid = add_sync_event([=]() { promise->set_value(callback()); },
+                                execute_delay, max_execute_repeats,
+                                wait_time_between_repeats, expiration, push_front);
   future = promise->get_future();
-  return eventGUID;
+  return event_guid;
 }
 
 template <class T>
-EventGUID EventManager::addAsyncEvent(
+EventGUID EventManager::add_async_event(
     std::shared_future<typename std::result_of<T()>::type>& future,
-    const T& callback, Time::ticks_t executeDelay, int32_t maxExecuteRepeats,
-    Time::ticks_t waitTimeBetweenRepeats, Time::ticks_t expiration,
-    bool pushFront) {
+    const T& callback, Time::ticks_t execute_delay, int32_t max_execute_repeats,
+    Time::ticks_t wait_time_between_repeats, Time::ticks_t expiration,
+    bool push_front) {
   auto promise =
       std::make_shared<std::promise<typename std::result_of<T()>::type>>();
-  auto eventGUID = addAsyncEvent([=]() { promise->set_value(callback()); },
-                                 executeDelay, maxExecuteRepeats,
-                                 waitTimeBetweenRepeats, expiration, pushFront);
+  auto event_guid = add_async_event([=]() { promise->set_value(callback()); },
+                                 execute_delay, max_execute_repeats,
+                                 wait_time_between_repeats, expiration, push_front);
   future = promise->get_future();
-  return eventGUID;
+  return event_guid;
 }
 }  // namespace FW::Thread
 #endif  // #ifndef FRAMEWORK_THREAD_EVENTMANAGER_H

@@ -11,12 +11,12 @@ namespace FW::Thread {
 // Its ide thats indetifu event for mall threads
 struct EventGUID {
   uint32_t id{0};
-  Time::ticks_t timeOfIdSet{0};
-  uint32_t eventPollId{0};
+  Time::ticks_t time_of_id_set{0};
+  uint32_t event_poll_id{0};
   // TODO
   // eventPollId can be 0 or not ?
-  bool isSet() {
-    if (id != 0 && timeOfIdSet != 0) return true;
+  bool is_set() {
+    if (id != 0 && time_of_id_set != 0) return true;
   }
   void reset() { *this = {}; }
 };
@@ -24,8 +24,8 @@ struct EventGUID {
 class Event {
  public:
   struct Compare {
-    bool operator()(const Event_ptr& lArg, const Event_ptr& rArg) {
-      return lArg->executeTime > rArg->executeTime;
+    bool operator()(const Event_ptr& l_arg, const Event_ptr& r_arg) {
+      return l_arg->execute_time_ > r_arg->execute_time_;
     }
   };
 
@@ -42,23 +42,23 @@ class Event {
   virtual ~Event() = default;
 
  public:
-  virtual void execute(Time::ticks_t syncTime);
+  virtual void execute(Time::ticks_t sync_time);
   void cancel();
 
  protected:
-  bool canExecuteRepeat(Time::ticks_t syncTime) const;
+  bool canExecuteRepeat(Time::ticks_t sync_time) const;
 
  private:  // Const at set
-  EventGUID guid;
-  std::function<void()> callback;
-  Time::ticks_t executeTime;
-  Time::ticks_t expirationTime;
-  Time::ticks_t waitTimeBetweenRepeats;
-  int32_t maxExecuteRepeats;
+  EventGUID guid_;
+  std::function<void()> callback_;
+  Time::ticks_t execute_time_;
+  Time::ticks_t expiration_time_;
+  Time::ticks_t wait_time_between_repeats_;
+  int32_t max_execute_repeats_;
 
  private:  // Work values
-  bool active;
-  uint32_t executeCount;
+  bool active_;
+  uint32_t execute_count_;
 
  private:
   friend class EventPoll;

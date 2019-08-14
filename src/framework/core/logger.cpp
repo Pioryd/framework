@@ -47,7 +47,7 @@ void Logger::fatal(const std::string& what, const std::string& caller,
 
 void Logger::log(Level level, const std::string& message,
                  const std::string& caller, const std::string& trace) {
-  addAsyncEvent(
+  add_async_event(
       std::bind(&Logger::addEventLog, this, level, message, caller, trace));
 }
 

@@ -17,36 +17,36 @@ class EventPoll : public Core::TraceInfo {
  public:
   enum class State { NO_EVENTS, READY_TO_EXECUTE, DELAYED_EVENTS };
 
-  EventPoll(uint32_t id, const std::string& traceInfo);
+  EventPoll(uint32_t id, const std::string& trace_info);
   virtual ~EventPoll() = default;
 
   EventPoll(const EventPoll&) = delete;
   EventPoll& operator=(const EventPoll&) = delete;
 
   // Returns GUID of set event. If fail returns Event::FATAL_GUID.
-  EventGUID addInstantEvent(std::function<void(void)> callback,
-                            bool pushFront = false);
-  EventGUID addDelayedEvent(
+  EventGUID add_instant_event(std::function<void(void)> callback,
+                            bool push_front = false);
+  EventGUID add_delayed_event(
       std::function<void(void)> callback,
-      Time::ticks_t executeDelay = Event::NO_DELAY,
-      int32_t maxExecuteRepeats = Event::REPEAT_ONCE,
-      Time::ticks_t waitTimeBetweenRepeats = Event::MINIMUM_WAIT_TIME,
+      Time::ticks_t execute_delay = Event::NO_DELAY,
+      int32_t max_execute_repeats = Event::REPEAT_ONCE,
+      Time::ticks_t wait_time_between_repeats = Event::MINIMUM_WAIT_TIME,
       Time::ticks_t expiration = Event::DO_NOT_EXPIRE);
   // Return true when remove event. False when event with given GUID does not
   // exist.
-  bool removeEvent(EventGUID eventId);
-  State getState();
+  bool remove_event(EventGUID eventId);
+  State get_state();
 
   void shutdown();
   void poll();
 
  protected:
-  inline bool isExecutedEventsLimitExceeded(uint32_t executedEventsCount);
-  inline Event_ptr createEvent(
+  inline bool is_executed_events_limit_exceeded(uint32_t executed_events_count);
+  inline Event_ptr create_event(
       std::function<void(void)> callback,
-      Time::ticks_t executeDelay = Event::NO_DELAY,
-      int32_t maxExecuteRepeats = Event::REPEAT_ONCE,
-      Time::ticks_t waitTimeBetweenRepeats = Event::MINIMUM_WAIT_TIME,
+      Time::ticks_t execute_delay = Event::NO_DELAY,
+      int32_t max_execute_repeats = Event::REPEAT_ONCE,
+      Time::ticks_t wait_time_between_repeats = Event::MINIMUM_WAIT_TIME,
       Time::ticks_t expiration = Event::DO_NOT_EXPIRE);
 
  public:
@@ -55,21 +55,21 @@ class EventPoll : public Core::TraceInfo {
  protected:
   const uint32_t id;
   State state;
-  EventGUID lastSetEventGUID;
-  std::unordered_set<uint32_t> takenEventIds;
+  EventGUID last_set_event_guid_;
+  std::unordered_set<uint32_t> taken_event_ids_;
 
   // These events are execute as fast as possible
-  std::list<Event_ptr> instantEventList;
+  std::list<Event_ptr> instant_event_list_;
   // Use only for cancel Events, becouse std::priority_queue does not have
   // iterator
-  std::list<Event_ptr> delayedEventList;
+  std::list<Event_ptr> delayed_event_list_;
   // Need for fast set events ordered by execute time. Even if event is
   // canceled, will be removed only when the time comes to execute that event.
   std::priority_queue<Event_ptr, std::deque<Event_ptr>, Event::Compare>
-      delayedEventQueue;
+      delayed_event_queue;
   // Status of all class functionality
   bool enabled;
-  Time::ticks_t pollStartTime;
+  Time::ticks_t poll_start_time;
 
  private:
   friend EventManager;

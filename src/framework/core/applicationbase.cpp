@@ -125,8 +125,8 @@ void ApplicationBase::init(const std::vector<std::string>& argv,
   FW::G::PyModule_Manager->init();
 
   FW::G::EventManager.start();
-  signals.on_poll_end.connect("FW::G::EventManager.syncPoll()",
-                              &FW::Thread::EventManager::syncPoll,
+  signals.on_poll_end.connect("FW::G::EventManager.sync_poll()",
+                              &FW::Thread::EventManager::sync_poll,
                             &FW::G::EventManager);
 
   signals.on_init.send(argv, title);
@@ -160,18 +160,18 @@ void ApplicationBase::poll() {
 
 void ApplicationBase::handleSystemSignal(int32_t signal) {
   if (signal == SIGINT)
-    G::EventManager.addAsyncEvent([]() {
+    G::EventManager.add_async_event([]() {
       FW::G::Application->terminate();
       FW::G::Application->join();
     });
   else if (signal == SIGTERM)
-    G::EventManager.addAsyncEvent([]() {
+    G::EventManager.add_async_event([]() {
       FW::G::Application->terminate();
       FW::G::Application->join();
     });
 #ifdef _WIN32
   else if (signal == SIGBREAK)
-    G::EventManager.addAsyncEvent([]() {
+    G::EventManager.add_async_event([]() {
       FW::G::Application->terminate();
       FW::G::Application->join();
     });

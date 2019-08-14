@@ -117,7 +117,7 @@ int64_t MainManager::getLastInsertId(int32_t sql_id) const {
 }
 
 void MainManager::executeAsync(int32_t sql_id, const Query& query) {
-  db_vec_[sql_id].event_manager->addAsyncEvent(
+  db_vec_[sql_id].event_manager->add_async_event(
       std::bind(static_cast<void (MainManager::*)(int32_t, const Query&)>(
                     &MainManager::internalExecute),
                 this, sql_id, query));
@@ -142,7 +142,7 @@ void MainManager::internalExecute(int32_t sql_id, const Query& query) {
   } catch (...) { success = false; }
 
   if (query.callback_) {
-    db_vec_[sql_id].event_manager->addAsyncEvent(
+    db_vec_[sql_id].event_manager->add_async_event(
         std::bind(query.callback_, result, success));
   }
 }

@@ -125,7 +125,7 @@ void TcpListener::asyncRestart() {
 
   stop();
   state_ = State::RESTARTING;
-  eventManager_.addAsyncEvent(
+  eventManager_.add_async_event(
       std::bind(&TcpListener::start, shared_from_this()),
       config.restartPerTime);
 }

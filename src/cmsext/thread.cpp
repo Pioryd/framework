@@ -11,7 +11,7 @@ void add_sync_event(std::function<void(void)> callback, int64_t execute_delay,
                     int64_t max_execute_repeats,
                     int64_t wait_time_between_repeats, int64_t expiration,
                     bool push_front) {
-  FW::G::EventManager.addSyncEvent(callback, execute_delay, max_execute_repeats,
+  FW::G::EventManager.add_sync_event(callback, execute_delay, max_execute_repeats,
                                    wait_time_between_repeats, expiration,
                                    push_front);
 }
@@ -20,7 +20,7 @@ void add_async_event(std::function<void(void)> callback, int64_t execute_delay,
                      int64_t max_execute_repeats,
                      int64_t wait_time_between_repeats, int64_t expiration,
                      bool push_front) {
-  FW::G::EventManager.addAsyncEvent(
+  FW::G::EventManager.add_async_event(
       callback, execute_delay, max_execute_repeats, wait_time_between_repeats,
       expiration, push_front);
 }
@@ -36,7 +36,7 @@ PYBIND11_EMBEDDED_MODULE(cmsext_thread, m) {
              FW::Thread::Event::MINIMUM_WAIT_TIME,
          int64_t expiration = FW::Thread::Event::DO_NOT_EXPIRE,
          bool push_front = false) {
-        FW::G::EventManager.addSyncEvent(
+        FW::G::EventManager.add_sync_event(
             callback, execute_delay, max_execute_repeats,
             wait_time_between_repeats, expiration, push_front);
       },
@@ -56,7 +56,7 @@ PYBIND11_EMBEDDED_MODULE(cmsext_thread, m) {
                  FW::Thread::Event::MINIMUM_WAIT_TIME,
              int64_t expiration = FW::Thread::Event::DO_NOT_EXPIRE,
              bool push_front = false) {
-            FW::G::EventManager.addAsyncEvent(
+            FW::G::EventManager.add_async_event(
                 callback, execute_delay, max_execute_repeats,
                 wait_time_between_repeats, expiration, push_front);
           },
