@@ -10,56 +10,56 @@ void OutputMessage::reset() {
 
 void OutputMessage::putUInt8(uint8_t value) {
   throwIfCantPut(1);
-  Util::Math::writeLE8<uint8_t>(buffer_ + position_, value);
+  Util::Math::write_le8<uint8_t>(buffer_ + position_, value);
   position_ += 1;
   length_ += 1;
 }
 
 void OutputMessage::putUInt16(uint16_t value) {
   throwIfCantPut(2);
-  Util::Math::writeLE16<uint16_t>(buffer_ + position_, value);
+  Util::Math::write_le16<uint16_t>(buffer_ + position_, value);
   position_ += 2;
   length_ += 2;
 }
 
 void OutputMessage::putUInt32(uint32_t value) {
   throwIfCantPut(4);
-  Util::Math::writeLE32<uint32_t>(buffer_ + position_, value);
+  Util::Math::write_le32<uint32_t>(buffer_ + position_, value);
   position_ += 4;
   length_ += 4;
 }
 
 void OutputMessage::putUInt64(uint64_t value) {
   throwIfCantPut(8);
-  Util::Math::writeLE64<uint64_t>(buffer_ + position_, value);
+  Util::Math::write_le64<uint64_t>(buffer_ + position_, value);
   position_ += 8;
   length_ += 8;
 }
 
 void OutputMessage::putInt8(int8_t value) {
   throwIfCantPut(1);
-  Util::Math::writeLE8<int8_t>(buffer_ + position_, value);
+  Util::Math::write_le8<int8_t>(buffer_ + position_, value);
   position_ += 1;
   length_ += 1;
 }
 
 void OutputMessage::putInt16(int16_t value) {
   throwIfCantPut(2);
-  Util::Math::writeLE16<int16_t>(buffer_ + position_, value);
+  Util::Math::write_le16<int16_t>(buffer_ + position_, value);
   position_ += 2;
   length_ += 2;
 }
 
 void OutputMessage::putInt32(int32_t value) {
   throwIfCantPut(2);
-  Util::Math::writeLE32<int32_t>(buffer_ + position_, value);
+  Util::Math::write_le32<int32_t>(buffer_ + position_, value);
   position_ += 4;
   length_ += 4;
 }
 
 void OutputMessage::putInt64(int64_t value) {
   throwIfCantPut(2);
-  Util::Math::writeLE64<int64_t>(buffer_ + position_, value);
+  Util::Math::write_le64<int64_t>(buffer_ + position_, value);
   position_ += 8;
   length_ += 8;
 }

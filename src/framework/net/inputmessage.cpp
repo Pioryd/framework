@@ -13,42 +13,42 @@ void InputMessage::reset() {
 
 uint8_t InputMessage::peekUInt8() {
   throwIfCantRead(1);
-  return Util::Math::readLE8<uint8_t>(buffer_ + position_);
+  return Util::Math::read_le8<uint8_t>(buffer_ + position_);
 }
 
 uint16_t InputMessage::peekUInt16() {
   throwIfCantRead(2);
-  return Util::Math::readLE16<uint16_t>(buffer_ + position_);
+  return Util::Math::read_le16<uint16_t>(buffer_ + position_);
 }
 
 uint32_t InputMessage::peekUInt32() {
   throwIfCantRead(4);
-  return Util::Math::readLE32<uint32_t>(buffer_ + position_);
+  return Util::Math::read_le32<uint32_t>(buffer_ + position_);
 }
 
 uint64_t InputMessage::peekUInt64() {
   throwIfCantRead(8);
-  return Util::Math::readLE64<uint64_t>(buffer_ + position_);
+  return Util::Math::read_le64<uint64_t>(buffer_ + position_);
 }
 
 int8_t InputMessage::peekInt8() {
   throwIfCantRead(1);
-  return Util::Math::readLE8<uint8_t>(buffer_ + position_);
+  return Util::Math::read_le8<uint8_t>(buffer_ + position_);
 }
 
 int16_t InputMessage::peekInt16() {
   throwIfCantRead(2);
-  return Util::Math::readLE16<uint16_t>(buffer_ + position_);
+  return Util::Math::read_le16<uint16_t>(buffer_ + position_);
 }
 
 int32_t InputMessage::peekInt32() {
   throwIfCantRead(4);
-  return Util::Math::readLE32<uint32_t>(buffer_ + position_);
+  return Util::Math::read_le32<uint32_t>(buffer_ + position_);
 }
 
 int64_t InputMessage::peekInt64() {
   throwIfCantRead(8);
-  return Util::Math::readLE64<uint64_t>(buffer_ + position_);
+  return Util::Math::read_le64<uint64_t>(buffer_ + position_);
 }
 
 std::string InputMessage::peekString() {

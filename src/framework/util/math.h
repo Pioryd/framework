@@ -8,65 +8,65 @@
 namespace FW::Util {
 namespace Math {
 template <typename T>
-inline T readLE8(const uint8_t* data) {
+inline T read_le8(const uint8_t* data) {
   return data[0];
 }
 template <typename T>
-inline T readLE16(const uint8_t* data) {
+inline T read_le16(const uint8_t* data) {
   return ((data[1] << 8) | data[0]);
 }
 template <typename T>
-inline T readLE32(const uint8_t* data) {
+inline T read_le32(const uint8_t* data) {
   return (data[3] << 24) | (data[2] << 16) | (data[1] << 8) | (data[0]);
 }
 // int64/uin64 is still only 40bits at x86-64
 // be sure you are in correct range of min/max
 template <typename T>
-inline T readLE64(const uint8_t* data) {
+inline T read_le64(const uint8_t* data) {
   return ((T)data[7] << 56) | ((T)data[6] << 48) | ((T)data[5] << 40) |
          ((T)data[4] << 32) | ((T)data[3] << 24) | ((T)data[2] << 16) |
          ((T)data[1] << 8) | ((T)data[0]);
 }
 
 template <typename T>
-inline T readBE8(const uint8_t* data) {
+inline T read_be8(const uint8_t* data) {
   return data[0];
 }
 template <typename T>
-inline T readBE16(const uint8_t* data) {
+inline T read_be16(const uint8_t* data) {
   return ((data[0] << 8) | data[1]);
 }
 template <typename T>
-inline T readBE32(const uint8_t* data) {
+inline T read_be32(const uint8_t* data) {
   return (data[0] << 24) | (data[1] << 16) | (data[2] << 8) | (data[3]);
 }
 // int64/uin64 is still only 40bits at x86-64
 // be sure you are in correct range of min/max
 template <typename T>
-inline T readBE64(const uint8_t* data) {
+inline T read_be64(const uint8_t* data) {
   return ((T)data[0] << 56) | ((T)data[1] << 48) | ((T)data[2] << 40) |
          ((T)data[3] << 32) | ((T)data[4] << 24) | ((T)data[5] << 16) |
          ((T)data[6] << 8) | ((T)data[7]);
 }
 
 template <typename T>
-inline void writeLE8(uint8_t* data, T value) {
+inline void write_le8(uint8_t* data, T value) {
   data[0] = (T)value;
 }
 template <typename T>
-inline void writeLE16(uint8_t* data, T value) {
+inline void write_le16(uint8_t* data, T value) {
   data[1] = ((T)value >> 8) & 0xFF;
   data[0] = (T)value;
 }
 template <typename T>
-inline void writeLE32(uint8_t* data, T value) {
+inline void write_le32(uint8_t* data, T value) {
   data[3] = ((T)value >> 24) & 0xFF;
   data[2] = ((T)value >> 16) & 0xFF;
   data[1] = ((T)value >> 8) & 0xFF;
   data[0] = (T)value;
 }
 template <typename T>
-inline void writeLE64(uint8_t* data, T value) {
+inline void write_le64(uint8_t* data, T value) {
   data[7] = ((T)value >> 56) & 0xFF;
   data[6] = ((T)value >> 48) & 0xFF;
   data[5] = ((T)value >> 40) & 0xFF;
@@ -78,23 +78,23 @@ inline void writeLE64(uint8_t* data, T value) {
 }
 
 template <typename T>
-inline void writeBE8(uint8_t* data, T value) {
+inline void write_be8(uint8_t* data, T value) {
   data[0] = (T)value;
 }
 template <typename T>
-inline void writeBE16(uint8_t* data, T value) {
+inline void write_be16(uint8_t* data, T value) {
   data[0] = ((T)value >> 8) & 0xFF;
   data[1] = (T)value;
 }
 template <typename T>
-inline void writeBE32(uint8_t* data, T value) {
+inline void write_be32(uint8_t* data, T value) {
   data[0] = ((T)value >> 24) & 0xFF;
   data[1] = ((T)value >> 16) & 0xFF;
   data[2] = ((T)value >> 8) & 0xFF;
   data[3] = (T)value;
 }
 template <typename T>
-inline void writeBE64(uint8_t* data, T value) {
+inline void write_be64(uint8_t* data, T value) {
   data[0] = ((T)value >> 56) & 0xFF;
   data[1] = ((T)value >> 48) & 0xFF;
   data[2] = ((T)value >> 40) & 0xFF;
