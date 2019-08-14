@@ -13,13 +13,13 @@
 namespace FW::Platform {
 std::string name() { return "Linux"; }
 
-Time::ticks_t getFileModificationTime(std::string file) {
+Time::ticks_t get_file_modification_time(std::string file) {
   struct stat attrib;
   if (stat(file.c_str(), &attrib) == 0) return attrib.st_mtime;
   return 0;
 }
 
-std::wstring getExecutableDirectory() {
+std::wstring get_executable_directory() {
   char result[PATH_MAX];
   ssize_t count = readlink("/proc/self/exe", result, PATH_MAX);
   if (count != -1) {

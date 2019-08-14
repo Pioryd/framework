@@ -4,10 +4,10 @@
 #include <cstring>
 
 namespace FW::IO {
-Time::ticks_t File::getFileModificationTime(const std::string& fileName) {
-  return Platform::getFileModificationTime(fileName);
+Time::ticks_t File::get_file_modification_time(const std::string& fileName) {
+  return Platform::get_file_modification_time(fileName);
 }
-std::wstring File::getExecutableDirectory() {
-  return Platform::getExecutableDirectory();
+std::wstring File::get_executable_directory() {
+  return Platform::get_executable_directory();
 }
 }  // namespace FW::IO

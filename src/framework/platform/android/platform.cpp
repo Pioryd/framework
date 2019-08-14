@@ -4,11 +4,11 @@
 namespace FW::Platform {
 std::string name() { return "Android"; }
 
-Time::ticks_t getFileModificationTime(std::string file) {
+Time::ticks_t get_file_modification_time(std::string file) {
   // TODO
 }
 
-std::wstring getExecutableDirectory() {
+std::wstring get_executable_directory() {
   char result[PATH_MAX];
   ssize_t count = readlink("/proc/self/exe", result, PATH_MAX);
   if (count != -1) {

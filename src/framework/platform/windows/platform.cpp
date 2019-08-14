@@ -9,7 +9,7 @@
 namespace FW::Platform {
 std::string name() { return "Windows"; }
 
-Time::ticks_t getFileModificationTime(std::string file) {
+Time::ticks_t get_file_modification_time(std::string file) {
   boost::replace_all(file, "/", "\\");
   std::wstring wfile(file.begin(), file.end());
   WIN32_FILE_ATTRIBUTE_DATA fileAttrData;
@@ -21,7 +21,7 @@ Time::ticks_t getFileModificationTime(std::string file) {
   return uli.QuadPart;
 }
 
-std::wstring getExecutableDirectory() {
+std::wstring get_executable_directory() {
   wchar_t exePath[MAX_PATH];
   GetModuleFileNameW(nullptr, exePath, MAX_PATH);
   const auto executableDir = std::wstring(exePath);

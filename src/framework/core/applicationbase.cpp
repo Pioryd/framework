@@ -107,7 +107,7 @@ std::wstring ApplicationBase::get_working_directory() {
 #define TOWSTRING(x) WSTRINGIFY(x)
   workingDirectory = TOWSTRING(FW_DEF_PATH_WORK);
 #else   // #ifdef FW_DEF_PATH_WORK
-  workingDirectory = IO::File::getExecutableDirectory();
+  workingDirectory = IO::File::get_executable_directory();
 #endif  // #ifdef FW_DEF_PATH_WORK
   return workingDirectory;
 }
