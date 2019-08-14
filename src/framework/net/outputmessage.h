@@ -34,7 +34,7 @@ class OutputMessage : public NetworkMessage {
   void put_bytes(const char* bytes, size_t size);
   void add_padding_bytes(size_t count);
 
-  uint8_t* get_output_buffer() { return buffer_ + output_buffer_start; }
+  uint8_t* get_output_buffer() { return buffer_ + output_buffer_start_; }
   void write_message_length() { add_header(length_); }
 
   void append(const OutputMessage& msg) {
@@ -49,14 +49,14 @@ class OutputMessage : public NetworkMessage {
 
   template <typename T>
   void add_header(T add) {
-    assert(output_buffer_start >= sizeof(T));
-    output_buffer_start -= sizeof(T);
-    memcpy(buffer_ + output_buffer_start, &add, sizeof(T));
+    assert(output_buffer_start_ >= sizeof(T));
+    output_buffer_start_ -= sizeof(T);
+    memcpy(buffer_ + output_buffer_start_, &add, sizeof(T));
     // added header size to the message size
     length_ += sizeof(T);
   }
 
-  uint16_t output_buffer_start = PACKET_SIZE_BYTES_LENGTH;
+  uint16_t output_buffer_start_ = PACKET_SIZE_BYTES_LENGTH;
 };
 }  // namespace FW::Net
 #endif  // #ifndef FW_NET_OUTPUTMESSAGE_H

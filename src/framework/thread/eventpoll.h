@@ -34,7 +34,7 @@ class EventPoll : public Core::TraceInfo {
       Time::ticks_t expiration = Event::DO_NOT_EXPIRE);
   // Return true when remove event. False when event with given GUID does not
   // exist.
-  bool remove_event(EventGUID eventId);
+  bool remove_event(EventGUID event_id);
   State get_state();
 
   void shutdown();
@@ -53,8 +53,8 @@ class EventPoll : public Core::TraceInfo {
   Config config;
 
  protected:
-  const uint32_t id;
-  State state;
+  const uint32_t id_;
+  State state_;
   EventGUID last_set_event_guid_;
   std::unordered_set<uint32_t> taken_event_ids_;
 
@@ -66,10 +66,10 @@ class EventPoll : public Core::TraceInfo {
   // Need for fast set events ordered by execute time. Even if event is
   // canceled, will be removed only when the time comes to execute that event.
   std::priority_queue<Event_ptr, std::deque<Event_ptr>, Event::Compare>
-      delayed_event_queue;
+      delayed_event_queue_;
   // Status of all class functionality
-  bool enabled;
-  Time::ticks_t poll_start_time;
+  bool enabled_;
+  Time::ticks_t poll_start_time_;
 
  private:
   friend EventManager;

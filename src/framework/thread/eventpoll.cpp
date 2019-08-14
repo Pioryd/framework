@@ -7,15 +7,15 @@
 namespace FW::Thread {
 EventPoll::EventPoll(uint32_t id, const std::string& trace_info)
     : TraceInfo{trace_info},
-      id{id},
-      state{State::NO_EVENTS},
+      id_{id},
+      state_{State::NO_EVENTS},
       last_set_event_guid_{Event::FATAL_GUID},
-      enabled{true},
-      poll_start_time{0} {}
+      enabled_{true},
+      poll_start_time_{0} {}
 
 EventGUID EventPoll::add_instant_event(std::function<void(void)> callback,
                                      bool push_front) {
-  if (!enabled) return Event::FATAL_GUID;
+  if (!enabled_) return Event::FATAL_GUID;
 
   Event_ptr event = create_event(callback);
 
@@ -32,19 +32,19 @@ EventGUID EventPoll::add_delayed_event(std::function<void(void)> callback,
                                      int32_t max_execute_repeats,
                                      Time::ticks_t wait_time_between_repeats,
                                      Time::ticks_t expiration) {
-  if (!enabled) return Event::FATAL_GUID;
+  if (!enabled_) return Event::FATAL_GUID;
 
   Event_ptr event = create_event(callback, execute_delay, max_execute_repeats,
                                 wait_time_between_repeats, expiration);
 
   delayed_event_list_.push_back(event);
-  delayed_event_queue.push(event);
+  delayed_event_queue_.push(event);
 
   return last_set_event_guid_;
 }
 
 bool EventPoll::remove_event(EventGUID event_guid) {
-  if (!enabled) return false;
+  if (!enabled_) return false;
 
   if (event_guid.id == Event::FATAL_GUID.id) return false;
 
@@ -78,8 +78,8 @@ bool EventPoll::remove_event(EventGUID event_guid) {
 
 EventPoll::State EventPoll::get_state() {
   if (!instant_event_list_.empty()) return State::READY_TO_EXECUTE;
-  if (!delayed_event_queue.empty()) {
-    Event_ptr delayd_event = delayed_event_queue.top();
+  if (!delayed_event_queue_.empty()) {
+    Event_ptr delayd_event = delayed_event_queue_.top();
     if (delayd_event->execute_time_ < Time::Now::get_millis())
       return State::READY_TO_EXECUTE;
     else
@@ -89,10 +89,10 @@ EventPoll::State EventPoll::get_state() {
 }
 
 void EventPoll::shutdown() {
-  if (!enabled) return;
+  if (!enabled_) return;
 
   // We need to disable the EventPoll, to avoid adding new events.
-  enabled = false;
+  enabled_ = false;
 
   while (!instant_event_list_.empty()) poll();
 
@@ -104,35 +104,36 @@ void EventPoll::shutdown() {
     delayed_event_list_.erase(event_it);
   }
 
-  while (!delayed_event_queue.empty()) {
-    Event_ptr event = delayed_event_queue.top();
+  while (!delayed_event_queue_.empty()) {
+    Event_ptr event = delayed_event_queue_.top();
     event->cancel();
-    delayed_event_queue.pop();
+    delayed_event_queue_.pop();
   }
 }
 
 void EventPoll::poll() {
   // For sync need we will take time one once per poll
-  poll_start_time = Time::Now::get_millis();
+  poll_start_time_ = Time::Now::get_millis();
   int executed_events_count = 0;
 
-  auto size_of_delayed_event_queue = delayed_event_queue.size();
-  for (auto i = 0; (i < size_of_delayed_event_queue && !delayed_event_queue.empty());
+  auto size_of_delayed_event_queue = delayed_event_queue_.size();
+  for (auto i = 0;
+       (i < size_of_delayed_event_queue && !delayed_event_queue_.empty());
        i++) {
     executed_events_count++;
     if (is_executed_events_limit_exceeded(executed_events_count)) break;
 
-    Event_ptr delayd_event = delayed_event_queue.top();
-    if (delayd_event->execute_time_ > poll_start_time) break;
+    Event_ptr delayd_event = delayed_event_queue_.top();
+    if (delayd_event->execute_time_ > poll_start_time_) break;
 
-    delayed_event_queue.pop();
+    delayed_event_queue_.pop();
 
-    if (delayd_event->canExecuteRepeat(poll_start_time))
-      delayd_event->execute(poll_start_time);
+    if (delayd_event->canExecuteRepeat(poll_start_time_))
+      delayd_event->execute(poll_start_time_);
 
     // Must check again, becouse execute counter was increased
-    if (delayd_event->canExecuteRepeat(poll_start_time)) {
-      delayed_event_queue.push(delayd_event);
+    if (delayd_event->canExecuteRepeat(poll_start_time_)) {
+      delayed_event_queue_.push(delayd_event);
     } else {
       // delayd_event->cancel();
       delayed_event_list_.remove(delayd_event);
@@ -147,7 +148,7 @@ void EventPoll::poll() {
 
     Event_ptr event = instant_event_list_.front();
     instant_event_list_.pop_front();
-    event->execute(poll_start_time);
+    event->execute(poll_start_time_);
   }
 
   // FW_DEBUG_INSTRUCTIONS(
@@ -175,7 +176,7 @@ bool EventPoll::is_executed_events_limit_exceeded(uint32_t executed_events_count
   //    })
 
   if (executed_events_count > 50) {
-    auto takenTime = Time::Now::get_millis() - poll_start_time;
+    auto takenTime = Time::Now::get_millis() - poll_start_time_;
     // if (takenTime > 100)
     //  FW_G_LOGGER_ERROR_TRACE("EventPoll[" + std::to_string(id) +
     //                          "] take too long(" + std::to_string(takenTime) +
@@ -199,7 +200,7 @@ Event_ptr EventPoll::create_event(std::function<void(void)> callback,
   const uint32_t fatal_loop_number = last_set_event_guid_.id;
   // We will iterate only by ID to make it faster
   last_set_event_guid_.time_of_id_set = Time::Now::get_millis();
-  last_set_event_guid_.event_poll_id = id;
+  last_set_event_guid_.event_poll_id = id_;
   while (true) {
     ++last_set_event_guid_.id;
     if (last_set_event_guid_.id == Event::FATAL_GUID.id) last_set_event_guid_.id = 1;
