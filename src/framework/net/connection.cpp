@@ -7,18 +7,18 @@
 
 namespace FW::Net {
 Connection::Connection(boost::asio::io_service& io_service,
-                       std::function<void(Connection_ptr&)> onClose,
+                       std::function<void(Connection_ptr&)> on_close,
                        std::function<void(Connection_ptr&)> on_connected,
-                       const PacketParseCallbacks_ptr& packetParseCallbacks)
+                       const PacketParseCallbacks_ptr& packet_parse_callbacks)
     : id_{-1},
       socket_{io_service},
-      readTimer_{io_service},
-      writeTimer_{io_service},
-      onClose{onClose},
+      read_timer_{io_service},
+      write_timer_{io_service},
+      on_close{on_close},
       on_connected{on_connected},
-      packetParseCallbacks_{packetParseCallbacks},
+      packet_parse_callbacks_{packet_parse_callbacks},
       state_{State::OPEN},
-      outMsg{std::make_shared<OutputMessage>()} {}
+      out_msg{std::make_shared<OutputMessage>()} {}
 
 Connection::~Connection() {
   Connection::auto_id.release(id_);
@@ -29,35 +29,35 @@ void Connection::init() { id_ = Connection::auto_id.lock(shared_from_this()); }
 
 void Connection::connect(
     boost::asio::ip::basic_resolver<boost::asio::ip::tcp>::iterator
-        endpointIterator) {
+        endpoint_iterator) {
   std::lock_guard<std::recursive_mutex> lock(mutex_);
 
   if (state_ == State::CLOSED) {
     FW_DEBUG_INSTRUCTIONS(G::Logger.error(
-        getInfo() + " Unable to connect. Connection is closed.");)
+        get_info() + " Unable to connect. Connection is closed.");)
     return;
   }
 
   if (state_ == State::CONNECTING || state_ == State::CONNECTED) {
     FW_DEBUG_INSTRUCTIONS(G::Logger.error(
-        getInfo() + " Unable to connect. Connection is connecting/connected.");)
+        get_info() + " Unable to connect. Connection is connecting/connected.");)
     return;
   }
 
   state_ = State::CONNECTING;
 
   try {
-    readTimer_.cancel();
-    readTimer_.expires_from_now(std::chrono::seconds(config.readTimeout));
-    readTimer_.async_wait(std::bind(&Connection::onTimeout, shared_from_this(),
+    read_timer_.cancel();
+    read_timer_.expires_from_now(std::chrono::seconds(config.read_timeout));
+    read_timer_.async_wait(std::bind(&Connection::on_timeout, shared_from_this(),
                                     std::placeholders::_1));
 
-    socket_.async_connect(*endpointIterator,
-                          std::bind(&Connection::onConnect, shared_from_this(),
+    socket_.async_connect(*endpoint_iterator,
+                          std::bind(&Connection::on_connect, shared_from_this(),
                                     std::placeholders::_1));
   } catch (boost::system::system_error& e) {
     FW_DEBUG_INSTRUCTIONS(G::Logger.error(
-        getInfo() + " Unable to connect. Error: " + std::string(e.what()) +
+        get_info() + " Unable to connect. Error: " + std::string(e.what()) +
         ".");)
     close();
   }
@@ -67,21 +67,21 @@ void Connection::close() {
   std::lock_guard<std::recursive_mutex> lock(mutex_);
   if (state_ == State::CLOSED) {
     FW_DEBUG_INSTRUCTIONS(G::Logger.error(
-        getInfo() + " Unable to close connection. Connection is closed.");)
+        get_info() + " Unable to close connection. Connection is closed.");)
     return;
   }
 
   auto this_ptr = shared_from_this();
-  onClose(this_ptr);
+  on_close(this_ptr);
 
   if (socket_.is_open()) {
     try {
-      readTimer_.cancel();
-      writeTimer_.cancel();
+      read_timer_.cancel();
+      write_timer_.cancel();
       socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_both);
       socket_.close();
     } catch (boost::system::system_error& e) {
-      G::Logger.error(getInfo() +
+      G::Logger.error(get_info() +
                       " Unable to correctly close connection. Error: " +
                       std::string(e.what()) + ".");
     }
@@ -94,17 +94,17 @@ void Connection::send() {
   std::lock_guard<std::recursive_mutex> lock(mutex_);
   if (state_ != State::CONNECTED) {
     FW_DEBUG_INSTRUCTIONS(G::Logger.error(
-        getInfo() + " Unable to send. Connection is NOT connected.");)
+        get_info() + " Unable to send. Connection is NOT connected.");)
     return;
   }
 
-  bool isSocketWritingPackets = outputMessageQueue_.empty();
-  outputMessageQueue_.emplace_back(outMsg);
-  if (isSocketWritingPackets) { writePacket(outMsg); }
-  outMsg = std::make_shared<OutputMessage>();
+  bool isSocketWritingPackets = output_message_queue_.empty();
+  output_message_queue_.emplace_back(out_msg);
+  if (isSocketWritingPackets) { write_packet(out_msg); }
+  out_msg = std::make_shared<OutputMessage>();
 }
 
-unsigned long Connection::getHost() {
+unsigned long Connection::get_host() {
   std::lock_guard<std::recursive_mutex> lock(mutex_);
   try {
     return socket_.remote_endpoint().address().to_v4().to_ulong();
@@ -114,7 +114,7 @@ unsigned long Connection::getHost() {
   return 0;
 }
 
-std::string Connection::getHostAsString() {
+std::string Connection::get_host_as_string() {
   std::lock_guard<std::recursive_mutex> lock(mutex_);
   try {
     return socket_.remote_endpoint().address().to_string();
@@ -124,7 +124,7 @@ std::string Connection::getHostAsString() {
   return "";
 }
 
-unsigned short Connection::getPort() {
+unsigned short Connection::get_port() {
   std::lock_guard<std::recursive_mutex> lock(mutex_);
   try {
     return socket_.remote_endpoint().port();
@@ -134,113 +134,113 @@ unsigned short Connection::getPort() {
   return 0;
 }
 
-std::string Connection::getPortAsString() {
+std::string Connection::get_port_as_string() {
   std::lock_guard<std::recursive_mutex> lock(mutex_);
-  return std::to_string(getPort());
+  return std::to_string(get_port());
 }
 
-std::string Connection::getInfo() {
+std::string Connection::get_info() {
   // TODO BUG
-  return std::string("std::string Connection::getInfo()"
-    /*"Connection[Host: " + getHostAsString() + " Port: " +
-                     getPortAsString() + 
+  return std::string("std::string Connection::get_info()"
+    /*"Connection[Host: " + get_host_as_string() + " Port: " +
+                     get_port_as_string() + 
                      " Protocol: " + protocol_->name + "]"*/);
 }
 
-void Connection::readPacket() {
+void Connection::read_packet() {
   std::lock_guard<std::recursive_mutex> lock(mutex_);
   try {
-    readTimer_.cancel();
+    read_timer_.cancel();
 
     if (state_ != State::CONNECTED) {
       FW_DEBUG_INSTRUCTIONS(G::Logger.error(
-          getInfo() + " Unable to read packet. Connection is NOT connected.");)
+          get_info() + " Unable to read packet. Connection is NOT connected.");)
       return;
     }
 
-    readTimer_.expires_from_now(std::chrono::seconds(config.readTimeout));
-    readTimer_.async_wait(std::bind(&Connection::onTimeout, shared_from_this(),
+    read_timer_.expires_from_now(std::chrono::seconds(config.read_timeout));
+    read_timer_.async_wait(std::bind(&Connection::on_timeout, shared_from_this(),
                                     std::placeholders::_1));
 
-    inMsg.reset();
-    inMsg.setLength(NetworkMessage::PACKET_SIZE_BYTES_LENGTH);
+    in_msg.reset();
+    in_msg.set_length(NetworkMessage::PACKET_SIZE_BYTES_LENGTH);
 
     boost::asio::async_read(
         socket_,
-        boost::asio::buffer(inMsg.getBufferAtCurrentPosition(),
+        boost::asio::buffer(in_msg.get_buffer_at_current_position(),
                             NetworkMessage::PACKET_SIZE_BYTES_LENGTH),
-        std::bind(&Connection::readPacketSize, shared_from_this(),
+        std::bind(&Connection::read_packet_size, shared_from_this(),
                   std::placeholders::_1));
   } catch (boost::system::system_error& e) {
     FW_DEBUG_INSTRUCTIONS(G::Logger.error(
-        getInfo() + " Unable to read packet. Error: " + std::string(e.what()) +
+        get_info() + " Unable to read packet. Error: " + std::string(e.what()) +
         ".");)
     close();
   }
 }
 
-void Connection::readPacketSize(const boost::system::error_code& error) {
+void Connection::read_packet_size(const boost::system::error_code& error) {
   std::lock_guard<std::recursive_mutex> lock(mutex_);
   try {
-    readTimer_.cancel();
+    read_timer_.cancel();
 
     if (state_ != State::CONNECTED) {
       FW_DEBUG_INSTRUCTIONS(G::Logger.error(
-          getInfo() +
+          get_info() +
           " Unable to read packet size. Connection is NOT connected.");)
       return;
     }
 
     if (error) {
       FW_DEBUG_INSTRUCTIONS(G::Logger.error(
-          getInfo() + " Unable to read packet size. Error: " + error.message() +
+          get_info() + " Unable to read packet size. Error: " + error.message() +
           ".");)
       close();
       return;
     }
 
-    inMsg.setLength(inMsg.peekUInt16());
-    if (inMsg.getLength() == 0 ||
-        inMsg.getLength() >= NetworkMessage::MAX_PACKET_BODY_LENGTH) {
+    in_msg.set_length(in_msg.peek_uint16());
+    if (in_msg.get_length() == 0 ||
+        in_msg.get_length() >= NetworkMessage::MAX_PACKET_BODY_LENGTH) {
       FW_DEBUG_INSTRUCTIONS(G::Logger.error(
-          getInfo() +
-          " Wrong packet size: " + std::to_string(inMsg.getLength()) + ".");)
+          get_info() +
+          " Wrong packet size: " + std::to_string(in_msg.get_length()) + ".");)
       close();
       return;
     }
 
-    readTimer_.expires_from_now(std::chrono::seconds(config.readTimeout));
-    readTimer_.async_wait(std::bind(&Connection::onTimeout, shared_from_this(),
+    read_timer_.expires_from_now(std::chrono::seconds(config.read_timeout));
+    read_timer_.async_wait(std::bind(&Connection::on_timeout, shared_from_this(),
                                     std::placeholders::_1));
 
     boost::asio::async_read(
         socket_,
-        boost::asio::buffer(inMsg.getBufferAtCurrentPosition(),
-                            inMsg.getLength() - inMsg.getBufferPosition()),
-        std::bind(&Connection::readPacketBody, shared_from_this(),
+        boost::asio::buffer(in_msg.get_buffer_at_current_position(),
+                            in_msg.get_length() - in_msg.get_buffer_position()),
+        std::bind(&Connection::read_packet_body, shared_from_this(),
                   std::placeholders::_1));
   } catch (boost::system::system_error& e) {
     FW_DEBUG_INSTRUCTIONS(G::Logger.error(
-        getInfo() +
+        get_info() +
         " Unable to read packet size. Error: " + std::string(e.what()));)
     close();
   }
 }
 
-void Connection::readPacketBody(const boost::system::error_code& error) {
+void Connection::read_packet_body(const boost::system::error_code& error) {
   std::lock_guard<std::recursive_mutex> lock(mutex_);
   try {
-    readTimer_.cancel();
+    read_timer_.cancel();
   } catch (boost::system::system_error& e) {
     FW_DEBUG_INSTRUCTIONS(G::Logger.error(
-        getInfo() +
+        get_info() +
         " Unable to read packet body. Error: " + std::string(e.what()));)
     close();
   }
 
   if (error) {
     FW_DEBUG_INSTRUCTIONS(G::Logger.error(
-        getInfo() + " Unable to parse packet. Error: " + error.message() +
+        get_info() + " Unable to parse packet. Error: " + error.message() +
         ".");)
     close();
     return;
@@ -248,64 +248,64 @@ void Connection::readPacketBody(const boost::system::error_code& error) {
 
   if (state_ != State::CONNECTED) {
     FW_DEBUG_INSTRUCTIONS(G::Logger.error(
-        getInfo() +
+        get_info() +
         " Unable to read packet body. Connection is NOT connected.");)
     return;
   }
 
-  parsePacket();
+  parse_packet();
 
-  readPacket();
+  read_packet();
 }
 
-void Connection::writePacket(const OutputMessage_ptr& msg) {
+void Connection::write_packet(const OutputMessage_ptr& msg) {
   std::lock_guard<std::recursive_mutex> lock(mutex_);
   try {
-    writeTimer_.cancel();
+    write_timer_.cancel();
 
     if (state_ != State::CONNECTED) {
       FW_DEBUG_INSTRUCTIONS(G::Logger.error(
-          getInfo() + " Unable to write packet. Connection is NOT connected.");)
+          get_info() + " Unable to write packet. Connection is NOT connected.");)
       return;
     }
 
-    prepareToWrite(msg);
+    prepare_to_write(msg);
 
-    writeTimer_.expires_from_now(std::chrono::seconds(config.writeTimeout));
-    writeTimer_.async_wait(std::bind(&Connection::onTimeout, shared_from_this(),
+    write_timer_.expires_from_now(std::chrono::seconds(config.write_timeout));
+    write_timer_.async_wait(std::bind(&Connection::on_timeout, shared_from_this(),
                                      std::placeholders::_1));
 
     boost::asio::async_write(
-        socket_, boost::asio::buffer(msg->getOutputBuffer(), msg->getLength()),
-        std::bind(&Connection::onWritePacket, shared_from_this(),
+        socket_, boost::asio::buffer(msg->get_output_buffer(), msg->get_length()),
+        std::bind(&Connection::on_write_packet, shared_from_this(),
                   std::placeholders::_1));
   } catch (boost::system::system_error& e) {
     FW_DEBUG_INSTRUCTIONS(G::Logger.error(
-        getInfo() +
+        get_info() +
         " Unable to write packet. Error: " + std::string(e.what()));)
     close();
   }
 }
 
-void Connection::onConnect(const boost::system::error_code& error) {
+void Connection::on_connect(const boost::system::error_code& error) {
   try {
-    readTimer_.cancel();
+    read_timer_.cancel();
   } catch (boost::system::system_error& e) {
     FW_DEBUG_INSTRUCTIONS(G::Logger.error(
-        getInfo() +
+        get_info() +
         " Unable to handle connect. Error: " + std::string(e.what()));)
     close();
   }
 
   if (error == boost::asio::error::operation_aborted) {
     FW_DEBUG_INSTRUCTIONS(G::Logger.error(
-        getInfo() + " Unable to handle connect. Operation aborted.");)
+        get_info() + " Unable to handle connect. Operation aborted.");)
     return;
   }
 
   if (error) {
     FW_DEBUG_INSTRUCTIONS(G::Logger.error(
-        getInfo() + " Unable to handle connect. Error: " + error.message() +
+        get_info() + " Unable to handle connect. Error: " + error.message() +
         ".");)
     close();
     return;
@@ -316,65 +316,65 @@ void Connection::onConnect(const boost::system::error_code& error) {
   state_ = State::CONNECTED;
   auto this_connection = shared_from_this();
   on_connected(this_connection);
-  readPacket();
+  read_packet();
 }
 
-void Connection::onAccept() {
+void Connection::on_accept() {
   std::lock_guard<std::recursive_mutex> lock(mutex_);
   state_ = State::CONNECTED;
   auto this_connection = shared_from_this();
   on_connected(this_connection);
-  readPacket();
+  read_packet();
 }
 
-void Connection::onWritePacket(const boost::system::error_code& error) {
+void Connection::on_write_packet(const boost::system::error_code& error) {
   std::lock_guard<std::recursive_mutex> lock(mutex_);
-  writeTimer_.cancel();
-  outputMessageQueue_.pop_front();
+  write_timer_.cancel();
+  output_message_queue_.pop_front();
 
   if (error) {
     FW_DEBUG_INSTRUCTIONS(G::Logger.error(
-        getInfo() + " Error while writing packet. Error: " + error.message() +
+        get_info() + " Error while writing packet. Error: " + error.message() +
         ".");)
-    outputMessageQueue_.clear();
+    output_message_queue_.clear();
     close();
     return;
   }
 
   if (state_ != State::CONNECTED) {
     FW_DEBUG_INSTRUCTIONS(G::Logger.error(
-        getInfo() +
+        get_info() +
         " Unable to handle write packet. Connection is NOT connected.");)
     return;
   }
 
-  if (!outputMessageQueue_.empty()) writePacket(outputMessageQueue_.front());
+  if (!output_message_queue_.empty()) write_packet(output_message_queue_.front());
 }
 
-void Connection::onTimeout(const boost::system::error_code& error) {
+void Connection::on_timeout(const boost::system::error_code& error) {
   if (error == boost::asio::error::operation_aborted) {
     // FW_DEBUG_INSTRUCTIONS(
-    //    G::Logger.info(getInfo() + " Timeout. Operation aborted.");)
+    //    G::Logger.info(get_info() + " Timeout. Operation aborted.");)
     return;
   }
 
   FW_DEBUG_INSTRUCTIONS(
-      G::Logger.error(getInfo() + " Timeout. Error: " + error.message() + ".");)
+      G::Logger.error(get_info() + " Timeout. Error: " + error.message() + ".");)
   close();
 }
 
-void Connection::prepareToWrite(const OutputMessage_ptr& msg) const {
-  msg->writeMessageLength();
+void Connection::prepare_to_write(const OutputMessage_ptr& msg) const {
+  msg->write_message_length();
 }
 
-void Connection::parsePacket() {
-  uint8_t packetId = inMsg.getUInt8();
+void Connection::parse_packet() {
+  uint8_t packet_id = in_msg.get_uint8();
   auto this_connection = shared_from_this();
 
   try {
-    Connection::packetParseCallbacks_->call(packetId, this_connection);
+    Connection::packet_parse_callbacks_->call(packet_id, this_connection);
   } catch (std::exception e) {
-    FW::G::Logger.error("Unable to parse packet[" + std::to_string(packetId) +
+    FW::G::Logger.error("Unable to parse packet[" + std::to_string(packet_id) +
                         "]. Error " + std::string(e.what()));
     close();
   }

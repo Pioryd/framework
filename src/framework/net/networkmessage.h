@@ -23,16 +23,16 @@ class NetworkMessage {
  public:
   virtual void reset() = 0;
 
-  uint16_t getLength() const;
-  void setLength(uint16_t newLength);
+  uint16_t get_length() const;
+  void set_length(uint16_t newLength);
 
-  uint8_t* getBuffer();
-  const uint8_t* getBuffer() const;
+  uint8_t* get_buffer();
+  const uint8_t* get_buffer() const;
 
-  uint8_t* getBufferAtCurrentPosition();
-  const uint8_t* getBufferAtCurrentPosition() const;
+  uint8_t* get_buffer_at_current_position();
+  const uint8_t* get_buffer_at_current_position() const;
 
-  uint16_t getBufferPosition() const;
+  uint16_t get_buffer_position() const;
 
  protected:
   uint16_t length_;

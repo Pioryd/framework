@@ -20,43 +20,43 @@ class OutputMessage : public NetworkMessage {
 
   void reset() override;
 
-  void putUInt8(uint8_t value);
-  void putUInt16(uint16_t value);
-  void putUInt32(uint32_t value);
-  void putUInt64(uint64_t value);
+  void put_uint8(uint8_t value);
+  void put_uint16(uint16_t value);
+  void put_uint32(uint32_t value);
+  void put_uint64(uint64_t value);
 
-  void putInt8(int8_t value);
-  void putInt16(int16_t value);
-  void putInt32(int32_t value);
-  void putInt64(int64_t value);
+  void put_int8(int8_t value);
+  void put_int16(int16_t value);
+  void put_int32(int32_t value);
+  void put_int64(int64_t value);
 
-  void addString(const std::string& value);
-  void putBytes(const char* bytes, size_t size);
-  void addPaddingBytes(size_t count);
+  void add_string(const std::string& value);
+  void put_bytes(const char* bytes, size_t size);
+  void add_padding_bytes(size_t count);
 
-  uint8_t* getOutputBuffer() { return buffer_ + outputBufferStart; }
-  void writeMessageLength() { add_header(length_); }
+  uint8_t* get_output_buffer() { return buffer_ + output_buffer_start; }
+  void write_message_length() { add_header(length_); }
 
   void append(const OutputMessage& msg) {
-    auto msgLen = msg.getLength();
-    memcpy(buffer_ + position_, msg.getBuffer() + 8, msgLen);
-    length_ += msgLen;
-    position_ += msgLen;
+    auto msg_len = msg.get_length();
+    memcpy(buffer_ + position_, msg.get_buffer() + 8, msg_len);
+    length_ += msg_len;
+    position_ += msg_len;
   }
 
  private:
-  void throwIfCantPut(size_t size) const;
+  void throw_if_cant_put(size_t size) const;
 
   template <typename T>
   void add_header(T add) {
-    assert(outputBufferStart >= sizeof(T));
-    outputBufferStart -= sizeof(T);
-    memcpy(buffer_ + outputBufferStart, &add, sizeof(T));
+    assert(output_buffer_start >= sizeof(T));
+    output_buffer_start -= sizeof(T);
+    memcpy(buffer_ + output_buffer_start, &add, sizeof(T));
     // added header size to the message size
     length_ += sizeof(T);
   }
 
-  uint16_t outputBufferStart = PACKET_SIZE_BYTES_LENGTH;
+  uint16_t output_buffer_start = PACKET_SIZE_BYTES_LENGTH;
 };
 }  // namespace FW::Net
 #endif  // #ifndef FW_NET_OUTPUTMESSAGE_H

@@ -14,16 +14,16 @@ class TcpListener : public std::enable_shared_from_this<TcpListener> {
 
  public:
   struct Config {
-    bool enableRestart = true;
-    FW::Time::ticks_t restartPerTime = 1000;
-    uint32_t packetsPerSecond = 20;
+    bool enable_restart = true;
+    FW::Time::ticks_t restart_per_time = 1000;
+    uint32_t packets_per_second = 20;
   };
 
  public:
   TcpListener(boost::asio::io_service& io_service,
               std::function<void(Connection_ptr&)> on_connected,
               const std::string& host, const std::string& port,
-              Thread::EventManager& eventManager);
+              Thread::EventManager& event_manager);
   ~TcpListener();
 
   TcpListener(const TcpListener&) = delete;
@@ -34,24 +34,24 @@ class TcpListener : public std::enable_shared_from_this<TcpListener> {
   void stop();
   bool is_running();
 
-  Connection_ptr createConnection();
-  void onConnectionClose(Connection_ptr& connection);
-  void closeConnections();
+  Connection_ptr create_connection();
+  void on_connection_close(Connection_ptr& connection);
+  void close_connections();
 
   Connection_ptr getConnection(uint32_t id);
   std::unordered_set<Connection_ptr>& get_connections();
 
  private:
-  void asyncRestart();
-  void asyncAccept();
-  void onAccept(Connection_ptr connection,
+  void async_restart();
+  void async_accept();
+  void on_accept(Connection_ptr connection,
                 const boost::system::error_code& error);
 
   std::string info();
 
  public:
   Config config;
-  Connection::PacketParseCallbacks_ptr packetParseCallbacks;
+  Connection::PacketParseCallbacks_ptr packet_parse_callbacks;
 
  private:
   boost::asio::io_service& io_service_;
@@ -61,10 +61,10 @@ class TcpListener : public std::enable_shared_from_this<TcpListener> {
   std::function<void(Connection_ptr&)> on_connected_;
   State state_;
 
-  std::mutex connectionsGuard_;
+  std::mutex connections_guard_;
   std::unordered_set<Connection_ptr> connections_;
 
-  Thread::EventManager& eventManager_;
+  Thread::EventManager& event_manager_;
 };
 }  // namespace FW::Net
 #endif  // #ifndef FW_NET_TCPLISTENER_H

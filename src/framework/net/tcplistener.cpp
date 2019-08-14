@@ -9,14 +9,14 @@ namespace FW::Net {
 TcpListener::TcpListener(boost::asio::io_service& io_service,
                          std::function<void(Connection_ptr&)> on_connected,
                          const std::string& host, const std::string& port,
-                         Thread::EventManager& eventManager)
+                         Thread::EventManager& event_manager)
     : io_service_{io_service},
       on_connected_{on_connected},
       host_{host},
       port_{port},
       state_{State::STOPPED},
-      eventManager_{eventManager},
-      packetParseCallbacks{
+      event_manager_{event_manager},
+      packet_parse_callbacks{
           std::make_shared<Connection::PacketParseCallbacks>()} {}
 
 TcpListener::~TcpListener() { stop(); }
@@ -42,11 +42,11 @@ void TcpListener::start() {
 
     acceptor_->set_option(boost::asio::ip::tcp::no_delay(true));
 
-    asyncAccept();
+    async_accept();
     state_ = State::RUNNING;
   } catch (boost::system::system_error& e) {
     G::Logger.error("Unable to start. " + info() + " Error: " + e.what() + ".");
-    asyncRestart();
+    async_restart();
   }
 }
 
@@ -62,16 +62,16 @@ void TcpListener::stop() {
   state_ = State::STOPPED;
 }
 
-Connection_ptr TcpListener::createConnection() {
-  G::Logger.info("TcpListener::createConnection()");
-  std::lock_guard<std::mutex> lockClass(connectionsGuard_);
+Connection_ptr TcpListener::create_connection() {
+  G::Logger.info("TcpListener::create_connection()");
+  std::lock_guard<std::mutex> lockClass(connections_guard_);
   Connection_ptr connection;
   try {
     connection = std::make_shared<Connection>(
         io_service_,
-        std::bind(&TcpListener::onConnectionClose, shared_from_this(),
+        std::bind(&TcpListener::on_connection_close, shared_from_this(),
                   std::placeholders::_1),
-        on_connected_, packetParseCallbacks);
+        on_connected_, packet_parse_callbacks);
     connection->init();
   } catch (const std::exception& e) {
     G::Logger.error("Unable to create connection. Exception: " +
@@ -82,15 +82,15 @@ Connection_ptr TcpListener::createConnection() {
   return connection;
 }
 
-void TcpListener::onConnectionClose(Connection_ptr& connection) {
-  G::Logger.info("TcpListener::onConnectionClose()");
-  std::lock_guard<std::mutex> lockClass(connectionsGuard_);
+void TcpListener::on_connection_close(Connection_ptr& connection) {
+  G::Logger.info("TcpListener::on_connection_close()");
+  std::lock_guard<std::mutex> lockClass(connections_guard_);
 
   connections_.erase(connection);
 }
 
-void TcpListener::closeConnections() {
-  std::lock_guard<std::mutex> lockClass(connectionsGuard_);
+void TcpListener::close_connections() {
+  std::lock_guard<std::mutex> lockClass(connections_guard_);
 
   for (const auto& connection : connections_) {
     try {
@@ -118,39 +118,39 @@ std::unordered_set<Connection_ptr>& TcpListener::get_connections() {
 
 bool TcpListener::is_running() { return (state_ == State::RUNNING); }
 
-void TcpListener::asyncRestart() {
-  if (!config.enableRestart || state_ == State::RESTARTING) return;
+void TcpListener::async_restart() {
+  if (!config.enable_restart || state_ == State::RESTARTING) return;
 
   G::Logger.info("Restarting... " + info());
 
   stop();
   state_ = State::RESTARTING;
-  eventManager_.add_async_event(
+  event_manager_.add_async_event(
       std::bind(&TcpListener::start, shared_from_this()),
-      config.restartPerTime);
+      config.restart_per_time);
 }
 
-void TcpListener::asyncAccept() {
-  G::Logger.info("TcpListener::asyncAccept()");
+void TcpListener::async_accept() {
+  G::Logger.info("TcpListener::async_accept()");
   if (!acceptor_) return;
 
-  auto connection = createConnection();
+  auto connection = create_connection();
   acceptor_->async_accept(connection->getSocket(),
-                          std::bind(&TcpListener::onAccept, shared_from_this(),
+                          std::bind(&TcpListener::on_accept, shared_from_this(),
                                     connection, std::placeholders::_1));
 }
 
-void TcpListener::onAccept(Connection_ptr connection,
+void TcpListener::on_accept(Connection_ptr connection,
                            const boost::system::error_code& error) {
-  G::Logger.info("TcpListener::onAccept()");
+  G::Logger.info("TcpListener::on_accept()");
   if (!error) {
-    connection->onAccept();
-    asyncAccept();
+    connection->on_accept();
+    async_accept();
   } else {
     G::Logger.error("Unable to accept connection. " + info() +
                     " Error: " + error.message() + ".");
 
-    if (error != boost::asio::error::operation_aborted) asyncRestart();
+    if (error != boost::asio::error::operation_aborted) async_restart();
   }
 }
 

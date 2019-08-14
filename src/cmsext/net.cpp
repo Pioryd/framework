@@ -22,7 +22,7 @@ int32_t tcp_listener_create(const cms::string& host, const cms::string& port,
 void tcp_listener_bind_paket_parse(int32_t tcp_listener_id, uint8_t code,
                                    void (*callback)(uint32_t connection_id)) {
   auto listener = FW::G::Net_Manager.get_tcp_listener(tcp_listener_id);
-  listener->packetParseCallbacks->add(
+  listener->packet_parse_callbacks->add(
       code, [callback](FW::Net::Connection_ptr& connection) {
         callback(connection->get_id());
       });
@@ -56,7 +56,7 @@ int32_t tcp_client_create(const cms::string& host, const cms::string& port,
 void tcp_client_bind_paket_parse(int32_t tcp_client_id, uint8_t code,
                                  void (*callback)(uint32_t connection_id)) {
   auto client = FW::G::Net_Manager.get_tcp_client(tcp_client_id);
-  client->packetParseCallbacks->add(
+  client->packet_parse_callbacks->add(
       code, [callback](FW::Net::Connection_ptr& connection) {
         callback(connection->get_id());
       });
@@ -70,13 +70,13 @@ void tcp_client_connect(int32_t tcp_client_id) {
 uint8_t paket_get_uint8(int32_t connection_id) {
   auto connection = FW::Net::Connection::auto_id.get_object(connection_id);
   if (!connection) return false;
-  return connection->inMsg.getUInt8();
+  return connection->in_msg.get_uint8();
 }
 
 void paket_add_uint8(int32_t connection_id, uint8_t value) {
   auto connection = FW::Net::Connection::auto_id.get_object(connection_id);
   if (!connection) return;
-  connection->outMsg->putUInt8(value);
+  connection->out_msg->put_uint8(value);
 }
 
 void paket_send(int32_t connection_id) {

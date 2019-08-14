@@ -37,16 +37,16 @@ class Connection : public std::enable_shared_from_this<Connection> {
 
  public:
   struct Config {
-    uint32_t readTimeout = 30;
-    uint32_t writeTimeout = 30;
+    uint32_t read_timeout = 30;
+    uint32_t write_timeout = 30;
     bool debug_enabled = true;
   };
 
  public:
   Connection(boost::asio::io_service& io_service,
-             std::function<void(Connection_ptr&)> onClose,
+             std::function<void(Connection_ptr&)> on_close,
              std::function<void(Connection_ptr&)> on_connected,
-             const PacketParseCallbacks_ptr& packetParseCallbacks);
+             const PacketParseCallbacks_ptr& packet_parse_callbacks);
   virtual ~Connection();
 
   void init();
@@ -55,58 +55,58 @@ class Connection : public std::enable_shared_from_this<Connection> {
   Connection& operator=(const Connection&) = delete;
 
   void connect(boost::asio::ip::basic_resolver<boost::asio::ip::tcp>::iterator
-                   endpointIterator);
+                   endpoint_iterator);
   void close();
   void send();
 
-  unsigned long getHost();
-  std::string getHostAsString();
-  unsigned short getPort();
-  std::string getPortAsString();
-  std::string getInfo();
+  unsigned long get_host();
+  std::string get_host_as_string();
+  unsigned short get_port();
+  std::string get_port_as_string();
+  std::string get_info();
   int32_t get_id();
   State get_state();
 
  protected:
-  void readPacket();
-  void readPacketSize(const boost::system::error_code& error);
-  void readPacketBody(const boost::system::error_code& error);
+  void read_packet();
+  void read_packet_size(const boost::system::error_code& error);
+  void read_packet_body(const boost::system::error_code& error);
 
-  void writePacket(const OutputMessage_ptr& msg);
+  void write_packet(const OutputMessage_ptr& msg);
 
-  void onConnect(const boost::system::error_code& error);
-  void onAccept();
-  void onWritePacket(const boost::system::error_code& error);
-  void onTimeout(const boost::system::error_code& error);
+  void on_connect(const boost::system::error_code& error);
+  void on_accept();
+  void on_write_packet(const boost::system::error_code& error);
+  void on_timeout(const boost::system::error_code& error);
 
-  void prepareToWrite(const OutputMessage_ptr& msg) const;
-  void parsePacket();
+  void prepare_to_write(const OutputMessage_ptr& msg) const;
+  void parse_packet();
 
   boost::asio::ip::tcp::socket& getSocket();
 
  public:
   Config config;
 
-  InputMessage inMsg;
-  OutputMessage_ptr outMsg;
+  InputMessage in_msg;
+  OutputMessage_ptr out_msg;
 
   static inline Core::AutoId<Connection> auto_id{1000};
  protected:
 
 
-  std::function<void(Connection_ptr&)> onClose;
+  std::function<void(Connection_ptr&)> on_close;
   std::function<void(Connection_ptr&)> on_connected;
 
   int32_t id_;
   boost::asio::ip::tcp::socket socket_;
-  boost::asio::steady_timer readTimer_;
-  boost::asio::steady_timer writeTimer_;
+  boost::asio::steady_timer read_timer_;
+  boost::asio::steady_timer write_timer_;
 
-  std::list<OutputMessage_ptr> outputMessageQueue_;
+  std::list<OutputMessage_ptr> output_message_queue_;
   State state_;
   std::recursive_mutex mutex_;
 
-  PacketParseCallbacks_ptr packetParseCallbacks_;
+  PacketParseCallbacks_ptr packet_parse_callbacks_;
 
  private:
   friend class TcpListener;

@@ -15,16 +15,16 @@ class TcpClient : public std::enable_shared_from_this<TcpClient> {
 
  public:
   struct Config {
-    uint32_t readTimeout = 30;
-    Time::ticks_t reconnectPerTime = 1000;
-    uint32_t packetsPerSecond = 20;
+    uint32_t read_timeout = 30;
+    Time::ticks_t reconnect_per_time = 1000;
+    uint32_t packets_per_second = 20;
   };
 
  public:
   TcpClient(boost::asio::io_service& io_service,
             const std::function<void(Connection_ptr&)>& on_connected,
             const std::string& host, const std::string& port,
-            Thread::EventManager& eventManager);
+            Thread::EventManager& event_manager);
   ~TcpClient();
 
   TcpClient(const TcpClient&) = delete;
@@ -36,24 +36,24 @@ class TcpClient : public std::enable_shared_from_this<TcpClient> {
   bool is_connected();
 
  private:
-  void onResolve(const boost::system::error_code& error,
+  void on_resolve(const boost::system::error_code& error,
                  boost::asio::ip::basic_resolver<boost::asio::ip::tcp>::iterator
-                     endpointIterator);
-  void asyncReconnect();
-  void onTimeout(const boost::system::error_code& error);
+                     endpoint_iterator);
+  void async_reconnect();
+  void on_timeout(const boost::system::error_code& error);
 
-  void onConnectionClose(Connection_ptr& connection);
+  void on_connection_close(Connection_ptr& connection);
 
   std::string info();
 
  public:
   Config config;
-  Connection::PacketParseCallbacks_ptr packetParseCallbacks;
+  Connection::PacketParseCallbacks_ptr packet_parse_callbacks;
 
  protected:
   boost::asio::io_service& io_service_;
-  std::unique_ptr<boost::asio::steady_timer> readTimer_;
-  std::unique_ptr<boost::asio::steady_timer> writeTimer_;
+  std::unique_ptr<boost::asio::steady_timer> read_timer_;
+  std::unique_ptr<boost::asio::steady_timer> write_timer_;
   std::unique_ptr<boost::asio::ip::tcp::resolver> resolver_;
   std::string host_;
   std::string port_;
@@ -61,7 +61,7 @@ class TcpClient : public std::enable_shared_from_this<TcpClient> {
   FW::Net::Connection_ptr connection_;
   State state_;
 
-  Thread::EventManager& eventManager_;
+  Thread::EventManager& event_manager_;
 };
 }  // namespace FW::Net
 #endif  // #ifndef FW_NET_TCPCLIENT_H

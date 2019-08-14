@@ -11,112 +11,112 @@ void InputMessage::reset() {
   position_ = 0;
 }
 
-uint8_t InputMessage::peekUInt8() {
-  throwIfCantRead(1);
+uint8_t InputMessage::peek_uint8() {
+  throw_if_cant_read(1);
   return Util::Math::read_le8<uint8_t>(buffer_ + position_);
 }
 
-uint16_t InputMessage::peekUInt16() {
-  throwIfCantRead(2);
+uint16_t InputMessage::peek_uint16() {
+  throw_if_cant_read(2);
   return Util::Math::read_le16<uint16_t>(buffer_ + position_);
 }
 
-uint32_t InputMessage::peekUInt32() {
-  throwIfCantRead(4);
+uint32_t InputMessage::peek_uint32() {
+  throw_if_cant_read(4);
   return Util::Math::read_le32<uint32_t>(buffer_ + position_);
 }
 
-uint64_t InputMessage::peekUInt64() {
-  throwIfCantRead(8);
+uint64_t InputMessage::peek_uint64() {
+  throw_if_cant_read(8);
   return Util::Math::read_le64<uint64_t>(buffer_ + position_);
 }
 
-int8_t InputMessage::peekInt8() {
-  throwIfCantRead(1);
+int8_t InputMessage::peek_int8() {
+  throw_if_cant_read(1);
   return Util::Math::read_le8<uint8_t>(buffer_ + position_);
 }
 
-int16_t InputMessage::peekInt16() {
-  throwIfCantRead(2);
+int16_t InputMessage::peek_int16() {
+  throw_if_cant_read(2);
   return Util::Math::read_le16<uint16_t>(buffer_ + position_);
 }
 
-int32_t InputMessage::peekInt32() {
-  throwIfCantRead(4);
+int32_t InputMessage::peek_int32() {
+  throw_if_cant_read(4);
   return Util::Math::read_le32<uint32_t>(buffer_ + position_);
 }
 
-int64_t InputMessage::peekInt64() {
-  throwIfCantRead(8);
+int64_t InputMessage::peek_int64() {
+  throw_if_cant_read(8);
   return Util::Math::read_le64<uint64_t>(buffer_ + position_);
 }
 
-std::string InputMessage::peekString() {
-  uint16_t stringLength = peekUInt16();
-  throwIfCantRead(stringLength);
+std::string InputMessage::peek_string() {
+  uint16_t string_length = peek_uint16();
+  throw_if_cant_read(string_length);
   char* value = reinterpret_cast<char*>(buffer_) + position_;
-  return std::string(value, stringLength);
+  return std::string(value, string_length);
 }
 
-uint8_t InputMessage::getUInt8() {
-  uint8_t value = peekUInt8();
+uint8_t InputMessage::get_uint8() {
+  uint8_t value = peek_uint8();
   position_ += 1;
   return value;
 }
 
-uint16_t InputMessage::getUInt16() {
-  uint16_t value = peekUInt16();
+uint16_t InputMessage::get_uint16() {
+  uint16_t value = peek_uint16();
   position_ += 2;
   return value;
 }
 
-uint32_t InputMessage::getUInt32() {
-  uint32_t value = peekUInt32();
+uint32_t InputMessage::get_uint32() {
+  uint32_t value = peek_uint32();
   position_ += 4;
   return value;
 }
 
-uint64_t InputMessage::getUInt64() {
-  uint64_t value = peekUInt64();
+uint64_t InputMessage::get_uint64() {
+  uint64_t value = peek_uint64();
   position_ += 8;
   return value;
 }
 
-int8_t InputMessage::getInt8() {
-  uint8_t value = peekInt8();
+int8_t InputMessage::get_int8() {
+  uint8_t value = peek_int8();
   position_ += 1;
   return value;
 }
 
-int16_t InputMessage::getInt16() {
-  uint16_t value = peekInt16();
+int16_t InputMessage::get_int16() {
+  uint16_t value = peek_int16();
   position_ += 2;
   return value;
 }
 
-int32_t InputMessage::getInt32() {
-  uint32_t value = peekInt32();
+int32_t InputMessage::get_int32() {
+  uint32_t value = peek_int32();
   position_ += 4;
   return value;
 }
 
-int64_t InputMessage::getInt64() {
-  uint64_t value = peekInt64();
+int64_t InputMessage::get_int64() {
+  uint64_t value = peek_int64();
   position_ += 8;
   return value;
 }
 
 std::string InputMessage::get_string() {
-  uint16_t stringLength = getUInt16();
-  throwIfCantRead(stringLength);
+  uint16_t string_length = get_uint16();
+  throw_if_cant_read(string_length);
   char* value = reinterpret_cast<char*>(buffer_) + position_;
-  position_ += stringLength;
-  return std::string(value, stringLength);
+  position_ += string_length;
+  return std::string(value, string_length);
 }
 
-void InputMessage::skipBytes(int16_t count) { position_ += count; }
+void InputMessage::skip_bytes(int16_t count) { position_ += count; }
 
-void InputMessage::throwIfCantRead(size_t size) const {
+void InputMessage::throw_if_cant_read(size_t size) const {
   if ((position_ + size) >= (length_ + PACKET_SIZE_BYTES_LENGTH) ||
       size >= (BUFFER_MAXSIZE - position_)) {
     throw std::runtime_error(

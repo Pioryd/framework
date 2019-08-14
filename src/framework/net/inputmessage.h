@@ -13,34 +13,34 @@ class InputMessage : public NetworkMessage {
 
   void reset() override;
 
-  uint8_t peekUInt8();
-  uint16_t peekUInt16();
-  uint32_t peekUInt32();
-  uint64_t peekUInt64();
+  uint8_t peek_uint8();
+  uint16_t peek_uint16();
+  uint32_t peek_uint32();
+  uint64_t peek_uint64();
 
-  int8_t peekInt8();
-  int16_t peekInt16();
-  int32_t peekInt32();
-  int64_t peekInt64();
+  int8_t peek_int8();
+  int16_t peek_int16();
+  int32_t peek_int32();
+  int64_t peek_int64();
 
-  std::string peekString();
+  std::string peek_string();
 
-  uint8_t getUInt8();
-  uint16_t getUInt16();
-  uint32_t getUInt32();
-  uint64_t getUInt64();
+  uint8_t get_uint8();
+  uint16_t get_uint16();
+  uint32_t get_uint32();
+  uint64_t get_uint64();
 
-  int8_t getInt8();
-  int16_t getInt16();
-  int32_t getInt32();
-  int64_t getInt64();
+  int8_t get_int8();
+  int16_t get_int16();
+  int32_t get_int32();
+  int64_t get_int64();
 
   std::string get_string();
 
-  void skipBytes(int16_t count);
+  void skip_bytes(int16_t count);
 
  protected:
-  void throwIfCantRead(size_t size) const;
+  void throw_if_cant_read(size_t size) const;
 };
 }  // namespace FW::Net
 #endif  // #ifndef FW_NET_INPUTMESSAGE_H
