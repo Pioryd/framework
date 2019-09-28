@@ -8,7 +8,8 @@
 * Compile last build: 
   * Windows (Success)
   * Linux (Not tested)
-
+  * Android (Not tested)
+  
 Framework use mostly C++17 and some additional libs:
 * Core (C++17)
 * Thread (C++17)
