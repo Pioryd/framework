@@ -34,7 +34,7 @@ class EventPoll : public Core::TraceInfo {
       Time::ticks_t expiration = Event::DO_NOT_EXPIRE);
   // Return true when remove event. False when event with given GUID does not
   // exist.
-  bool remove_event(EventGUID event_id);
+  bool remove_event(EventGUID event_guid);
   State get_state();
 
   void shutdown();

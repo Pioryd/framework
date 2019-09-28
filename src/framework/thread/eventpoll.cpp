@@ -46,7 +46,8 @@ EventGUID EventPoll::add_delayed_event(std::function<void(void)> callback,
 bool EventPoll::remove_event(EventGUID event_guid) {
   if (!enabled_) return false;
 
-  if (event_guid.id == Event::FATAL_GUID.id) return false;
+  if (!event_guid.is_set()) return false;
+  if (event_guid.event_poll_id != id_) return false;
 
   auto taken_event_id_it = taken_event_ids_.find(event_guid.id);
   if (taken_event_id_it == taken_event_ids_.end())
